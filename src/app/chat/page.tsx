@@ -1313,7 +1313,7 @@ import { useSearchParams } from 'next/navigation';
                                       })
                                     });
 
-                                    if (ttsResponse.ok) {
+                                    if if (ttsResponse.ok) {
                                       const ttsData = await ttsResponse.json();
                                       console.log('🎯 [CHAT-TTS-2CHUNK] TTS Response:', ttsData.strategy, ttsData.isFirstChunk, ttsData.hasSecondChunk);
                                       
