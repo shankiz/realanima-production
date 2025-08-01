@@ -1,0 +1,1635 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@font-face {
+  font-family: 'Shocka Serif';
+  src: url('/fonts/ShockaSerif-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Shocka Serif';
+  src: url('/fonts/ShockaSerif-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manolo Mono';
+  src: url('/fonts/ManoloMono.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideInFromTop {
+  from { 
+    opacity: 0; 
+    transform: translateY(-100%) translateX(-50%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) translateX(-50%); 
+  }
+}
+
+@keyframes slideOutToTop {
+  from { 
+    opacity: 1; 
+    transform: translateY(0) translateX(-50%); 
+  }
+  to { 
+    opacity: 0; 
+    transform: translateY(-100%) translateX(-50%); 
+  }
+}
+
+.animate-slideInFromTop {
+  animation: slideInFromTop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-slideOutToTop {
+  animation: slideOutToTop 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+@keyframes dotPulse {
+  0%, 60%, 100% { 
+    opacity: 0.3; 
+  }
+  30% { 
+    opacity: 1; 
+  }
+}
+
+/* Theme transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Custom scrollbar for chat */
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0;
+
+
+/* Minimal Sidebar Styling */
+.sidebar-left {
+  width: var(--sidebar-width-left);
+  min-width: var(--sidebar-width-left);
+  max-width: var(--sidebar-width-left);
+  transition: width 0.2s ease;
+}
+
+.sidebar-right {
+  width: var(--sidebar-width-right);
+  min-width: var(--sidebar-width-right);
+  max-width: var(--sidebar-width-right);
+  transition: width 0.2s ease;
+}
+
+/* Global sidebar adjustments */
+[data-sidebar="sidebar"] {
+  border-right: 1px solid var(--color-sidebar-border);
+  background: var(--color-sidebar);
+}
+
+.sidebar-left[data-sidebar="sidebar"] {
+  width: var(--sidebar-width-left) !important;
+}
+
+.sidebar-right[data-sidebar="sidebar"] {
+  width: var(--sidebar-width-right) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width-left: 160px;
+    --sidebar-width-right: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --sidebar-width-left: 140px;
+    --sidebar-width-right: 180px;
+  }
+}
+
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+/* Glass morphism effects */
+.glass-panel {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Clean, minimal chat bubbles */
+.message-bubble {
+  max-width: 70%;
+
+/* Custom scrollbar styling for textarea */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  position: absolute;
+  right: 0;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.4);
+  border-radius: 2px;
+  right: 1px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.6);
+}
+
+/* Typing indicator styles */
+.placeholder-typing {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+textarea:focus::placeholder {
+  opacity: 0.3;
+}
+
+
+
+textarea {
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  line-height: 1.5;
+  transition: height 0.1s ease;
+  text-indent: 0;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  border-radius: inherit;
+}
+
+textarea::placeholder {
+  text-indent: 0;
+}
+
+/* Ensure text is properly padded in multi-line input */
+textarea.break-words {
+  padding: 12px 16px !important;
+}
+
+/* Change container shape based on content length */
+.chat-input-container {
+  transition: border-radius 0.3s ease;
+}
+
+.chat-input-container.expanded {
+  border-radius: 16px !important;
+}
+
+/* Auto-hiding scrollbar only when not actively scrolling */
+.auto-hide-scrollbar:not(.scrolling)::-webkit-scrollbar {
+  opacity: 0;
+  width: 0;
+}
+
+.auto-hide-scrollbar.scrolling::-webkit-scrollbar {
+  width: 3px;
+}
+
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.user-message {
+  background-image: linear-gradient(to bottom right, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.2));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+}
+
+.assistant-message {
+  background-image: linear-gradient(to bottom right, rgba(31, 41, 55, 0.7), rgba(17, 24, 39, 0.8));
+  border: 1px solid rgba(75, 85, 99, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --sidebar-width-left: 200px;
+  --sidebar-width-right: 280px;
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px) scale(1);
+  }
+  50% { 
+    transform: translateY(-6px) scale(1.01);
+  }
+}
+
+.animate-float {
+  animation: float 4.5s ease-in-out infinite;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light theme styles */
+.light {
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(0.97 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.145 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.922 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.922 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.922 0 0);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0 0 0 / 15%);
+  --input: oklch(0 0 0 / 8%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.145 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.922 0 0);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0 0 0 / 15%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Light mode specific overrides for your chat interface */
+body.light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Core background colors for light mode */
+body.light .bg-black {
+  background-color: #ffffff !important;
+}
+
+body.light .bg-black\/98 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.light .bg-black\/90 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body.light .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+body.light .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light .bg-black\/60 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.light .bg-black\/50 {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+body.light .bg-black\/40 {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+}
+
+body.light .bg-black\/30 {
+  background-color: rgba(241, 245, 249, 0.4) !important;
+}
+
+body.light .bg-black\/20 {
+  background-color: rgba(241, 245, 249, 0.3) !important;
+}
+
+body.light .bg-black\/10 {
+  background-color: rgba(241, 245, 249, 0.2) !important;
+}
+
+/* Character card backgrounds */
+body.light [class*="bg-black/40"] {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(203, 213, 225, 0.4) !important;
+}
+
+body.light [class*="bg-black/60"]:hover {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+/* Gray scale backgrounds */
+body.light .bg-gray-950 {
+  background-color: #ffffff !important;
+}
+
+body.light .bg-gray-950\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.light .bg-gray-950\/90 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+body.light .bg-gray-950\/80 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+body.light .bg-gray-950\/60 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.light .bg-gray-950\/50 {
+  background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+body.light .bg-gray-900 {
+  background-color: #f1f5f9 !important;
+}
+
+body.light .bg-gray-900\/98 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.light .bg-gray-900\/95 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+body.light .bg-gray-900\/90 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+body.light .bg-gray-900\/50 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.light .bg-gray-900\/40 {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+}
+
+body.light .bg-gray-900\/30 {
+  background-color: rgba(226, 232, 240, 0.4) !important;
+}
+
+body.light .bg-gray-900\/20 {
+  background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+body.light .bg-gray-800 {
+  background-color: #e2e8f0 !important;
+}
+
+body.light .bg-gray-800\/80 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+body.light .bg-gray-800\/50 {
+  background-color: rgba(226, 232, 240, 0.7) !important;
+}
+
+body.light .bg-gray-800\/40 {
+  background-color: rgba(226, 232, 240, 0.4) !important;
+}
+
+body.light .bg-gray-800\/30 {
+  background-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+body.light .bg-gray-800\/20 {
+  background-color: rgba(226, 232, 240, 0.3) !important;
+}
+
+body.light .bg-gray-800\/10 {
+  background-color: rgba(226, 232, 240, 0.2) !important;
+}
+
+body.light .bg-gray-700 {
+  background-color: #cbd5e1 !important;
+}
+
+body.light .bg-gray-700\/50 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.light .bg-gray-600 {
+  background-color: #94a3b8 !important;
+}
+
+/* Border colors for light mode */
+body.light .border-gray-900\/50 {
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+body.light .border-gray-800\/50 {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+body.light .border-gray-800\/30 {
+  border-color: rgba(148, 163, 184, 0.3) !important;
+}
+
+body.light .border-gray-800\/20 {
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+body.light .border-gray-700\/50 {
+  border-color: rgba(203, 213, 225, 0.7) !important;
+}
+
+body.light .border-gray-700\/40 {
+  border-color: rgba(203, 213, 225, 0.6) !important;
+}
+
+body.light .border-gray-700\/30 {
+  border-color: rgba(203, 213, 225, 0.5) !important;
+}
+
+body.light .border-gray-700\/20 {
+  border-color: rgba(203, 213, 225, 0.4) !important;
+}
+
+body.light .border-gray-600 {
+  border-color: #cbd5e1 !important;
+}
+
+body.light .border-gray-600\/30 {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+body.light .border-gray-500 {
+  border-color: #94a3b8 !important;
+}
+
+/* Character card specific border fixes */
+body.light [class*="border-gray-800/30"] {
+  border-color: rgba(203, 213, 225, 0.4) !important;
+}
+
+body.light [class*="border-cyan-500/30"]:hover {
+  border-color: rgba(6, 182, 212, 0.4) !important;
+}
+
+/* Text colors for light mode */
+body.light .text-white {
+  color: #0f172a !important;
+}
+
+body.light .text-gray-100 {
+  color: #1e293b !important;
+}
+
+body.light .text-gray-200 {
+  color: #334155 !important;
+}
+
+body.light .text-gray-300 {
+  color: #475569 !important;
+}
+
+body.light .text-gray-400 {
+  color: #64748b !important;
+}
+
+body.light .text-gray-500 {
+  color: #64748b !important;
+}
+
+body.light .text-gray-600 {
+  color: #475569 !important;
+}
+
+/* White text variations */
+body.light .text-white\/90 {
+  color: #1e293b !important;
+}
+
+body.light .text-white\/80 {
+  color: #334155 !important;
+}
+
+body.light .text-white\/70 {
+  color: #475569 !important;
+}
+
+body.light .text-white\/60 {
+  color: #64748b !important;
+}
+
+/* Hover states for light mode */
+body.light .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+
+body.light .hover\:bg-black\/60:hover {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+body.light .hover\:bg-gray-950\/60:hover {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+body.light .hover\:bg-gray-800\/50:hover {
+  background-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+body.light .hover\:bg-gray-800\/20:hover {
+  background-color: rgba(226, 232, 240, 0.4) !important;
+}
+
+body.light .hover\:bg-gray-800\/10:hover {
+  background-color: rgba(226, 232, 240, 0.2) !important;
+}
+
+body.light .hover\:bg-gray-700:hover {
+  background-color: #cbd5e1 !important;
+}
+
+body.light .hover\:bg-gray-600:hover {
+  background-color: #94a3b8 !important;
+}
+
+body.light .hover\:border-gray-600\/30:hover {
+  border-color: rgba(148, 163, 184, 0.5) !important;
+}
+
+body.light .hover\:border-cyan-500\/30:hover {
+  border-color: rgba(6, 182, 212, 0.4) !important;
+}
+
+/* Group hover states */
+body.light .group:hover .text-white {
+  color: #0f172a !important;
+}
+
+body.light .group:hover .text-gray-400 {
+  color: #334155 !important;
+}
+
+body.light .group:hover .border-gray-700\/20 {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+/* Shadow improvements for light mode */
+body.light .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04),```text
+0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+}
+
+body.light .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
+}
+
+body.light .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Border transparency fixes */
+body.light .border-transparent {
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
+/* Make sure all character cards look good */
+body.light .cursor-pointer:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Sidebar text colors for light mode */
+body.light .text-white\/90 {
+  color: #1e293b !important;
+}
+
+body.light .text-white\/80 {
+  color: #334155 !important;
+}
+
+body.light .text-white\/70 {
+  color: #475569 !important;
+}
+
+body.light .text-white\/60 {
+  color: #64748b !important;
+}
+
+body.light .text-gray-200 {
+  color: #334155 !important;
+}
+
+body.light .text-gray-300 {
+  color: #475569 !important;
+}
+
+body.light .text-gray-400 {
+  color: #64748b !important;
+}
+
+body.light .text-gray-500 {
+  color: #64748b !important;
+}
+
+body.light .text-gray-600 {
+  color: #475569 !important;
+}
+
+/* Specific sidebar component text overrides */
+body.light [data-sidebar="sidebar"] .text-white {
+  color: #1e293b !important;
+}
+
+body.light [data-sidebar="sidebar"] .text-gray-400 {
+  color: #475569 !important;
+}
+
+body.light [data-sidebar="sidebar"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Group hover text colors for light mode */
+body.light .group:hover .text-white {
+  color: #0f172a !important;
+}
+
+body.light .group:hover .text-gray-400 {
+  color: #334155 !important;
+}
+
+/* Chat history item text colors */
+body.light .text-sm.text-gray-400 {
+  color: #475569 !important;
+}
+
+body.light .text-xs.text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Right sidebar specific light mode styling */
+body.light .bg-gray-950 {
+  background-color: #ffffff !important;
+}
+
+body.light .bg-gray-900\/98 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.light .bg-gray-900\/90 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+/* Chat sidebar container backgrounds */
+body.light .bg-gray-800 {
+  background-color: #f8fafc !important;
+}
+
+body.light .bg-gray-950\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Button backgrounds in sidebar */
+body.light .bg-gray-700 {
+  background-color: #e2e8f0 !important;
+}
+
+body.light .bg-gray-600 {
+  background-color: #cbd5e1 !important;
+}
+
+/* Hover states for sidebar buttons */
+body.light .hover\:bg-gray-700:hover {
+  background-color: #cbd5e1 !important;
+}
+
+body.light .hover\:bg-gray-600:hover {
+  background-color: #94a3b8 !important;
+}
+
+/* Input field backgrounds in sidebar */
+body.light .bg-gray-800\/80 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+body.light .bg-gray-700\/50 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* Border colors for sidebar elements */
+body.light .border-gray-600 {
+  border-color: #cbd5e1 !important;
+}
+
+body.light .border-gray-500 {
+  border-color: #94a3b8 !important;
+}
+
+/* Sidebar text color overrides */
+body.light .text-gray-100 {
+  color: #1e293b !important;
+}
+
+body.light .text-gray-200 {
+  color: #334155 !important;
+}
+
+body.light .text-gray-300 {
+  color: #475569 !important;
+}
+
+body.light .text-gray-400 {
+  color: #64748b !important;
+}
+
+/* Placeholder text in light mode */
+body.light .placeholder-gray-400::placeholder {
+  color: #374151 !important;
+}
+
+body.light .placeholder-gray-500::placeholder {
+  color: #1f2937 !important;
+}
+
+/* Ring colors for focus states */
+body.light .ring-gray-600 {
+  --tw-ring-color: #cbd5e1 !important;
+}
+
+body.light .focus\:ring-gray-600:focus {
+  --tw-ring-color: #cbd5e1 !important;
+}
+
+/* Additional chat sidebar specific overrides */
+body.light .bg-black98 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.light .bg-gray-900\/95 {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+}
+
+/* Chat sidebar overlay backgrounds */
+body.light [class*="bg-black/98"] {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+/* History sidebar backgrounds */
+body.light .bg-gray-900\/20 {
+  background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+body.light .bg-gray-800\/20 {
+  background-color: rgba(226, 232, 240, 0.3) !important;
+}
+
+body.light .bg-gray-800\/30 {
+  background-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+body.light .bg-gray-800\/50 {
+  background-color: rgba(226, 232, 240, 0.7) !important;
+}
+
+/* Border colors for sidebar */
+body.light .border-gray-700\/40 {
+  border-color: rgba(203, 213, 225, 0.6) !important;
+}
+
+body.light .border-gray-700\/50 {
+  border-color: rgba(203, 213, 225, 0.7) !important;
+}
+
+/* Hover states for sidebar elements */
+body.light .hover\:bg-gray-800\/20:hover {
+  background-color: rgba(226, 232, 240, 0.4) !important;
+}
+
+body.light .hover\:bg-gray-800\/50:hover {
+  background-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+body.light .border-gray-600\/30 {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+/* Active discover page state for light mode */
+body.light .bg-cyan-950\/30 {
+  background-color: rgba(6, 182, 212, 0.08) !important;
+  border: 1px solid rgba(6, 182, 212, 0.2) !important;
+}
+
+body.light .text-cyan-400 {
+  color: #0891b2 !important;
+}
+
+/* Search input field visibility improvements for light mode */
+body.light input[type="text"],
+body.light input[type="search"] {
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+body.light input[type="text"]:focus,
+body.light input[type="search"]:focus {
+  border: 1px solid rgba(6, 182, 212, 0.4) !important;
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.1) !important;
+}
+
+/* Specific search input styling */
+body.light .bg-gray-950\/50 input {
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body.light .bg-gray-900\/30 input {
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+/* Search container backgrounds for better visibility */
+body.light .bg-gray-900\/30 {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+  border: 1px solid rgba(203, 213, 225, 0.3) !important;
+}
+
+/* Discover page search input - make it darker/more visible in light mode */
+body.light .bg-gray-950\/50 {
+  background-color: rgba(226, 232, 240, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+}
+
+body.light .bg-gray-950\/50 input {
+  background-color: rgba(226, 232, 240, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  color: #1e293b !important;
+}
+
+body.light .bg-gray-950\/50 input:focus {
+  background-color: rgba(226, 232, 240, 1) !important;
+  border: 1px solid rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+}
+
+body.light .bg-gray-950\/50 input::placeholder {
+  color: #64748b !important;
+}
+
+/* Premium/Ultimate tags styling for light mode - cool and aesthetic */
+body.light .bg-purple-900\/30 {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(168, 85, 247, 0.2)) !important;
+  border: 1px solid rgba(147, 51, 234, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.15) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.light .text-purple-400 {
+  color: #7c3aed !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* Ultimate tag styling */
+body.light .bg-gradient-to-r.from-yellow-400.to-orange-500 {
+  background: linear-gradient(135deg, #fbbf24, #f97316) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.light .bg-amber-900\/30 {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.2)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.light .text-amber-400 {
+  color: #d97706 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(217, 119, 6, 0.2) !important;
+}
+
+/* Gold/Ultimate gradient text effect for light mode */
+body.light .text-yellow-400 {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 600 !important;
+}
+
+/* Enhanced premium badge styling */
+body.light .bg-purple-500\/20 {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(147, 51, 234, 0.18)) !important;
+  border: 1px solid rgba(168, 85, 247, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(168, 85, 247, 0.12) !important;
+}
+
+/* Add glow effect for premium/ultimate tags */
+body.light .premium-glow {
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.2), 0 2px 8px rgba(147, 51, 234, 0.15) !important;
+}
+
+body.light .ultimate-glow {
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25), 0 2px 8px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Billing management container for light mode */
+body.light .bg-black\/95 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(203, 213, 225, 0.6) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Billing section card backgrounds */
+body.light .bg-gray-800\/40 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+  border: 1px solid rgba(203, 213, 225, 0.4) !important;
+}
+
+/* Plan status badges in light mode */
+body.light .bg-purple-900\/30 {
+  background-color: rgba(147, 51, 234, 0.1) !important;
+  border: 1px solid rgba(147, 51, 234, 0.2) !important;
+}
+
+body.light .text-purple-400 {
+  color: #7c3aed !important;
+}
+
+body.light .bg-amber-900\/30 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+body.light .text-amber-400 {
+  color: #d97706 !important;
+}
+
+body.light .bg-gray-900\/30 {
+  background-color: rgba(148, 163, 184, 0.1) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Button styling for billing panel */
+body.light .bg-blue-600 {
+  background-color: #2563eb !important;
+}
+
+body.light .hover\:bg-blue-700:hover {
+  background-color: #1d4ed8 !important;
+}
+
+body.light .bg-gray-700 {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+}
+
+body.light .hover\:bg-gray-600:hover {
+  background-color: #475569 !important;
+}
+
+/* Specific billing button overrides for light mode */
+body.light .bg-gray-800 {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+}
+
+body.light .hover\:bg-gray-700:hover {
+  background-color: #475569 !important;
+}
+
+/* Dark gray buttons in billing panel for light mode */
+body.light button.bg-gray-700,
+body.light button.bg-gray-800 {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+}
+
+body.light button.bg-gray-700:hover,
+body.light button.bg-gray-800:hover {
+  background-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+body.light .bg-red-600 {
+  background-color: #dc2626 !important;
+}
+
+body.light .hover\:bg-red-700:hover {
+  background-color: #b91c1c !important;
+}
+
+body.light .bg-green-600 {
+  background-color: #16a34a !important;
+}
+
+body.light .hover\:bg-green-700:hover {
+  background-color: #15803d !important;
+}
+
+/* Warning/alert backgrounds in billing panel */
+body.light .bg-red-900\/20 {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
+}
+
+body.light .border-red-500\/50 {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+body.light .text-red-400 {
+  color: #dc2626 !important;
+}
+
+body.light .text-red-300 {
+  color: #ef4444 !important;
+}
+
+/* Billing header text colors */
+body.light .text-white {
+  color: #111827 !important;
+}
+
+body.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+body.light .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+/* Gradient button for upgrade */
+body.light .bg-gradient-to-r.from-purple-500.to-blue-500 {
+  background: linear-gradient(to right, #8b5cf6, #3b82f6) !important;
+}
+
+body.light .hover\:from-purple-600.hover\:to-blue-600:hover {
+  background: linear-gradient(to right, #7c3aed, #2563eb) !important;
+}
+
+/* Loading spinner color */
+body.light .border-purple-400 {
+  border-color: #a855f7 !important;
+}
+
+/* Status text colors for billing */
+body.light .text-green-400 {
+  color: #16a34a !important;
+}
+
+body.light .text-yellow-400 {
+  color: #ca8a04 !important;
+}
+
+/* Modal and overlay backgrounds for light mode */
+body.light .bg-black\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+body.light .bg-black\/80 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+body.light .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Input and form field backgrounds */
+body.light .bg-gray-950\/50 {
+  background-color: rgba(248, 250, 252, 0.8) !important;
+}
+
+body.light .bg-black\/60 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* Discover page specific fixes */
+body.light .from-black {
+  --tw-gradient-from: #f8fafc !important;
+  --tw-gradient-to: rgba(248, 250, 252, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+body.light .to-gray-950 {
+  --tw-gradient-to: #e2e8f0 !important;
+}
+
+body.light .bg-gradient-to-b {
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0) !important;
+}
+
+/* Cyan backgrounds for active states */
+body.light .bg-cyan-900\/30 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+}
+
+body.light .bg-cyan-500\/20 {
+  background-color: rgba(6, 182, 212, 0.12) !important;
+  border: 1px solid rgba(6, 182, 212, 0.2) !important;
+}
+
+body.light .border-cyan-800\/30 {
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+
+/* Placeholder text colors */
+body.light .placeholder-gray-400::placeholder {
+  color: #64748b !important;
+}
+
+body.light .placeholder-gray-500::placeholder {
+  color: #475569 !important;
+}
+
+/* Ring/focus colors */
+body.light .ring-gray-600 {
+  --tw-ring-color: #cbd5e1 !important;
+}
+
+body.light .focus\:ring-gray-600:focus {
+  --tw-ring-color: #cbd5e1 !important;
+}
+
+/* Special backdrop blur panels */
+body.light .bg-black98 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+body.light [class*="bg-black/98"] {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+/* Discover page gradient backgrounds for light mode */
+body.light .bg-gradient-to-b {
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0) !important;
+}
+
+body.light .from-black {
+  --tw-gradient-from: #f8fafc !important;
+  --tw-gradient-to: rgba(248, 250, 252, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+body.light .to-gray-950 {
+  --tw-gradient-to: #e2e8f0 !important;
+}
+
+/* Transparent borders */
+body.light .border-transparent {
+  border-color: rgba(203, 213, 225, 0.2) !important;
+}
+
+/* Hover states for dropdowns */
+body.light .hover\:bg-gray-950\/60:hover {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* History sidebar items */
+body.light .group:hover .border-gray-700\/20 {
+  border-color: rgba(148, 163, 184, 0.4) !important;
+}
+
+/* Chat message bubbles in light mode */
+body.light .bg-cyan-500\/20 {
+  background-color: rgba(6, 182, 212, 0.12) !important;
+  border: 1px solid rgba(6, 182, 212, 0.2) !important;
+}
+
+/* Icon colors in light mode */
+body.light .text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Upgrade button gradient in light mode */
+body.light .bg-gradient-to-r {
+  background: linear-gradient(to right, #0891b2, #06b6d4) !important;
+}
+
+/* Modal styles for light mode */
+body.light .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Modal container backgrounds for light mode */
+body.light .modal-default {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(203, 213, 225, 0.6) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light .modal-danger {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.15) !important;
+}
+
+body.light .modal-warning {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.15) !important;
+}
+
+body.light .modal-success {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.15) !important;
+}
+
+body.light .modal-error {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.15) !important;
+}
+
+body.light .modal-info {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Modal text colors for light mode */
+body.light .modal-title {
+  color: #111827 !important;
+}
+
+body.light .modal-message {
+  color: #374151 !important;
+}
+
+/* Modal button styles for light mode */
+body.light .modal-cancel-btn {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+  border-color: rgba(148, 163, 184, 0.5) !important;
+  color: #475569 !important;
+}
+
+body.light .modal-cancel-btn:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border-color: rgba(148, 163, 184, 0.7) !important;
+  color: #334155 !important;
+}
+
+/* Ensure all modal buttons have proper text visibility in light mode */
+body.light button[class*="border-gray-600"] {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+  color: #374151 !important;
+}
+
+body.light button[class*="border-gray-600"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border-color: rgba(148, 163, 184, 0.8) !important;
+  color: #1f2937 !important;
+}
+
+/* Override for outline buttons in modals */
+body.light button[variant="outline"] {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+  color: #374151 !important;
+}
+
+body.light button[variant="outline"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border-color: rgba(148, 163, 184, 0.8) !important;
+  color: #1f2937 !important;
+}
+
+/* Fix cancel button visibility in light mode */
+body.light .modal-cancel-btn,
+body.light button[class*="border-gray-600"] {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border-color: rgba(100, 116, 139, 0.8) !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+body.light .modal-cancel-btn:hover,
+body.light button[class*="border-gray-600"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border-color: rgba(100, 116, 139, 1) !important;
+  color: #1f2937 !important;
+}
+
+/* Ensure outline buttons in modals are visible */
+body.light button[variant="outline"] {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 0.8) !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+body.light button[variant="outline"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 1) !important;
+  color: #1f2937 !important;
+}
+
+/* Specific styling for Button component with outline variant in modals */
+body.light .modal-default button[class*="border"],
+body.light .modal-danger button[class*="border"],
+body.light .modal-warning button[class*="border"] {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 0.8) !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+body.light .modal-default button[class*="border"]:hover,
+body.light .modal-danger button[class*="border"]:hover,
+body.light .modal-warning button[class*="border"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 1) !important;
+  color: #1f2937 !important;
+}
+
+/* Enhanced backdrop blur for light mode modals */
+body.light .modal-default,
+body.light .modal-danger,
+body.light .modal-warning,
+body.light .modal-success,
+body.light .modal-error,
+body.light .modal-info {
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+/* Modal confirm button styles for light mode */
+body.light .modal-danger button,
+body.light .modal-warning button,
+body.light .modal-default button {
+  color: #ffffff !important;
+}
+
+/* Specific button color overrides for light mode modals */
+body.light button.bg-red-600 {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.light button.bg-red-600:hover {
+  background-color: #b91c1c !important;
+  color: #ffffff !important;
+}
+
+body.light button.bg-blue-600 {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.light button.bg-blue-600:hover {
+  background-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+body.light button.bg-yellow-600 {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.light button.bg-yellow-600:hover {
+  background-color: #b45309 !important;
+  color: #ffffff !important;
+}
+
+body.light button.bg-gray-600 {
+  background-color: #4b5563 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.light button.bg-gray-600:hover {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+}
+
+/* Disabled button states for light mode */
+body.light button.bg-gray-600.opacity-75 {
+  background-color: #9ca3af !important;
+  color: #ffffff !important;
+  opacity: 0.75 !important;
+}
+
+body.light button.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+@layer utilities {
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Adding styles to the REALANIMA text */
+.realanima-text {
+  font-family: 'Manolo Mono', monospace;
+  color: white;
+  cursor: pointer;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Hide scrollbars completely */
+.flex-1.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
