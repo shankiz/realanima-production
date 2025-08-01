@@ -600,7 +600,357 @@ import { useSearchParams } from 'next/navigation';
 
                                 // Force immediate refresh of user data multiple times to ensure it updates
                                 const refreshUserData = async () => {
-                                  for (let i = 0; i =========================================================================================================================================================================== fetch('/api/voice/tts', {
+                                  for (let i = 0; i < 3; i++) {
+                                    await new Promise(resolve => setTimeout(resolve, 1000));
+                                    fetchUserData();
+                                  }
+                                };
+                                refreshUserData();
+
+                                // Clear URL parameters
+                                window.history.replaceState({}, document.title, window.location.pathname);
+                              }
+                            };
+
+                            fetchUserData();
+                            fetchBillingData();
+                          }, [user]);
+
+                          // Fetch recent conversations
+                          useEffect(() => {
+                            const fetchRecentConversations = async () => {
+                              if (!user) return;
+
+                              try {
+                                const token = await user.getIdToken();
+                                const response = await fetch('/api/conversation/recent', {
+                                  method: 'GET',
+                                  headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                  },
+                                });
+
+                                if (response.ok) {
+                                  const data = await response.json();
+                                  setRecentConversations(data.conversations || []);
+                                }
+                              } catch (error) {
+                                console.error('Error fetching recent conversations:', error);
+                              }
+                            };
+
+                            fetchRecentConversations();
+                          }, [user]);
+
+                          // Placeholder text animation effect
+                          useEffect(() => {
+                            if (!character) return;
+
+                            const placeholders = [
+                              `Message ${character}...`,
+                              `Chat with ${character}...`,
+                              `Talk to ${character}...`,
+                              `Ask ${character} something...`
+                            ];
+
+                            let currentIndex = 0;
+                            const interval = setInterval(() => {
+                              setPlaceholderText(placeholders[currentIndex]);
+                              currentIndex = (currentIndex + 1) % placeholders.length;
+                            }, 2000);
+
+                            // Set initial placeholder
+                            setPlaceholderText(placeholders[0]);
+
+                            return () => clearInterval(interval);
+                          }, [character]);
+
+                          // Initialize voice service when character changes
+                          useEffect(() => {
+                            if (character) {
+                              console.log('🎤 [VOICE] Initializing voice service for character:', character);
+                              
+                              const deepgramKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
+                              const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+                              
+                              if (deepgramKey && geminiKey) {
+                                const service = new SimplifiedVoiceService(deepgramKey, geminiKey);
+                                service.setCharacter(character);
+                                
+                                service.setCallbacks({
+                                  onTranscriptUpdate: (transcript, isFinal) => {
+                                    setLiveTranscriptDisplay(transcript);
+                                    if (isFinal) {
+                                      console.log('🎤 [VOICE] Final transcript:', transcript);
+                                    }
+                                  },
+                                  onResponse: (text, audio, userTranscript) => {
+                                    console.log('🎤 [VOICE] Got response:', text);
+                                    
+                                    // Add user message
+                                    if (userTranscript) {
+                                      const userMessage = {
+                                        id: Date.now(),
+                                        text: userTranscript,
+                                        isUser: true,
+                                        timestamp: new Date()
+                                      };
+                                      setMessages(prev => [...prev, userMessage]);
+                                    }
+                                    
+                                    // Add AI response
+                                    const aiMessage = {
+                                      id: Date.now() + 1,
+                                      text: text,
+                                      isUser: false,
+                                      timestamp: new Date(),
+                                      hasAudio: true
+                                    };
+                                    setMessages(prev => [...prev, aiMessage]);
+                                    
+                                    // Play audio
+                                    setCurrentAudio(audio);
+                                    
+                                    // Clear live transcript
+                                    setLiveTranscriptDisplay('');
+                                  },
+                                  onError: (error) => {
+                                    console.error('🎤 [VOICE] Error:', error);
+                                    setCallStatus('error');
+                                    setIsCallActive(false);
+                                    setShowCallInterface(false);
+                                  }
+                                });
+                                
+                                setVoiceService(service);
+                              }
+                            }
+                          }, [character, user]);
+
+                          // Handle auto-scroll
+                          useEffect(() => {
+                            if (autoScrollEnabled && chatEndRef.current) {
+                              const timer = setTimeout(() => {
+                                chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                              }, 100);
+                              return () => clearTimeout(timer);
+                            }
+                          }, [messages, autoScrollEnabled]);
+
+                          // Auto-resize textarea
+                          const adjustTextareaHeight = () => {
+                            if (inputRef.current) {
+                              inputRef.current.style.height = 'auto';
+                              const scrollHeight = inputRef.current.scrollHeight;
+                              const maxHeight = 120; // max 5 lines approximately
+                              inputRef.current.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+                            }
+                          };
+
+                          useEffect(() => {
+                            adjustTextareaHeight();
+                          }, [input]);
+
+                          // Clear update timeout when component unmounts
+                          useEffect(() => {
+                            return () => {
+                              if (updateTimeoutRef.current) {
+                                clearTimeout(updateTimeoutRef.current);
+                              }
+                            };
+                          }, []);
+
+                          // Start voice call
+                          const startVoiceCall = async () => {
+                            if (!voiceService || !character) {
+                              console.error('❌ [CALL] Voice service not initialized');
+                              return;
+                            }
+
+                            setCallStatus('calling');
+                            setShowCallInterface(true);
+                            setIsCallActive(true);
+
+                            try {
+                              // Start the complete call process
+                              const greeting = await voiceService.startCall();
+                              
+                              if (greeting) {
+                                // Add greeting message to chat
+                                const greetingMessage = {
+                                  id: Date.now(),
+                                  text: greeting.text,
+                                  isUser: false,
+                                  timestamp: new Date(),
+                                  hasAudio: true
+                                };
+                                setMessages(prev => [...prev, greetingMessage]);
+                                
+                                // Play greeting audio
+                                setCurrentAudio(greeting.audio);
+                                setCallStatus('speaking');
+                                
+                                // After greeting, start listening
+                                setTimeout(async () => {
+                                  setCallStatus('listening');
+                                  await voiceService.startListening();
+                                  setIsRecording(true);
+                                }, 2000);
+                              } else {
+                                throw new Error('Failed to generate greeting');
+                              }
+                            } catch (error) {
+                              console.error('❌ [CALL] Start call error:', error);
+                              setCallStatus('error');
+                              setIsCallActive(false);
+                              setShowCallInterface(false);
+                            }
+                          };
+
+                          // End voice call
+                          const endVoiceCall = () => {
+                            console.log('📞 [CALL] Ending voice call');
+                            
+                            if (voiceService) {
+                              voiceService.stopListening();
+                            }
+                            
+                            setIsCallActive(false);
+                            setShowCallInterface(false);
+                            setCallStatus('');
+                            setIsRecording(false);
+                            setLiveTranscriptDisplay('');
+                            setCurrentAudio(null);
+                            
+                            // Stop any playing audio
+                            if (audioRef.current) {
+                              audioRef.current.pause();
+                              audioRef.current.currentTime = 0;
+                            }
+                          };
+
+                          // Play audio function
+                          const playAudio = (audioData: string) => {
+                            if (audioRef.current && audioData) {
+                              audioRef.current.src = audioData;
+                              audioRef.current.play().catch(error => {
+                                console.error('❌ [AUDIO] Playback failed:', error);
+                              });
+                            }
+                          };
+
+                          // Handle character selection
+                          const handleCharacterSelect = (characterId: string) => {
+                            router.push(`/chat?character=${characterId}`);
+                          };
+
+                          // Delete conversation from recents
+                          const deleteFromRecents = async (characterId: string) => {
+                            try {
+                              if (!user) return;
+                              
+                              const token = await user.getIdToken();
+                              const response = await fetch(`/api/conversation/${characterId}/history`, {
+                                method: 'DELETE',
+                                headers: {
+                                  'Authorization': `Bearer ${token}`,
+                                  'Content-Type': 'application/json',
+                                },
+                              });
+
+                              if (response.ok) {
+                                // Remove from recent conversations
+                                setRecentConversations(prev => prev.filter(conv => conv.id !== characterId));
+                                
+                                // If it's the current character, clear the chat
+                                if (character === characterId) {
+                                  setChatHistory([]);
+                                  setMessages([]);
+                                }
+                              }
+                            } catch (error) {
+                              console.error('Error deleting conversation:', error);
+                            }
+                          };
+
+                          // Send message function with 2-chunk TTS optimization
+                          const sendMessage = async () => {
+                            if (!input.trim() || isLoading || !character || !user) return;
+
+                            const currentCharacter = character;
+                            const messageText = input.trim();
+                            setInput('');
+                            setIsLoading(true);
+                            setIsGeneratingVoice(true);
+                            setVoiceGenerationError(false);
+
+                            // Prevent scrolling during message processing
+                            const wasAutoScrollEnabled = autoScrollEnabled;
+                            if (!wasAutoScrollEnabled) setAutoScrollEnabled(false);
+
+                            try {
+                              // Create user message
+                              const userMessage = {
+                                id: Date.now(),
+                                text: messageText,
+                                isUser: true,
+                                timestamp: new Date()
+                              };
+
+                              setMessages(prev => [...prev, userMessage]);
+
+                              // Get AI response
+                              const token = await user.getIdToken();
+                              const response = await fetch(`/api/conversation/${currentCharacter}/chat`, {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                  message: messageText
+                                })
+                              });
+
+                              if (!response.ok) {
+                                const errorData = await response.text();
+                                if (response.status === 429) {
+                                  setShowCreditModal(true);
+                                  return;
+                                }
+                                throw new Error(`Response failed: ${response.status} - ${errorData}`);
+                              }
+
+                              const data = await response.json();
+                              setIsLoading(false);
+
+                              if (!data.success || !data.response) {
+                                throw new Error('Invalid response from AI');
+                              }
+
+                              // Update user data
+                              if (data.messagesLeft !== undefined) setMessagesLeft(data.messagesLeft);
+                              if (data.credits !== undefined) setCredits(data.credits);
+
+                              // Create AI message
+                              const newMessage = {
+                                id: Date.now() + 1,
+                                text: data.response,
+                                isUser: false,
+                                timestamp: new Date(),
+                                hasAudio: false
+                              };
+
+                              setMessages(prev => [...prev, newMessage]);
+
+                              // Handle voice generation with 2-chunk strategy
+                              if (generateVoice) {
+                                try {
+                                  console.log('🎵 [CHAT] Starting 2-chunk TTS strategy...');
+
+                                  // Start first chunk request immediately
+                                  const chunk1Promise = fetch('/api/voice/tts', {
                                         method: 'POST',
                                         headers: {
                                           'Content-Type': 'application/json',
