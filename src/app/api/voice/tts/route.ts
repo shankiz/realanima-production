@@ -23,13 +23,13 @@ function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
   const cleanText = text.trim();
 
   // If text is short, don't split
-  if (cleanText.length <= 60) {
+  if (cleanText.length <= 80) {
     return { chunk1: cleanText, chunk2: '' };
   }
 
   // Find the best split point (prioritize sentence endings, then commas, then spaces)
   let splitPoint = -1;
-  const maxChunk1Length = Math.min(80, Math.floor(cleanText.length * 0.35)); // 35% or 80 chars max for faster first chunk
+  const maxChunk1Length = Math.min(100, Math.floor(cleanText.length * 0.4)); // 40% or 100 chars max
 
   // Look for sentence endings within reasonable range
   for (let i = 30; i <= maxChunk1Length; i++) {
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now();
 
     // Check if text is long enough to benefit from 2-chunk strategy
-    const shouldUse2Chunks = text.length > 60; // More aggressive chunking for faster responses
+    const shouldUse2Chunks = text.length > 100; // Only use for longer responses
 
     if (!shouldUse2Chunks) {
       console.log('📝 [TTS-2CHUNK] Text too short, using single chunk strategy');
