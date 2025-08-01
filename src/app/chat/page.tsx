@@ -1344,7 +1344,7 @@ import { useSearchParams } from 'next/navigation';
                                               });
                                               
                                               if (chunk2Response.ok) {
-                                                const chunk2Data = await chunk2Response.json();</old_str>
+                                                const chunk2Data = await chunk2Response.json();
                                               
                                               if (chunk2Response.ok) {
                                                 const chunk2Data = await chunk2Response.json();
