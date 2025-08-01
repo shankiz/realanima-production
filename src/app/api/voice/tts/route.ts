@@ -145,11 +145,14 @@ async function generateTTSChunk(text: string, character: string, chunkNumber: nu
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  console.log('🔊 [TTS-PARALLEL] Request received');
+
   try {
+    // Authenticate user
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
     }
 
     const token = authHeader.split(' ')[1];
@@ -157,17 +160,51 @@ export async function POST(request: Request) {
     const userId = decodedToken.uid;
 
     const body = await request.json();
-    const { character, text, generateVoice = true, requestChunk = 1 } = body;
+    const { character, text, generateVoice = true, requestChunk } = body;
+    console.log(`🔊 [TTS-PARALLEL] Request received for character: ${character}, chunk: ${requestChunk || 1}`);
+    console.log(`📝 [TTS-PARALLEL] Text length: ${text.length} characters`);
 
-    console.log(`🔊 [TTS-PARALLEL] Request received for character: ${character}, chunk: ${requestChunk}`);
-    console.log(`📝 [TTS-PARALLEL] Text length: ${text?.length} characters`);
+    // Handle second chunk requests
+    if (requestChunk === 2) {
+      console.log('🎯 [TTS-PARALLEL] Processing second chunk request...');
 
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+      // Clean up old cache entries first
+      cleanupCache();
+
+      // Check cache for second chunk
+      const cacheKey = `${userId}-${character}-${text.slice(0, 50)}`;
+      const cached = chunkCache.get(cacheKey);
+
+      if (cached && cached.chunk2Audio) {
+        console.log('✅ [TTS-PARALLEL] Second chunk found in cache - returning immediately');
+        return NextResponse.json({
+          success: true,
+          audio: cached.chunk2Audio,
+          character: character,
+          text: text,
+          model: 's1',
+          strategy: 'parallel-cached',
+          isSecondChunk: true,
+          chunkNumber: 2
+        });
+      } else {
+        console.log('❌ [TTS-PARALLEL] Second chunk not found in cache');
+        return NextResponse.json({ 
+          error: 'Second chunk not ready yet',
+          success: false 
+        }, { status: 404 });
+      }
     }
 
-    if (!character) {
-      return NextResponse.json({ error: 'Character is required' }, { status: 400 });
+    console.log(`📝 [TTS-PARALLEL] Processing first chunk request`);
+
+    if (!generateVoice) {
+      console.log('🔇 [TTS-PARALLEL] Voice generation disabled by request');
+      return NextResponse.json({ 
+        success: true, 
+        skipVoice: true,
+        message: 'Voice generation was disabled'
+      });
     }
 
     const startTime = Date.now();
