@@ -1339,7 +1339,7 @@ import { useSearchParams } from 'next/navigation';
                                                   character: character,
                                                   text: aiResponseText,
                                                   generateVoice: true,
-                                requestChunk: 2 // Request specifically chunk 2
+                                                  requestChunk: 2 // Request specifically chunk 2
                                                 })
                                               });
 
