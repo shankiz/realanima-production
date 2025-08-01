@@ -1448,8 +1448,64 @@ import { useSearchParams } from 'next/navigation';
                                           setAudioPlayingForMessage(null);
                                         }
                                       } else {
-                                        console.log('🎵 [CHAT-TTS-2CHUNK] Single chunk audio complete');
-                                        setAudioPlayingForMessage(null);
+                                        // No secondChunkPromise means we might need to request chunk 2 from the server
+                                        console.log('🔍 [CHAT-TTS-2CHUNK] No second chunk promise, checking if we need to request chunk 2...');
+                                        
+                                        // Check if the original response indicated there's a second chunk
+                                        if (ttsData.hasSecondChunk) {
+                                          console.log('📞 [CHAT-TTS-2CHUNK] Requesting second chunk from server...');
+                                          try {
+                                            const chunk2Response = await fetch('/api/voice/tts', {
+                                              method: 'POST',
+                                              headers: {
+                                                'Authorization': `Bearer ${token}`,
+                                                'Content-Type': 'application/json',
+                                              },
+                                              body: JSON.stringify({
+                                                character: character,
+                                                text: aiResponseText,
+                                                generateVoice: true,
+                                                requestChunk: 2
+                                              })
+                                            });
+
+                                            if (chunk2Response.ok) {
+                                              const chunk2Data = await chunk2Response.json();
+                                              if (chunk2Data.success && chunk2Data.audio) {
+                                                console.log('🔊 [CHAT-TTS-2CHUNK] Playing requested second chunk');
+                                                const secondAudio = new Audio(chunk2Data.audio);
+                                                secondAudio.volume = 1.0;
+
+                                                secondAudio.onended = () => {
+                                                  console.log('🎵 [CHAT-TTS-2CHUNK] Second chunk finished - complete audio sequence done');
+                                                  setAudioPlayingForMessage(null);
+                                                };
+
+                                                secondAudio.onerror = () => {
+                                                  console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error');
+                                                  setAudioPlayingForMessage(null);
+                                                };
+
+                                                secondAudio.play().catch(error => {
+                                                  console.error('❌ [CHAT-TTS-2CHUNK] Failed to play second chunk:', error);
+                                                  setAudioPlayingForMessage(null);
+                                                });
+                                              } else {
+                                                console.log('⚠️ [CHAT-TTS-2CHUNK] Second chunk request failed or no audio');
+                                                setAudioPlayingForMessage(null);
+                                              }
+                                            } else {
+                                              console.log('⚠️ [CHAT-TTS-2CHUNK] Second chunk request failed');
+                                              setAudioPlayingForMessage(null);
+                                            }
+                                          } catch (error) {
+                                            console.error('❌ [CHAT-TTS-2CHUNK] Error requesting second chunk:', error);
+                                            setAudioPlayingForMessage(null);
+                                          }
+                                        } else {
+                                          console.log('🎵 [CHAT-TTS-2CHUNK] No second chunk available - audio complete');
+                                          setAudioPlayingForMessage(null);
+                                        }
                                       }
                                     };
 
