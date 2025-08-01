@@ -1289,14 +1289,17 @@ import { useSearchParams } from 'next/navigation';
                                   }, 2500);
                                 }
 
-                                console.log('🔊 [CHAT-TTS] Checking voice generation - toggle enabled:', isVoiceResponseEnabled);
+                                console.log('🔊 [CHAT-TTS-2CHUNK] Starting 2-chunk TTS strategy - toggle enabled:', isVoiceResponseEnabled);
 
-                                // Step 2: Generate TTS only if voice toggle is enabled
+                                // Step 2: Generate TTS using 2-chunk strategy if voice toggle is enabled
                                 let audioData = null;
+                                let secondChunkPromise = null;
+                                
                                 if (isVoiceResponseEnabled) {
                                   setIsGeneratingVoice(true);
                                   setVoiceGenerationError(false);
                                   try {
+                                    console.log('⚡ [CHAT-TTS-2CHUNK] Requesting first chunk for immediate response...');
                                     const ttsResponse = await fetch('/api/voice/tts', {
                                       method: 'POST',
                                       headers: {
@@ -1312,14 +1315,61 @@ import { useSearchParams } from 'next/navigation';
 
                                     if (ttsResponse.ok) {
                                       const ttsData = await ttsResponse.json();
-                                      // Check if voice was actually generated or skipped
+                                      console.log('🎯 [CHAT-TTS-2CHUNK] TTS Response:', ttsData.strategy, ttsData.isFirstChunk, ttsData.hasSecondChunk);
+                                      
+                                      // Check if we got a successful response
                                       if (ttsData.success && ttsData.audio) {
                                         audioData = ttsData.audio;
-                                        console.log('✅ [CHAT-TTS] Voice generation successful');
+                                        
+                                        // If this is the 2-chunk strategy and there's a second chunk
+                                        if (ttsData.strategy === '2chunk' && ttsData.hasSecondChunk) {
+                                          console.log('🔄 [CHAT-TTS-2CHUNK] First chunk received, scheduling second chunk request...');
+                                          
+                                          // Request second chunk after a short delay to ensure first chunk starts playing
+                                          secondChunkPromise = new Promise((resolve) => {
+                                            setTimeout(async () => {
+                                              try {
+                                                console.log('📞 [CHAT-TTS-2CHUNK] Requesting second chunk...');
+                                                const chunk2Response = await fetch('/api/voice/tts', {
+                                                  method: 'POST',
+                                                  headers: {
+                                                    'Authorization': `Bearer ${token}`,
+                                                    'Content-Type': 'application/json',
+                                                  },
+                                                  body: JSON.stringify({
+                                                    character: character,
+                                                    text: aiResponseText,
+                                                    generateVoice: true,
+                                                    requestChunk: 2 // Request specifically chunk 2
+                                                  })
+                                                });
+                                                
+                                                if (chunk2Response.ok) {
+                                                  const chunk2Data = await chunk2Response.json();
+                                                  if (chunk2Data.success && chunk2Data.audio) {
+                                                    console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
+                                                    resolve(chunk2Data.audio);
+                                                  } else {
+                                                    console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk failed, resolving null');
+                                                    resolve(null);
+                                                  }
+                                                } else {
+                                                  console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk request failed');
+                                                  resolve(null);
+                                                }
+                                              } catch (error) {
+                                                console.error('❌ [CHAT-TTS-2CHUNK] Second chunk error:', error);
+                                                resolve(null);
+                                              }
+                                            }, 1000); // Wait 1 second before requesting chunk 2
+                                          });
+                                        }
+                                        
+                                        console.log('✅ [CHAT-TTS-2CHUNK] Voice generation successful');
                                       } else if (ttsData.skipVoice) {
-                                        console.log('🔇 [CHAT-TTS] Voice generation was skipped by server');
+                                        console.log('🔇 [CHAT-TTS-2CHUNK] Voice generation was skipped by server');
                                       } else {
-                                        console.warn('⚠️ [CHAT-TTS] Voice generation failed, proceeding with text only');
+                                        console.warn('⚠️ [CHAT-TTS-2CHUNK] Voice generation failed, proceeding with text only');
                                         setVoiceGenerationError(true);
                                         // Auto-hide error after 3 seconds
                                         setTimeout(() => {
@@ -1327,7 +1377,7 @@ import { useSearchParams } from 'next/navigation';
                                         }, 3000);
                                       }
                                     } else {
-                                      console.warn('⚠️ [CHAT-TTS] Voice generation failed, proceeding with text only');
+                                      console.warn('⚠️ [CHAT-TTS-2CHUNK] Voice generation failed, proceeding with text only');
                                       setVoiceGenerationError(true);
                                       // Auto-hide error after 3 seconds
                                       setTimeout(() => {
@@ -1335,7 +1385,7 @@ import { useSearchParams } from 'next/navigation';
                                       }, 3000);
                                     }
                                   } catch (ttsError) {
-                                    console.warn('⚠️ [CHAT-TTS] Voice generation error:', ttsError);
+                                    console.warn('⚠️ [CHAT-TTS-2CHUNK] Voice generation error:', ttsError);
                                     setVoiceGenerationError(true);
                                     // Auto-hide error after 3 seconds
                                     setTimeout(() => {
@@ -1345,7 +1395,7 @@ import { useSearchParams } from 'next/navigation';
                                     setIsGeneratingVoice(false);
                                   }
                                 } else {
-                                  console.log('🔇 [CHAT-TTS] Voice generation disabled by toggle');
+                                  console.log('🔇 [CHAT-TTS-2CHUNK] Voice generation disabled by toggle');
                                 }
 
                                 // Step 3: Display text response
@@ -1353,26 +1403,65 @@ import { useSearchParams } from 'next/navigation';
                                 setMessages(prev => {
                                   const newMessages = [...prev, aiMessage];
                                   
-                                  // Step 4: Play the voice response if available
+                                  // Step 4: Play the voice response with 2-chunk sequencing if available
                                   if (audioData) {
-                                    console.log('🔊 [CHAT-TTS] Playing voice response');
-                                    const audio = new Audio(audioData);
-                                    audio.volume = 1.0;
+                                    console.log('🔊 [CHAT-TTS-2CHUNK] Playing first chunk immediately');
+                                    const firstAudio = new Audio(audioData);
+                                    firstAudio.volume = 1.0;
                                     
                                     // Set audio playing state for the AI message (last message in the new array)
                                     const aiMessageIndex = newMessages.length - 1;
                                     setAudioPlayingForMessage(aiMessageIndex);
                                     
-                                    audio.onended = () => {
+                                    // Handle first chunk playback
+                                    firstAudio.onended = async () => {
+                                      console.log('🎵 [CHAT-TTS-2CHUNK] First chunk finished playing');
+                                      
+                                      // If there's a second chunk, wait for it and play it
+                                      if (secondChunkPromise) {
+                                        console.log('⏳ [CHAT-TTS-2CHUNK] Waiting for second chunk...');
+                                        try {
+                                          const secondChunkAudio = await secondChunkPromise;
+                                          if (secondChunkAudio) {
+                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            const secondAudio = new Audio(secondChunkAudio);
+                                            secondAudio.volume = 1.0;
+                                            
+                                            secondAudio.onended = () => {
+                                              console.log('🎵 [CHAT-TTS-2CHUNK] Second chunk finished - complete audio sequence done');
+                                              setAudioPlayingForMessage(null);
+                                            };
+                                            
+                                            secondAudio.onerror = () => {
+                                              console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error');
+                                              setAudioPlayingForMessage(null);
+                                            };
+                                            
+                                            secondAudio.play().catch(error => {
+                                              console.error('❌ [CHAT-TTS-2CHUNK] Failed to play second chunk:', error);
+                                              setAudioPlayingForMessage(null);
+                                            });
+                                          } else {
+                                            console.log('🎵 [CHAT-TTS-2CHUNK] No second chunk available - audio complete');
+                                            setAudioPlayingForMessage(null);
+                                          }
+                                        } catch (error) {
+                                          console.error('❌ [CHAT-TTS-2CHUNK] Error waiting for second chunk:', error);
+                                          setAudioPlayingForMessage(null);
+                                        }
+                                      } else {
+                                        console.log('🎵 [CHAT-TTS-2CHUNK] Single chunk audio complete');
+                                        setAudioPlayingForMessage(null);
+                                      }
+                                    };
+                                    
+                                    firstAudio.onerror = () => {
+                                      console.error('❌ [CHAT-TTS-2CHUNK] First chunk playback error');
                                       setAudioPlayingForMessage(null);
                                     };
                                     
-                                    audio.onerror = () => {
-                                      setAudioPlayingForMessage(null);
-                                    };
-                                    
-                                    audio.play().catch(error => {
-                                      console.error('❌ [CHAT-TTS] Audio playback failed:', error);
+                                    firstAudio.play().catch(error => {
+                                      console.error('❌ [CHAT-TTS-2CHUNK] Failed to play first chunk:', error);
                                       setAudioPlayingForMessage(null);
                                     });
                                   }
