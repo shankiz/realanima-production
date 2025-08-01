@@ -1341,7 +1341,10 @@ import { useSearchParams } from 'next/navigation';
                                                   generateVoice: true,
                                                   requestChunk: 2 // Request specifically chunk 2
                                                 })
-                                              });</old_str>
+                                              });
+                                              
+                                              if (chunk2Response.ok) {
+                                                const chunk2Data = await chunk2Response.json();</old_str>
                                               
                                               if (chunk2Response.ok) {
                                                 const chunk2Data = await chunk2Response.json();
