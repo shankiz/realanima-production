@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase/admin';
 import * as msgpack from '@msgpack/msgpack';
@@ -146,8 +145,17 @@ async function generateTTSChunk(text: string, character: string, chunkNumber: nu
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    const userId = decodedToken.uid;
+
     const body = await request.json();
     const { character, text, generateVoice = true, requestChunk = 1 } = body;
 
@@ -195,16 +203,16 @@ export async function POST(request: NextRequest) {
     // Handle second chunk requests (check cache first)
     if (requestChunk === 2) {
       console.log('🎯 [TTS-PARALLEL] Processing second chunk request...');
-      
+
       // Check if we have the second chunk cached
       const cached = chunkCache.get(cacheKey);
       if (cached) {
         console.log('⚡ [TTS-PARALLEL] Second chunk found in cache!');
         const processingTime = Date.now() - startTime;
-        
+
         // Clean up the cache entry since it's been used
         chunkCache.delete(cacheKey);
-        
+
         return NextResponse.json({
           success: true,
           audio: cached.chunk2Audio,
@@ -221,7 +229,7 @@ export async function POST(request: NextRequest) {
         // Cache miss - generate on demand (fallback)
         console.log('⚠️ [TTS-PARALLEL] Second chunk not in cache, generating on demand...');
         const { chunk2 } = splitTextIntoChunks(text);
-        
+
         if (!chunk2) {
           return NextResponse.json({ error: 'No second chunk available' }, { status: 404 });
         }
@@ -258,10 +266,10 @@ export async function POST(request: NextRequest) {
 
     // Start BOTH chunks processing in parallel
     console.log('⚡ [TTS-PARALLEL] Starting parallel processing of both chunks...');
-    
+
     const chunk1Promise = generateTTSChunk(chunk1, character, 1);
     let chunk2Promise = null;
-    
+
     if (chunk2) {
       chunk2Promise = generateTTSChunk(chunk2, character, 2);
     }
@@ -298,7 +306,7 @@ export async function POST(request: NextRequest) {
         if (chunk2Audio) {
           const totalTime = Date.now() - startTime;
           console.log(`🎯 [TTS-PARALLEL] Chunk 2 ready in background after ${totalTime}ms - caching for later request`);
-          
+
           // Cache the second chunk for when frontend requests it
           chunkCache.set(cacheKey, {
             chunk2Audio: chunk2Audio,

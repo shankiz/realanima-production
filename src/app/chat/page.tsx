@@ -1322,47 +1322,45 @@ import { useSearchParams } from 'next/navigation';
                                         audioData = ttsData.audio;
                                         
                                         // If this is the 2-chunk strategy and there's a second chunk
-                                        if (ttsData.strategy === '2chunk' && ttsData.hasSecondChunk) {
-                                          console.log('🔄 [CHAT-TTS-2CHUNK] First chunk received, scheduling second chunk request...');
+                                        if ((ttsData.strategy === '2chunk' || ttsData.strategy === '2chunk-parallel') && ttsData.hasSecondChunk) {
+                                          console.log('🔄 [CHAT-TTS-2CHUNK] First chunk received, requesting second chunk immediately...');
                                           
-                                          // Request second chunk after a short delay to ensure first chunk starts playing
-                                          secondChunkPromise = new Promise((resolve) => {
-                                            setTimeout(async () => {
-                                              try {
-                                                console.log('📞 [CHAT-TTS-2CHUNK] Requesting second chunk...');
-                                                const chunk2Response = await fetch('/api/voice/tts', {
-                                                  method: 'POST',
-                                                  headers: {
-                                                    'Authorization': `Bearer ${token}`,
-                                                    'Content-Type': 'application/json',
-                                                  },
-                                                  body: JSON.stringify({
-                                                    character: character,
-                                                    text: aiResponseText,
-                                                    generateVoice: true,
-                                                    requestChunk: 2 // Request specifically chunk 2
-                                                  })
-                                                });
-                                                
-                                                if (chunk2Response.ok) {
-                                                  const chunk2Data = await chunk2Response.json();
-                                                  if (chunk2Data.success && chunk2Data.audio) {
-                                                    console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
-                                                    resolve(chunk2Data.audio);
-                                                  } else {
-                                                    console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk failed, resolving null');
-                                                    resolve(null);
-                                                  }
+                                          // Request second chunk immediately (no delay)
+                                          secondChunkPromise = (async () => {
+                                            try {
+                                              console.log('📞 [CHAT-TTS-2CHUNK] Requesting second chunk...');
+                                              const chunk2Response = await fetch('/api/voice/tts', {
+                                                method: 'POST',
+                                                headers: {
+                                                  'Authorization': `Bearer ${token}`,
+                                                  'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                  character: character,
+                                                  text: aiResponseText,
+                                                  generateVoice: true,
+                                                  requestChunk: 2 // Request specifically chunk 2
+                                                })
+                                              });
+                                              
+                                              if (chunk2Response.ok) {
+                                                const chunk2Data = await chunk2Response.json();
+                                                if (chunk2Data.success && chunk2Data.audio) {
+                                                  console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
+                                                  return chunk2Data.audio;
                                                 } else {
-                                                  console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk request failed');
-                                                  resolve(null);
+                                                  console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk failed, returning null');
+                                                  return null;
                                                 }
-                                              } catch (error) {
-                                                console.error('❌ [CHAT-TTS-2CHUNK] Second chunk error:', error);
-                                                resolve(null);
+                                              } else {
+                                                console.warn('⚠️ [CHAT-TTS-2CHUNK] Second chunk request failed');
+                                                return null;
                                               }
-                                            }, 1000); // Wait 1 second before requesting chunk 2
-                                          });
+                                            } catch (error) {
+                                              console.error('❌ [CHAT-TTS-2CHUNK] Second chunk error:', error);
+                                              return null;
+                                            }
+                                          })();
                                         }
                                         
                                         console.log('✅ [CHAT-TTS-2CHUNK] Voice generation successful');
