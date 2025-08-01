@@ -1,0 +1,37 @@
+💬 [CHAT] Processing message for gojo: "hi..."
+💫 [CHAT] Using session: eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754090287451
+🤖 [CHAT] Generating AI response for gojo...
+🏗️ [GEMINI] Created singleton GeminiService instance
+🚀 [GEMINI] Generating response for gojo using ChatSession
+📚 [GEMINI] Creating fresh ChatSession for eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754090287451-gojo - conversation memory starts now
+✨ [GEMINI] Created NEW ChatSession for eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754090287451-gojo with 2 initial history items
+✅ [GEMINI] Response generated using persistent ChatSession with automatic conversation memory!
+✅ [CHAT] AI response generated: "(delighted) Well hello there! Fancy seeing you aro..."
+ POST /api/conversation/gojo/chat 200 in 5399ms
+ ○ Compiling /api/voice/tts ...
+💾 [CONVERSATION] Appended messages to existing session: eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754090287451
+ ✓ Compiled /api/voice/tts in 1309ms
+🔊 [TTS-PARALLEL] Request received
+🔊 [TTS-PARALLEL] Request received for character: gojo, chunk: 1
+📝 [TTS-PARALLEL] Text length: 238 characters
+📝 [TTS-PARALLEL] Processing first chunk request
+🚀 [TTS-PARALLEL] Using parallel chunk strategy for optimal user experience
+🔪 [TTS-CHUNK] Split text: "(delighted) Well hello there! Fancy seeing you around." | "What brings you to my neck of the woods today? (laughing) hahaha! Don't tell me you're looking for a lesson in pure, unadulterated awesomeness, because you've come to the right place."
+📊 [TTS-PARALLEL] Chunk 1 (54 chars): "(delighted) Well hello there! Fancy seeing you around."
+📊 [TTS-PARALLEL] Chunk 2 (183 chars): "What brings you to my neck of the woods today? (laughing) hahaha! Don't tell me you're looking for a lesson in pure, unadulterated awesomeness, because you've come to the right place."
+⚡ [TTS-PARALLEL] Starting parallel processing of both chunks...
+🔊 [TTS-CHUNK-1] Generating for gojo: "(delighted) Well hello there! ..."
+🔊 [TTS-CHUNK-2] Generating for gojo: "What brings you to my neck of ..."
+✅ [TTS-CHUNK-1] Generated: 249900 bytes
+⚡ [TTS-PARALLEL] Chunk 1 ready in 2044ms - sending immediate response!
+📤 [TTS-PARALLEL] Returning first chunk immediately, second chunk processing in background
+ POST /api/voice/tts 200 in 3415ms
+✅ [TTS-CHUNK-2] Generated: 811052 bytes
+🎯 [TTS-PARALLEL] Chunk 2 ready in background after 3656ms - caching for later request
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 244ms
+🔊 [TTS-PARALLEL] Request received
+🔊 [TTS-PARALLEL] Request received for character: gojo, chunk: 2
+📝 [TTS-PARALLEL] Text length: 238 characters
+🎯 [TTS-PARALLEL] Processing second chunk request...
+❌ [TTS-PARALLEL] Second chunk not found in cache
+ POST /api/voice/tts 404 in 44ms
