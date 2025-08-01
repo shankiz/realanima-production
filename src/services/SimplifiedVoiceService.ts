@@ -437,19 +437,22 @@ export class SimplifiedVoiceService {
 
       // Create a controller for timeout handling
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // Reduced to 10 seconds
 
       try {
-        const response = await fetch('/api/voice/tts', {
+        // Try direct voice server connection first (faster)
+        const voiceServerUrl = process.env.NODE_ENV === 'production' 
+          ? '/api/voice/tts' 
+          : 'http://localhost:5000/api/voice/tts';
+
+        const response = await fetch(voiceServerUrl, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${await this.getAuthToken()}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             character: this.currentCharacter,
-            text: text,
-            generateVoice: true // Voice service always wants voice generation
+            text: text
           }),
           signal: controller.signal
         });

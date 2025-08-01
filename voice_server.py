@@ -61,14 +61,14 @@ def text_to_speech_lightning_fast(text, character):
 
         start_time = time.time()
 
-        # Use faster settings for better performance
+        # Use fastest settings for maximum performance
         tts_request = TTSRequest(
             text=text,
             reference_id=voice_id,
             format="mp3",
-            latency="normal",  # Changed from "balanced" to "normal" for speed
+            latency="low",     # Use low latency for fastest response
             normalize=False,
-            chunk_length=200   # Increased chunk length for better performance
+            chunk_length=150   # Optimized chunk length for speed vs quality balance
         )
 
         # Generate audio using Fish Audio SDK with timeout handling
