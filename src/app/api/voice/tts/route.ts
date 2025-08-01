@@ -171,8 +171,8 @@ export async function POST(request: NextRequest) {
       // Clean up old cache entries first
       cleanupCache();
 
-      // Check cache for second chunk
-      const cacheKey = `${userId}-${character}-${text.slice(0, 50)}`;
+      // Check cache for second chunk - use consistent cache key format
+      const cacheKey = `${character}-${Buffer.from(text).toString('base64').substring(0, 20)}`;
       const cached = chunkCache.get(cacheKey);
 
       if (cached && cached.chunk2Audio) {
@@ -236,63 +236,6 @@ export async function POST(request: NextRequest) {
 
     // Generate cache key for this request
     const cacheKey = `${character}-${Buffer.from(text).toString('base64').substring(0, 20)}`;
-
-    // Handle second chunk requests (check cache first)
-    if (requestChunk === 2) {
-      console.log('🎯 [TTS-PARALLEL] Processing second chunk request...');
-
-      // Check if we have the second chunk cached
-      const cached = chunkCache.get(cacheKey);
-      if (cached) {
-        console.log('⚡ [TTS-PARALLEL] Second chunk found in cache!');
-        const processingTime = Date.now() - startTime;
-
-        // Clean up the cache entry since it's been used
-        chunkCache.delete(cacheKey);
-
-        return NextResponse.json({
-          success: true,
-          audio: cached.chunk2Audio,
-          character: character,
-          text: splitTextIntoChunks(text).chunk2,
-          fullText: text,
-          processingTime: processingTime,
-          model: 's1',
-          strategy: 'parallel-cached',
-          isFirstChunk: false,
-          chunkNumber: 2
-        });
-      } else {
-        // Cache miss - generate on demand (fallback)
-        console.log('⚠️ [TTS-PARALLEL] Second chunk not in cache, generating on demand...');
-        const { chunk2 } = splitTextIntoChunks(text);
-
-        if (!chunk2) {
-          return NextResponse.json({ error: 'No second chunk available' }, { status: 404 });
-        }
-
-        const chunk2Audio = await generateTTSChunk(chunk2, character, 2);
-        if (!chunk2Audio) {
-          return NextResponse.json({ error: 'Second chunk generation failed' }, { status: 500 });
-        }
-
-        const processingTime = Date.now() - startTime;
-        console.log(`✅ [TTS-PARALLEL] Second chunk ready in ${processingTime}ms`);
-
-        return NextResponse.json({
-          success: true,
-          audio: chunk2Audio,
-          character: character,
-          text: chunk2,
-          fullText: text,
-          processingTime: processingTime,
-          model: 's1',
-          strategy: 'parallel-fallback',
-          isFirstChunk: false,
-          chunkNumber: 2
-        });
-      }
-    }
 
     console.log('🚀 [TTS-PARALLEL] Using parallel chunk strategy for optimal user experience');
 
