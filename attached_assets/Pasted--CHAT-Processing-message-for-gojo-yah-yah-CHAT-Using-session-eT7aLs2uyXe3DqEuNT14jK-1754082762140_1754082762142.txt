@@ -1,0 +1,37 @@
+💬 [CHAT] Processing message for gojo: "yah yah..."
+💫 [CHAT] Using session: eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754082615731
+🤖 [CHAT] Generating AI response for gojo...
+🚀 [GEMINI] Generating response for gojo using ChatSession
+⚡ [GEMINI] CACHE HIT! Using existing ChatSession for eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754082615731-gojo - INSTANT response!
+🔍 Checking for users needing message reset...
+📝 Found 2 users needing reset
+✅ Reset 200 messages for user eT7aLs2uyXe3DqEuNT14jKXlJpu2 (premium plan)
+✅ [GEMINI] Response generated using persistent ChatSession with automatic conversation memory!
+✅ [CHAT] AI response generated: "(amused) Oh, I see. A bit of a smart aleck, are we..."
+✅ Reset 200 messages for user rnbCLMWR5OXfNOhjEdWEj7rV6d73 (premium plan)
+🎉 Successfully processed 2 user resets
+ POST /api/conversation/gojo/chat 200 in 3293ms
+🔊 [TTS-2CHUNK] Request received for character: gojo, chunk: 1
+📝 [TTS-2CHUNK] Text length: 326 characters
+🔪 [TTS-CHUNK] Split text: "(amused) Oh, I see. A bit of a smart aleck, are we?" | "I like that. Shows a bit of spirit, even if it’s directed at someone as ridiculously powerful as me. (chuckles) hmmhmm. Keep it up, it’s entertaining. Just try not to get too ahead of yourself, alright? Wouldn't want you tripping over your own feet trying to reach my level."
+📊 [TTS-2CHUNK] Chunk 1 (51 chars): "(amused) Oh, I see. A bit of a smart aleck, are we?"
+📊 [TTS-2CHUNK] Chunk 2 (274 chars): "I like that. Shows a bit of spirit, even if it’s directed at someone as ridiculously powerful as me. (chuckles) hmmhmm. Keep it up, it’s entertaining. Just try not to get too ahead of yourself, alright? Wouldn't want you tripping over your own feet trying to reach my level."
+🚀 [TTS-2CHUNK] Using 2-chunk strategy for optimal user experience
+⚡ [TTS-2CHUNK] Processing chunk 1 for immediate response...
+🔊 [TTS-CHUNK-1] Generating for gojo: "(amused) Oh, I see. A bit of a..."
+💾 [CONVERSATION] Appended messages to existing session: eT7aLs2uyXe3DqEuNT14jKXlJpu2-gojo-1754082615731
+✅ [TTS-CHUNK-1] Generated: 294956 bytes
+⚡ [TTS-2CHUNK] Chunk 1 ready in 2954ms - sending immediate response!
+📤 [TTS-2CHUNK] Returning first chunk immediately for better UX
+ POST /api/voice/tts 200 in 3007ms
+ GET /api/user/profile 200 in 323ms
+🔊 [TTS-2CHUNK] Request received for character: gojo, chunk: 2
+📝 [TTS-2CHUNK] Text length: 326 characters
+🔪 [TTS-CHUNK] Split text: "(amused) Oh, I see. A bit of a smart aleck, are we?" | "I like that. Shows a bit of spirit, even if it’s directed at someone as ridiculously powerful as me. (chuckles) hmmhmm. Keep it up, it’s entertaining. Just try not to get too ahead of yourself, alright? Wouldn't want you tripping over your own feet trying to reach my level."
+📊 [TTS-2CHUNK] Chunk 1 (51 chars): "(amused) Oh, I see. A bit of a smart aleck, are we?"
+📊 [TTS-2CHUNK] Chunk 2 (274 chars): "I like that. Shows a bit of spirit, even if it’s directed at someone as ridiculously powerful as me. (chuckles) hmmhmm. Keep it up, it’s entertaining. Just try not to get too ahead of yourself, alright? Wouldn't want you tripping over your own feet trying to reach my level."
+🎯 [TTS-2CHUNK] Processing second chunk request...
+🔊 [TTS-CHUNK-2] Generating for gojo: "I like that. Shows a bit of sp..."
+✅ [TTS-CHUNK-2] Generated: 1151020 bytes
+✅ [TTS-2CHUNK] Second chunk ready in 4138ms
+ POST /api/voice/tts 200 in 4207ms
