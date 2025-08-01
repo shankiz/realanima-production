@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase/admin';
 import * as msgpack from '@msgpack/msgpack';
@@ -16,6 +17,19 @@ const VOICE_MAPPINGS = {
   'megumin': 'provide correct id',
   'zenitsu': 'provide correct id'
 };
+
+// In-memory cache for second chunks (simple implementation)
+const chunkCache = new Map<string, { chunk2Audio: string; timestamp: number }>();
+
+// Clean up old cache entries (older than 30 seconds)
+function cleanupCache() {
+  const now = Date.now();
+  for (const [key, value] of chunkCache.entries()) {
+    if (now - value.timestamp > 30000) {
+      chunkCache.delete(key);
+    }
+  }
+}
 
 // Smart text splitting function
 function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
@@ -137,8 +151,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { character, text, generateVoice = true, requestChunk = 1 } = body;
 
-    console.log(`🔊 [TTS-2CHUNK] Request received for character: ${character}, chunk: ${requestChunk}`);
-    console.log(`📝 [TTS-2CHUNK] Text length: ${text?.length} characters`);
+    console.log(`🔊 [TTS-PARALLEL] Request received for character: ${character}, chunk: ${requestChunk}`);
+    console.log(`📝 [TTS-PARALLEL] Text length: ${text?.length} characters`);
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
@@ -151,10 +165,10 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now();
 
     // Check if text is long enough to benefit from 2-chunk strategy
-    const shouldUse2Chunks = text.length > 100; // Only use for longer responses
+    const shouldUse2Chunks = text.length > 100;
 
     if (!shouldUse2Chunks) {
-      console.log('📝 [TTS-2CHUNK] Text too short, using single chunk strategy');
+      console.log('📝 [TTS-PARALLEL] Text too short, using single chunk strategy');
       const singleAudio = await generateTTSChunk(text, character, 0);
       if (!singleAudio) {
         return NextResponse.json({ error: 'Voice generation failed' }, { status: 500 });
@@ -172,48 +186,91 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Split text into 2 meaningful chunks
-    const { chunk1, chunk2 } = splitTextIntoChunks(text);
-    console.log(`📊 [TTS-2CHUNK] Chunk 1 (${chunk1.length} chars): "${chunk1}"`);
-    console.log(`📊 [TTS-2CHUNK] Chunk 2 (${chunk2.length} chars): "${chunk2}"`);
+    // Clean up old cache entries
+    cleanupCache();
 
-    // Handle specific chunk requests (for second chunk requests from frontend)
+    // Generate cache key for this request
+    const cacheKey = `${character}-${Buffer.from(text).toString('base64').substring(0, 20)}`;
+
+    // Handle second chunk requests (check cache first)
     if (requestChunk === 2) {
-      console.log('🎯 [TTS-2CHUNK] Processing second chunk request...');
-      if (!chunk2) {
-        return NextResponse.json({ error: 'No second chunk available' }, { status: 404 });
+      console.log('🎯 [TTS-PARALLEL] Processing second chunk request...');
+      
+      // Check if we have the second chunk cached
+      const cached = chunkCache.get(cacheKey);
+      if (cached) {
+        console.log('⚡ [TTS-PARALLEL] Second chunk found in cache!');
+        const processingTime = Date.now() - startTime;
+        
+        // Clean up the cache entry since it's been used
+        chunkCache.delete(cacheKey);
+        
+        return NextResponse.json({
+          success: true,
+          audio: cached.chunk2Audio,
+          character: character,
+          text: splitTextIntoChunks(text).chunk2,
+          fullText: text,
+          processingTime: processingTime,
+          model: 's1',
+          strategy: 'parallel-cached',
+          isFirstChunk: false,
+          chunkNumber: 2
+        });
+      } else {
+        // Cache miss - generate on demand (fallback)
+        console.log('⚠️ [TTS-PARALLEL] Second chunk not in cache, generating on demand...');
+        const { chunk2 } = splitTextIntoChunks(text);
+        
+        if (!chunk2) {
+          return NextResponse.json({ error: 'No second chunk available' }, { status: 404 });
+        }
+
+        const chunk2Audio = await generateTTSChunk(chunk2, character, 2);
+        if (!chunk2Audio) {
+          return NextResponse.json({ error: 'Second chunk generation failed' }, { status: 500 });
+        }
+
+        const processingTime = Date.now() - startTime;
+        console.log(`✅ [TTS-PARALLEL] Second chunk ready in ${processingTime}ms`);
+
+        return NextResponse.json({
+          success: true,
+          audio: chunk2Audio,
+          character: character,
+          text: chunk2,
+          fullText: text,
+          processingTime: processingTime,
+          model: 's1',
+          strategy: 'parallel-fallback',
+          isFirstChunk: false,
+          chunkNumber: 2
+        });
       }
-
-      const chunk2Audio = await generateTTSChunk(chunk2, character, 2);
-      if (!chunk2Audio) {
-        return NextResponse.json({ error: 'Second chunk generation failed' }, { status: 500 });
-      }
-
-      const processingTime = Date.now() - startTime;
-      console.log(`✅ [TTS-2CHUNK] Second chunk ready in ${processingTime}ms`);
-
-      return NextResponse.json({
-        success: true,
-        audio: chunk2Audio,
-        character: character,
-        text: chunk2,
-        fullText: text,
-        processingTime: processingTime,
-        model: 's1',
-        strategy: '2chunk',
-        isFirstChunk: false,
-        chunkNumber: 2
-      });
     }
 
-    console.log('🚀 [TTS-2CHUNK] Using 2-chunk strategy for optimal user experience');
+    console.log('🚀 [TTS-PARALLEL] Using parallel chunk strategy for optimal user experience');
 
-    // Step 1: Generate first chunk immediately (default behavior)
-    console.log('⚡ [TTS-2CHUNK] Processing chunk 1 for immediate response...');
-    const chunk1Audio = await generateTTSChunk(chunk1, character, 1);
+    // Split text into 2 meaningful chunks
+    const { chunk1, chunk2 } = splitTextIntoChunks(text);
+    console.log(`📊 [TTS-PARALLEL] Chunk 1 (${chunk1.length} chars): "${chunk1}"`);
+    console.log(`📊 [TTS-PARALLEL] Chunk 2 (${chunk2.length} chars): "${chunk2}"`);
+
+    // Start BOTH chunks processing in parallel
+    console.log('⚡ [TTS-PARALLEL] Starting parallel processing of both chunks...');
+    
+    const chunk1Promise = generateTTSChunk(chunk1, character, 1);
+    let chunk2Promise = null;
+    
+    if (chunk2) {
+      chunk2Promise = generateTTSChunk(chunk2, character, 2);
+    }
+
+    // Wait for first chunk to complete
+    const chunk1Audio = await chunk1Promise;
 
     if (!chunk1Audio) {
-      console.error('❌ [TTS-2CHUNK] Failed to generate chunk 1, falling back to full text');
+      console.error('❌ [TTS-PARALLEL] Failed to generate chunk 1, falling back to full text');
       // Fallback to original single-chunk processing
       const fallbackAudio = await generateTTSChunk(text, character, 0);
       if (!fallbackAudio) {
@@ -233,28 +290,48 @@ export async function POST(request: NextRequest) {
     }
 
     const chunk1ProcessingTime = Date.now() - startTime;
-    console.log(`⚡ [TTS-2CHUNK] Chunk 1 ready in ${chunk1ProcessingTime}ms - sending immediate response!`);
+    console.log(`⚡ [TTS-PARALLEL] Chunk 1 ready in ${chunk1ProcessingTime}ms - sending immediate response!`);
 
-    // Step 2: Return immediate response with chunk 1
+    // Start background processing for chunk 2 (if it exists)
+    if (chunk2Promise) {
+      chunk2Promise.then((chunk2Audio) => {
+        if (chunk2Audio) {
+          const totalTime = Date.now() - startTime;
+          console.log(`🎯 [TTS-PARALLEL] Chunk 2 ready in background after ${totalTime}ms - caching for later request`);
+          
+          // Cache the second chunk for when frontend requests it
+          chunkCache.set(cacheKey, {
+            chunk2Audio: chunk2Audio,
+            timestamp: Date.now()
+          });
+        } else {
+          console.error('❌ [TTS-PARALLEL] Chunk 2 failed in background');
+        }
+      }).catch((error) => {
+        console.error('❌ [TTS-PARALLEL] Chunk 2 background error:', error);
+      });
+    }
+
+    // Return immediate response with chunk 1
     const response = {
       success: true,
       audio: chunk1Audio,
       character: character,
-      text: chunk1, // Return chunk 1 text for frontend
-      fullText: text, // Include full text for reference
+      text: chunk1,
+      fullText: text,
       processingTime: chunk1ProcessingTime,
       model: 's1',
-      strategy: '2chunk',
+      strategy: 'parallel',
       isFirstChunk: true,
       hasSecondChunk: !!chunk2,
       chunkNumber: 1
     };
 
-    console.log('📤 [TTS-2CHUNK] Returning first chunk immediately for better UX');
+    console.log('📤 [TTS-PARALLEL] Returning first chunk immediately, second chunk processing in background');
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('❌ [TTS-2CHUNK] Error:', error);
+    console.error('❌ [TTS-PARALLEL] Error:', error);
     return NextResponse.json({ 
       error: 'Failed to generate voice' 
     }, { status: 500 });
