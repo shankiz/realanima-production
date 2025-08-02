@@ -4583,12 +4583,12 @@ import { useSearchParams } from 'next/navigation';
                                                 className="rounded-full object-cover"
                                               />
                                             </div>
-                                                <div className="text-gray-500 text-sm italic flex items-center">
-                                                  {getCharacterName(character)} is thinking
-                                                  <span className="ml-2">
-                                                    <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                                                  </span>
-                                                </div>
+                                            <div className="text-gray-500 text-sm italic flex items-center">
+                                              {getCharacterName(character)} is thinking
+                                              <span className="ml-1">
+                                                <span className="inline-block opacity-30" style={{ animation: 'dotPulse 2.5s ease-in-out infinite', animationDelay: '0s' }}>.</span>
+                                                <span className="inline-block opacity-30" style={{ animation: 'dotPulse 2.5s ease-in-out infinite', animationDelay: '0.5s' }}>.</span>
+                                                <span className="inline-block opacity-30" style={{ animation: 'dotPulse 2.5s ease-in-out infinite', animationDelay: '1s' }}>.</span>
                                               </span>
                                             </div>
                                           </div>
