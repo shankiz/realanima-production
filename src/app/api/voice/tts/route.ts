@@ -20,32 +20,43 @@ const VOICE_MAPPINGS = {
 // In-memory cache for second chunks (simple implementation)
 const chunkCache = new Map<string, { chunk2Audio: string; timestamp: number }>();
 
-// Clean up old cache entries (older than 30 seconds)
+// Optimized cache cleanup with batching
 function cleanupCache() {
   const now = Date.now();
+  const keysToDelete: string[] = [];
+  
+  // Batch delete operations for better performance
   for (const [key, value] of chunkCache.entries()) {
     if (now - value.timestamp > 30000) {
-      chunkCache.delete(key);
+      keysToDelete.push(key);
     }
+  }
+  
+  // Delete in batch
+  keysToDelete.forEach(key => chunkCache.delete(key));
+  
+  if (keysToDelete.length > 0) {
+    console.log(`🧹 [TTS-CACHE] Cleaned up ${keysToDelete.length} old cache entries`);
   }
 }
 
-// Smart text splitting function
+// Optimized text splitting function for faster first chunk
 function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
   // Clean the text
   const cleanText = text.trim();
 
   // If text is short, don't split
-  if (cleanText.length <= 80) {
+  if (cleanText.length <= 60) {
     return { chunk1: cleanText, chunk2: '' };
   }
 
-  // Find the best split point (prioritize sentence endings, then commas, then spaces)
+  // Prioritize VERY short first chunk for instant response (20-50 chars)
   let splitPoint = -1;
-  const maxChunk1Length = Math.min(100, Math.floor(cleanText.length * 0.4)); // 40% or 100 chars max
+  const minChunk1Length = 15; // Minimum viable chunk
+  const maxChunk1Length = Math.min(50, Math.floor(cleanText.length * 0.3)); // 30% or 50 chars max
 
-  // Look for sentence endings within reasonable range
-  for (let i = 30; i <= maxChunk1Length; i++) {
+  // Look for early sentence endings for super quick first chunk
+  for (let i = minChunk1Length; i <= maxChunk1Length; i++) {
     const char = cleanText[i];
     if (char === '.' || char === '!' || char === '?') {
       // Make sure it's not an abbreviation by checking next character
@@ -58,7 +69,7 @@ function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
 
   // If no sentence ending found, look for comma or natural pause
   if (splitPoint === -1) {
-    for (let i = 40; i <= maxChunk1Length; i++) {
+    for (let i = minChunk1Length; i <= maxChunk1Length; i++) {
       const char = cleanText[i];
       if (char === ',' || char === ';') {
         if (i + 1 < cleanText.length && cleanText[i + 1] === ' ') {
@@ -71,7 +82,7 @@ function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
 
   // If no good punctuation split, find last space within range
   if (splitPoint === -1) {
-    for (let i = maxChunk1Length; i >= 30; i--) {
+    for (let i = maxChunk1Length; i >= minChunk1Length; i--) {
       if (cleanText[i] === ' ') {
         splitPoint = i + 1;
         break;
@@ -81,13 +92,13 @@ function splitTextIntoChunks(text: string): { chunk1: string; chunk2: string } {
 
   // Fallback: just split at maxChunk1Length
   if (splitPoint === -1) {
-    splitPoint = maxChunk1Length;
+    splitPoint = Math.min(maxChunk1Length, cleanText.length);
   }
 
   const chunk1 = cleanText.substring(0, splitPoint).trim();
   const chunk2 = cleanText.substring(splitPoint).trim();
 
-  console.log(`🔪 [TTS-CHUNK] Split text: "${chunk1}" | "${chunk2}"`);
+  console.log(`🔪 [TTS-CHUNK] Optimized split: "${chunk1}" (${chunk1.length} chars) | "${chunk2}" (${chunk2.length} chars)`);
 
   return { chunk1, chunk2 };
 }
@@ -101,9 +112,9 @@ async function generateTTSChunk(text: string, character: string, chunkNumber: nu
     const payload = {
       text: text,
       reference_id: voiceId,
-      format: 'wav',
-      chunk_length: 100,
-      normalize: true,
+      format: 'mp3', // MP3 is faster to generate and smaller
+      chunk_length: 200, // Larger chunks for faster processing
+      normalize: false, // Skip normalization for speed
       latency: 'low',
       references: []
     };
@@ -118,7 +129,7 @@ async function generateTTSChunk(text: string, character: string, chunkNumber: nu
         'model': 's1'
       },
       body: packedPayload,
-      signal: AbortSignal.timeout(12000)
+      signal: AbortSignal.timeout(8000) // Reduced timeout for faster failure recovery
     });
 
     if (!response.ok) {
@@ -209,8 +220,8 @@ export async function POST(request: NextRequest) {
 
     const startTime = Date.now();
 
-    // Check if text is long enough to benefit from 2-chunk strategy
-    const shouldUse2Chunks = text.length > 100;
+    // Optimize threshold - only use 2-chunk for longer texts where it really helps
+    const shouldUse2Chunks = text.length > 80;
 
     if (!shouldUse2Chunks) {
       console.log('📝 [TTS-PARALLEL] Text too short, using single chunk strategy');
