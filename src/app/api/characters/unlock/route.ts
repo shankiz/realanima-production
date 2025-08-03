@@ -3,7 +3,7 @@ import connectToDatabase from '@/lib/db';
 import Character from '@/models/Character';
 import User from '@/models/User';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // POST /api/characters/unlock - Unlock a character
 export async function POST(req: NextRequest) {

@@ -4,7 +4,7 @@ import { adminAuth, adminDb } from '@/lib/firebase/admin';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { character: string } }
+  { params }: { params: Promise<{ character: string }> }
 ) {
   try {
     // Get the authorization header
@@ -37,7 +37,7 @@ export async function POST(
       }, { status: 403 });
     }
 
-    const { character } = params;
+    const { character } = await params;
     const { message } = await request.json();
 
     if (!character || !message) {

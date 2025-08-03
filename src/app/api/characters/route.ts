@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
 import Character from '@/models/Character';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // GET /api/characters - Get all characters
 export async function GET() {
