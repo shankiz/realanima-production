@@ -144,8 +144,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
             return aTime - bTime;
           });
 
-          const firstUserMessage = session.messages.find(m => m.sender === 'user' || m.role === 'user');
-          const firstAssistantMessage = session.messages.find(m => m.sender === 'assistant' || m.role === 'assistant');
+          const firstUserMessage = session.messages.find((m: any) => m.sender === 'user' || m.role === 'user');
+          const firstAssistantMessage = session.messages.find((m: any) => m.sender === 'assistant' || m.role === 'assistant');
           // Removed unused last message variables
 
           return {
@@ -251,8 +251,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
             return aTime - bTime;
           });
 
-          const firstUserMessage = session.messages.find(m => m.sender === 'user' || m.role === 'user');
-          const firstAssistantMessage = session.messages.find(m => m.sender === 'assistant' || m.role === 'assistant');
+          const firstUserMessage = session.messages.find((m: any) => m.sender === 'user' || m.role === 'user');
+          const firstAssistantMessage = session.messages.find((m: any) => m.sender === 'assistant' || m.role === 'assistant');
           // Removed unused last message variables
 
           return {
