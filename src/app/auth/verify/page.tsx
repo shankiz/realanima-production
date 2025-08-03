@@ -48,9 +48,12 @@ export default function VerifyEmailPage() {
         console.error('❌ Email verification failed:', error);
         setStatus('error');
 
-        if (error.code === 'auth/expired-action-code') {
+        // Type check the error to safely access properties
+        const errorCode = (error as any)?.code;
+        
+        if (errorCode === 'auth/expired-action-code') {
           setError('This verification link has expired. Please request a new one.');
-        } else if (error.code === 'auth/invalid-action-code') {
+        } else if (errorCode === 'auth/invalid-action-code') {
           setError('This verification link is invalid. Please request a new one.');
         } else {
           setError('Failed to verify email. Please try again.');
