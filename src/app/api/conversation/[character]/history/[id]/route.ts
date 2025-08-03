@@ -103,10 +103,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
 
   } catch (error) {
     console.error('Error fetching individual conversation:', error);
-    console.error('Error details:', error.message, error.stack);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+    console.error('Error details:', errorMessage, errorStack);
     return NextResponse.json({ 
       error: 'Internal server error',
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 });
   }
 }
