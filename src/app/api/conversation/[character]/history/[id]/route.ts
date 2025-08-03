@@ -40,7 +40,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
     console.log('📊 Found', conversationsSnapshot.size, 'documents for session:', id);
 
     // Collect all messages from the session
-    const allMessages = [];
+    const allMessages: any[] = [];
     const sessionData = {
       id: id,
       character: character,
