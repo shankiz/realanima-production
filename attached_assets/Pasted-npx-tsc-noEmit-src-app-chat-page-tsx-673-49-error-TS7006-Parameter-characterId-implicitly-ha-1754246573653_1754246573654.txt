@@ -1,0 +1,64 @@
+npx tsc --noEmit
+src/app/chat/page.tsx:673:49 - error TS7006: Parameter 'characterId' implicitly has an 'any' type.
+
+673                           const addToRecents = (characterId) => {
+                                                    ~~~~~~~~~~~
+
+src/app/chat/page.tsx:683:52 - error TS2345: Argument of type '(prev: never[]) => { id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to type 'never[]'.
+      Type '{ id: any; name: string; image: string; lastInteraction: string; }' is not assignable to type 'never'.
+
+683                             setRecentConversations(prev => {
+                                                       ~~~~~~~~~
+
+src/app/chat/page.tsx:685:73 - error TS2339: Property 'id' does not exist on type 'never'.
+
+685                               const filtered = prev.filter(conv => conv.id !== characterId);
+                                                                            ~~
+
+src/app/chat/page.tsx:697:54 - error TS7006: Parameter 'characterId' implicitly has an 'any' type.
+
+697                           const removeFromRecents = (characterId) => {
+                                                         ~~~~~~~~~~~
+
+src/app/chat/page.tsx:701:72 - error TS2339: Property 'id' does not exist on type 'never'.
+
+701                               const updated = prev.filter(conv => conv.id !== characterId);
+                                                                           ~~
+
+src/app/chat/page.tsx:785:61 - error TS7006: Parameter 'conversationId' implicitly has an 'any' type.
+
+785                             const loadConversation = async (conversationId) => {
+                                                                ~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:811:89 - error TS7006: Parameter 'msg' implicitly has an 'any' type.
+
+811                                           const structuredMessages = data.messages.map((msg, index) => {
+                                                                                            ~~~
+
+src/app/chat/page.tsx:811:94 - error TS7006: Parameter 'index' implicitly has an 'any' type.
+
+811                                           const structuredMessages = data.messages.map((msg, index) => {
+                                                                                                 ~~~~~
+
+src/app/chat/page.tsx:835:87 - error TS7006: Parameter 'msg' implicitly has an 'any' type.
+
+835                                           const hasGreeting = structuredMessages.some(msg =>
+                                                                                          ~~~
+
+src/app/chat/page.tsx:845:98 - error TS7006: Parameter 'm' implicitly has an 'any' type.
+
+845                                           console.log('💬 Message structure:', messagesToSet.map(m => ({ role: m.role, preview: m.content.substring(0, 20) + '...' })));
+                                                                                                     ~
+
+src/app/chat/page.tsx:885:59 - error TS2345: Argument of type '{ role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+    Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+885                                               setMessages(initialMessages);
+                                                              ~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:942:69 - error TS2339: Property 'lastInteraction' does not exist on type 'never'.
+
+942                               const interactionDate = new Date(conv.lastInteraction);
