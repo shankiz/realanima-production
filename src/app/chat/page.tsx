@@ -950,7 +950,13 @@ import { useSearchParams } from 'next/navigation';
                             const thisWeekStart = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
                             const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-                            const groups = {
+                            const groups: {
+                              today: RecentConversation[];
+                              yesterday: RecentConversation[];
+                              thisWeek: RecentConversation[];
+                              thisMonth: RecentConversation[];
+                              older: RecentConversation[];
+                            } = {
                               today: [],
                               yesterday: [],
                               thisWeek: [],
