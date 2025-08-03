@@ -138,7 +138,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
         })
         .map(session => {
           // Sort messages by timestamp
-          session.messages.sort((a, b) => {
+          session.messages.sort((a: any, b: any) => {
             const aTime = a.timestamp?.seconds || a.timestamp?.getTime?.() || 0;
             const bTime = b.timestamp?.seconds || b.timestamp?.getTime?.() || 0;
             return aTime - bTime;
@@ -245,7 +245,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
                  session.messages.some((msg: any) => msg.content && msg.content.trim().length > 0);
         })
         .map(session => {
-          session.messages.sort((a, b) => {
+          session.messages.sort((a: any, b: any) => {
             const aTime = a.timestamp?.seconds || a.timestamp?.getTime?.() || 0;
             const bTime = b.timestamp?.seconds || b.timestamp?.getTime?.() || 0;
             return aTime - bTime;
