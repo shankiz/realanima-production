@@ -39,6 +39,11 @@ export async function POST(request: NextRequest) {
       const orderData = orderDoc.data();
       console.log('📊 Order data:', orderData);
 
+      if (!orderData) {
+        console.error('❌ Order data is empty');
+        return NextResponse.json({ error: 'Order data is empty' }, { status: 400 });
+      }
+
       // Update user's credits
       const userRef = adminDb.collection('users').doc(orderData.userId);
       const userDoc = await userRef.get();
