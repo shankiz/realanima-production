@@ -44,7 +44,14 @@ export async function POST(
       return NextResponse.json({ error: 'Missing character or message' }, { status: 400 });
     }
 
-    const service = new SimplifiedVoiceService();
+    const deepgramApiKey = process.env.DEEPGRAM_API_KEY || process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
+    const geminiApiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    
+    if (!deepgramApiKey || !geminiApiKey) {
+      return NextResponse.json({ error: 'API keys not configured' }, { status: 500 });
+    }
+
+    const service = new SimplifiedVoiceService(deepgramApiKey, geminiApiKey);
     const response = await service.get_response(character, message);
 
     return NextResponse.json({ response });
