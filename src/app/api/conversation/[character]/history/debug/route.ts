@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 
@@ -8,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { character } = await params;
-    
+
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -25,7 +24,13 @@ export async function GET(
       .where('character', '==', character)
       .get();
 
-    const debugInfo = {
+    const debugInfo: {
+      totalDocs: number;
+      collections: any[];
+      sampleDocs: { id: string; data: any; }[];
+      totalUserConversations?: number;
+      charactersFound?: string[];
+    } = {
       totalDocs: snapshot.size,
       collections: [],
       sampleDocs: snapshot.docs.slice(0, 5).map(doc => ({
