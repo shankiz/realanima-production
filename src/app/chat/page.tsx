@@ -1140,7 +1140,7 @@ import { useSearchParams } from 'next/navigation';
                                   console.log('🔄 Restored messages count:', savedMessages.length);
 
                                   // Validate all messages don't contain cross-character contamination
-                                  const validMessages = savedMessages.filter(msg => {
+                                  const validMessages = savedMessages.filter((msg: Message) => {
                                     if (msg.role === 'assistant') {
                                       // Check if this message could belong to the current character
                                       const expectedInitial = getInitialMessage(character);
