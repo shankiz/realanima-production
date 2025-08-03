@@ -70,11 +70,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
       console.error('❌ [GEMINI] Service error:', error);
 
       // Handle specific Gemini API errors
-      if (error.message.includes('429')) {
+      const errorMessage = error instanceof Error ? error.message : '';
+      if (errorMessage.includes('429')) {
         return NextResponse.json({ 
           error: "Sorry, I couldn't generate a response right now. Please try again!" 
         }, { status: 429 });
-      } else if (error.message.includes('quota') || error.message.includes('limit')) {
+      } else if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
         return NextResponse.json({ 
           error: "Sorry, I couldn't generate a response right now. Please try again!" 
         }, { status: 503 });
