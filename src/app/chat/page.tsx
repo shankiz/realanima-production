@@ -1252,7 +1252,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           }, [isVoiceResponseEnabled, currentUserPlan]);
 
-                          const handleSendMessage = async (e) => {
+                          const handleSendMessage = async (e: React.FormEvent) => {
                             e.preventDefault();
                             const currentInput = inputRef.current?.value || input;
                             if (currentInput.trim() === '') return;
