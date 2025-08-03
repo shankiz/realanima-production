@@ -35,12 +35,8 @@ export async function GET(request: NextRequest) {
 
       // Import and call the active subscriptions function directly
       const { GET: getActiveSubscriptions } = await import('./active-subscriptions/route');
-      const mockActiveRequest = new Request('http://localhost/api/subscription/cron/active-subscriptions', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
 
-      const activeSubsResponse = await getActiveSubscriptions(mockActiveRequest as any);
+      const activeSubsResponse = await getActiveSubscriptions();
       let activeSubscriptions = [];
       let summary = {};
 
