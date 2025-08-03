@@ -1,6 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 // POST /api/user/deduct-message - Deduct one credit/message
 export async function POST(req: NextRequest) {
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
       transaction.update(userRef, {
         credits: newCredits,
         messagesLeft: newMessagesLeft,
-        lastMessageSent: adminDb.serverTimestamp()
+        lastMessageSent: FieldValue.serverTimestamp()
       });
 
       return {
