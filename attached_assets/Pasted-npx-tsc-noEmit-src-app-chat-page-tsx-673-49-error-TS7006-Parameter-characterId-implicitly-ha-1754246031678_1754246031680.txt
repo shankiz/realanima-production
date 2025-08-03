@@ -1,0 +1,372 @@
+npx tsc --noEmit
+src/app/chat/page.tsx:673:49 - error TS7006: Parameter 'characterId' implicitly has an 'any' type.
+
+673                           const addToRecents = (characterId) => {
+                                                    ~~~~~~~~~~~
+
+src/app/chat/page.tsx:683:52 - error TS2345: Argument of type '(prev: never[]) => { id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ id: any; name: string; image: string; lastInteraction: string; }[]' is not assignable to type 'never[]'.
+      Type '{ id: any; name: string; image: string; lastInteraction: string; }' is not assignable to type 'never'.
+
+683                             setRecentConversations(prev => {
+                                                       ~~~~~~~~~
+
+src/app/chat/page.tsx:685:73 - error TS2339: Property 'id' does not exist on type 'never'.
+
+685                               const filtered = prev.filter(conv => conv.id !== characterId);
+                                                                            ~~
+
+src/app/chat/page.tsx:697:54 - error TS7006: Parameter 'characterId' implicitly has an 'any' type.
+
+697                           const removeFromRecents = (characterId) => {
+                                                         ~~~~~~~~~~~
+
+src/app/chat/page.tsx:701:72 - error TS2339: Property 'id' does not exist on type 'never'.
+
+701                               const updated = prev.filter(conv => conv.id !== characterId);
+                                                                           ~~
+
+src/app/chat/page.tsx:785:61 - error TS7006: Parameter 'conversationId' implicitly has an 'any' type.
+
+785                             const loadConversation = async (conversationId) => {
+                                                                ~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:811:89 - error TS7006: Parameter 'msg' implicitly has an 'any' type.
+
+811                                           const structuredMessages = data.messages.map((msg, index) => {
+                                                                                            ~~~
+
+src/app/chat/page.tsx:811:94 - error TS7006: Parameter 'index' implicitly has an 'any' type.
+
+811                                           const structuredMessages = data.messages.map((msg, index) => {
+                                                                                                 ~~~~~
+
+src/app/chat/page.tsx:835:87 - error TS7006: Parameter 'msg' implicitly has an 'any' type.
+
+835                                           const hasGreeting = structuredMessages.some(msg =>
+                                                                                          ~~~
+
+src/app/chat/page.tsx:845:98 - error TS7006: Parameter 'm' implicitly has an 'any' type.
+
+845                                           console.log('💬 Message structure:', messagesToSet.map(m => ({ role: m.role, preview: m.content.substring(0, 20) + '...' })));
+                                                                                                     ~
+
+src/app/chat/page.tsx:885:59 - error TS2345: Argument of type '{ role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+    Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+885                                               setMessages(initialMessages);
+                                                              ~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:942:69 - error TS2339: Property 'lastInteraction' does not exist on type 'never'.
+
+942                               const interactionDate = new Date(conv.lastInteraction);
+                                                                        ~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:962:47 - error TS7006: Parameter 'timestamp' implicitly has an 'any' type.
+
+962                           const getTimeAgo = (timestamp) => {
+                                                  ~~~~~~~~~
+
+src/app/chat/page.tsx:1001:63 - error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+
+1001                             const diffInSeconds = Math.floor((now - date) / 1000);
+                                                                   ~~~
+
+src/app/chat/page.tsx:1014:61 - error TS7006: Parameter 'conversationId' implicitly has an 'any' type.
+
+1014                           const deleteConversation = async (conversationId) => {
+                                                                 ~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1029:81 - error TS2339: Property 'id' does not exist on type 'never'.
+
+1029                                 setChatHistory(prev => prev.filter(conv => conv.id !== conversationId));
+                                                                                     ~~
+
+src/app/chat/page.tsx:1052:50 - error TS2339: Property 'scrollIntoView' does not exist on type 'never'.
+
+1052                               chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                                                      ~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1062:39 - error TS2339: Property 'role' does not exist on type 'never'.
+
+1062                                   msg.role === 'assistant' && msg.content === expectedInitial
+                                           ~~~~
+
+src/app/chat/page.tsx:1062:67 - error TS2339: Property 'content' does not exist on type 'never'.
+
+1062                                   msg.role === 'assistant' && msg.content === expectedInitial
+                                                                       ~~~~~~~
+
+src/app/chat/page.tsx:1117:78 - error TS7006: Parameter 'msg' implicitly has an 'any' type.
+
+1117                                   const validMessages = savedMessages.filter(msg => {
+                                                                                  ~~~
+
+src/app/chat/page.tsx:1162:45 - error TS2345: Argument of type '{ role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+    Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+1162                                 setMessages(initialMessages);
+                                                 ~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1182:45 - error TS2345: Argument of type '{ role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+    Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+1182                                 setMessages(initialMessages);
+                                                 ~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1229:60 - error TS7006: Parameter 'e' implicitly has an 'any' type.
+
+1229                           const handleSendMessage = async (e) => {
+                                                                ~
+
+src/app/chat/page.tsx:1256:41 - error TS2345: Argument of type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+1256                             setMessages(prev => [...prev, userMessage]);
+                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1274:51 - error TS18047: 'user' is possibly 'null'.
+
+1274                               const token = await user.getIdToken();
+                                                       ~~~~
+
+src/app/chat/page.tsx:1412:45 - error TS2345: Argument of type '(prev: never[]) => { role: string; content: any; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: string; content: any; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'never[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'never'.
+
+1412                                 setMessages(prev => {
+                                                 ~~~~~~~~~
+
+src/app/chat/page.tsx:1589:45 - error TS2345: Argument of type '(prev: never[]) => { role: string; content: any; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: string; content: any; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: string; content: any; }[]' is not assignable to type 'never[]'.
+      Type '{ role: string; content: any; }' is not assignable to type 'never'.
+
+1589                                 setMessages(prev => [...prev, errorMessage]);
+                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1597:43 - error TS2345: Argument of type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+1597                               setMessages(prev => [...prev, errorMessage]);
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:1607:58 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1607                           const handleSelectCharacter = (char) => {
+                                                              ~~~~
+
+src/app/chat/page.tsx:1611:54 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1611                           const getInitialMessage = (char) => {
+                                                          ~~~~
+
+src/app/chat/page.tsx:1676:54 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1676                           const getCharacterImage = (char) => {
+                                                          ~~~~
+
+src/app/chat/page.tsx:1741:53 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1741                           const getCharacterName = (char) => {
+                                                         ~~~~
+
+src/app/chat/page.tsx:1806:60 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1806                           const getCharacterDescription = (char) => {
+                                                                ~~~~
+
+src/app/chat/page.tsx:1871:60 - error TS7006: Parameter 'char' implicitly has an 'any' type.
+
+1871                           const getCharacterPersonality = (char) => {
+                                                                ~~~~
+
+src/app/chat/page.tsx:1936:47 - error TS7006: Parameter 'newView' implicitly has an 'any' type.
+
+1936                           const navigateTo = (newView) => {
+                                                   ~~~~~~~
+
+src/app/chat/page.tsx:2005:51 - error TS2345: Argument of type '(prev: never[]) => { role: "user"; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: "user"; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: "user"; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: "user"; content: string; }' is not assignable to type 'never'.
+
+2005                                       setMessages(prev => [...prev, userMessage]);
+                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:2014:49 - error TS2345: Argument of type '(prev: never[]) => { role: "assistant"; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: "assistant"; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: "assistant"; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: "assistant"; content: string; }' is not assignable to type 'never'.
+
+2014                                     setMessages(prev => [...prev, aiMessage]);
+                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:2186:73 - error TS18046: 'error' is of type 'unknown'.
+
+2186                               console.error('❌ [DEBUG] Error details:', error.name, error.message);
+                                                                             ~~~~~
+
+src/app/chat/page.tsx:2186:85 - error TS18046: 'error' is of type 'unknown'.
+
+2186                               console.error('❌ [DEBUG] Error details:', error.name, error.message);
+                                                                                         ~~~~~
+
+src/app/chat/page.tsx:2188:35 - error TS18046: 'error' is of type 'unknown'.
+
+2188                               if (error.name === 'NotAllowedError') {
+                                       ~~~~~
+
+src/app/chat/page.tsx:2190:42 - error TS18046: 'error' is of type 'unknown'.
+
+2190                               } else if (error.name === 'NotFoundError') {
+                                              ~~~~~
+
+src/app/chat/page.tsx:2192:42 - error TS18046: 'error' is of type 'unknown'.
+
+2192                               } else if (error.name === 'NotSupportedError') {
+                                              ~~~~~
+
+src/app/chat/page.tsx:2239:43 - error TS2345: Argument of type '(prev: never[]) => { role: "assistant"; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: "assistant"; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: "assistant"; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: "assistant"; content: string; }' is not assignable to type 'never'.
+
+2239                               setMessages(prev => [...prev, greetingMessage]);
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:2353:41 - error TS2345: Argument of type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(prev: never[]) => { role: string; content: string; }[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type '{ role: string; content: string; }[]' is not assignable to type 'never[]'.
+      Type '{ role: string; content: string; }' is not assignable to type 'never'.
+
+2353                             setMessages(prev => [...prev, endMessage]);
+                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3027:83 - error TS18047: 'user' is possibly 'null'.
+
+3027                                                               const token = await user.getIdToken();
+                                                                                       ~~~~
+
+src/app/chat/page.tsx:3040:102 - error TS18047: 'user' is possibly 'null'.
+
+3040                                                                   if (key.startsWith(`chat_session_${user.uid}_`) ||
+                                                                                                          ~~~~
+
+src/app/chat/page.tsx:3041:109 - error TS18047: 'user' is possibly 'null'.
+
+3041                                                                       key.startsWith(`recentConversations_${user.uid}`)) {
+                                                                                                                 ~~~~
+
+src/app/chat/page.tsx:3116:83 - error TS18047: 'user' is possibly 'null'.
+
+3116                                                               const token = await user.getIdToken();
+                                                                                       ~~~~
+
+src/app/chat/page.tsx:3264:138 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3264                                                       {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && billingData?.subscription && (
+                                                                                                                                              ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3267:73 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3267                                                             billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
+                                                                             ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3267:113 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3267                                                             billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
+                                                                                                                     ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3269:77 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3269                                                               : billingData.subscription.status === 'active'
+                                                                                 ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3273:74 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3273                                                             {billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
+                                                                              ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3273:114 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3273                                                             {billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
+                                                                                                                      ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3275:77 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3275                                                               : billingData.subscription.status?.charAt(0).toUpperCase() + billingData.subscription.status?.slice(1)}
+                                                                                 ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3275:136 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3275                                                               : billingData.subscription.status?.charAt(0).toUpperCase() + billingData.subscription.status?.slice(1)}
+                                                                                                                                            ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3278:72 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3278                                                           {billingData.subscription.nextBillingDate && (() => {
+                                                                            ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3283:86 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3283                                                               if (typeof billingData.subscription.nextBillingDate === 'string') {
+                                                                                          ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3284:93 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3284                                                                 date = new Date(billingData.subscription.nextBillingDate);
+                                                                                                 ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3285:86 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3285                                                               } else if (billingData.subscription.nextBillingDate?.seconds) {
+                                                                                          ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3287:93 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3287                                                                 date = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
+                                                                                                 ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3289:93 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3289                                                                 date = new Date(billingData.subscription.nextBillingDate);
+                                                                                                 ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3295:80 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3295                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt
+                                                                                    ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3295:131 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3295                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt
+                                                                                                                                       ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3311:73 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3311                                                           {!billingData.subscription.cancelledAt && billingData.subscription.status !== 'cancelled' && (() => {
+                                                                             ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3311:113 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3311                                                           {!billingData.subscription.cancelledAt && billingData.subscription.status !== 'cancelled' && (() => {
+                                                                                                                     ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3313:80 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3313                                                               if (!billingData.subscription.lastChargedAt) {
+                                                                                    ~~~~~~~~~~~~
+
+src/app/chat/page.tsx:3317:119 - error TS2339: Property 'subscription' does not exist on type 'never'.
+
+3317                                                               console.log('🔍 Processing lastChargedAt:', billingData.subscription.lastChargedAt, 'Type:', typeof billingData.subscription.lastChargedAt);
