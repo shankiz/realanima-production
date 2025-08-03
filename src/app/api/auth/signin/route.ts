@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       await adminAuth.getUser(uid);
       console.log('[SIGNIN] User record found in Firebase Auth');
     } catch (authError: unknown) {
-      console.error('[SIGNIN] User not found in Firebase Auth:', authError.message);
+      console.error('[SIGNIN] User not found in Firebase Auth:', authError instanceof Error ? authError.message : 'Unknown error');
       return NextResponse.json({ 
         error: 'User authentication failed', 
         details: 'User record not found' 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           freshUserRecord = await adminAuth.getUser(uid);
           console.log(`[SIGNIN] Fresh user record - emailVerified: ${freshUserRecord.emailVerified}`);
         } catch (getUserError: unknown) {
-          console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError.message);
+          console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError instanceof Error ? getUserError.message : 'Unknown error');
 
           // If we can't get the user record, but we have a valid token, create it
           try {
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
             });
             console.log(`[SIGNIN] Created missing user record: ${uid}`);
           } catch (createError: unknown) {
-            console.error(`[SIGNIN] Failed to create user record: ${uid}`, createError.message);
+            console.error(`[SIGNIN] Failed to create user record: ${uid}`, createError instanceof Error ? createError.message : 'Unknown error');
             return NextResponse.json({ error: 'Failed to create user session' }, { status: 500 });
           }
         }
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         freshUserRecord = await adminAuth.getUser(uid);
         console.log(`[SIGNIN] Fresh user record - emailVerified: ${freshUserRecord.emailVerified}`);
       } catch (getUserError: unknown) {
-        console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError.message);
+        console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError instanceof Error ? getUserError.message : 'Unknown error');
         return NextResponse.json({ error: 'Failed to create user session' }, { status: 500 });
       }
     }
@@ -159,10 +159,10 @@ export async function POST(request: NextRequest) {
       sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
       console.log('[SIGNIN] Session cookie created successfully');
     } catch (cookieError: unknown) {
-      console.error('[SIGNIN] Failed to create session cookie:', cookieError.message);
+      console.error('[SIGNIN] Failed to create session cookie:', cookieError instanceof Error ? cookieError.message : 'Unknown error');
       return NextResponse.json({ 
         error: 'Failed to create session', 
-        details: cookieError.message 
+        details: cookieError instanceof Error ? cookieError.message : 'Unknown error'
       }, { status: 500 });
     }
 
