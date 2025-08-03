@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     try {
       await applyActionCode(auth, actionCode);
       console.log('[VERIFY_EMAIL] Email verification successful');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[VERIFY_EMAIL] Failed to apply action code:', error.message);
       return NextResponse.json({ 
         error: 'Invalid or expired verification code',
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         await userRef.update({ isVerified: true });
         
         console.log(`[VERIFY_EMAIL] Updated Firestore verification status for user: ${uid}`);
-      } catch (tokenError: any) {
+      } catch {
         console.log('[VERIFY_EMAIL] Could not verify token, user may need to sign in again');
       }
     }

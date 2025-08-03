@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       isVerified: userRecord.emailVerified 
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[SYNC] Error syncing verification status:', error);
     return NextResponse.json({ error: 'Sync failed: ' + error.message }, { status: 500 });
   }

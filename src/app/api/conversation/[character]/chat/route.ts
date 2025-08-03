@@ -94,7 +94,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
 
     // Save conversation using single-document-per-session approach
     const conversationRef = adminDb.collection('conversations').doc(activeSessionId);
-    
+
     // New messages to append
     const newMessages = [
       {

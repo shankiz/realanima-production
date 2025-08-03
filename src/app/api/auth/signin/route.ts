@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
-import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,15 +21,14 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
-    let { uid, email, name, picture, email_verified } = decodedToken;
+    const { uid, email, name, picture, email_verified } = decodedToken;
     console.log('[SIGNIN] Token verified for user:', uid);
 
     // Ensure user exists in Firebase Auth Admin
-    let userRecord;
     try {
-      userRecord = await adminAuth.getUser(uid);
+      await adminAuth.getUser(uid);
       console.log('[SIGNIN] User record found in Firebase Auth');
-    } catch (authError: any) {
+    } catch (authError: unknown) {
       console.error('[SIGNIN] User not found in Firebase Auth:', authError.message);
       return NextResponse.json({ 
         error: 'User authentication failed', 
@@ -57,7 +55,7 @@ export async function POST(request: NextRequest) {
         } else {
           freshUserRecord = existingUserByEmail;
         }
-      } catch (emailError: any) {
+      } catch {
         // User doesn't exist by email, try to get by UID
         try {
           freshUserRecord = await adminAuth.getUser(uid);
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
               emailVerified: email_verified || false,
             });
             console.log(`[SIGNIN] Created missing user record: ${uid}`);
-          } catch (createError: any) {
+          } catch (createError: unknown) {
             console.error(`[SIGNIN] Failed to create user record: ${uid}`, createError.message);
             return NextResponse.json({ error: 'Failed to create user session' }, { status: 500 });
           }
@@ -96,7 +94,7 @@ export async function POST(request: NextRequest) {
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
 
-    let userData: any;
+    let userData: Record<string, unknown>;
     let isNewUser = false;
 
     if (!userDoc.exists) {
@@ -126,7 +124,7 @@ export async function POST(request: NextRequest) {
       console.log('[SIGNIN] User exists, updating if needed...');
       // Update existing user with fresh data
       userData = userDoc.data();
-      const updateData: any = {};
+      const updateData: Record<string, unknown> = {};
 
       const currentName = name || freshUserRecord.displayName;
       const currentPhoto = picture || freshUserRecord.photoURL;
@@ -160,7 +158,7 @@ export async function POST(request: NextRequest) {
     try {
       sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
       console.log('[SIGNIN] Session cookie created successfully');
-    } catch (cookieError: any) {
+    } catch (cookieError: unknown) {
       console.error('[SIGNIN] Failed to create session cookie:', cookieError.message);
       return NextResponse.json({ 
         error: 'Failed to create session', 
