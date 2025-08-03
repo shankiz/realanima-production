@@ -13,7 +13,7 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     const handleEmailVerification = async () => {
-      const actionCode = searchParams.get('oobCode');
+      const actionCode = searchParams?.get('oobCode');
 
       if (!actionCode) {
         setStatus('error');
