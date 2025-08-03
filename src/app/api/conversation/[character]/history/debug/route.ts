@@ -51,10 +51,11 @@ export async function GET(
     return NextResponse.json(debugInfo);
 
   } catch (error) {
-    console.error('Debug endpoint error:', error);
+    console.error('Debug route error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
       error: 'Debug failed',
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 });
   }
 }
