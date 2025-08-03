@@ -91,7 +91,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
     await adminDb.collection('users').doc(uid).update({
       messagesLeft: newMessagesLeft
     });
-    userData.messagesLeft = newMessagesLeft;
+    
+    // Update userData if it exists
+    if (userData) {
+      userData.messagesLeft = newMessagesLeft;
+    }
 
     // Save conversation using single-document-per-session approach
     const conversationRef = adminDb.collection('conversations').doc(activeSessionId);
