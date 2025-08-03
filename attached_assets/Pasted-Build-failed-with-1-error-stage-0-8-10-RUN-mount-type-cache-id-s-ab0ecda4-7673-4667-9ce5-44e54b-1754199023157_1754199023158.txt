@@ -1,0 +1,216 @@
+Build failed with 1 error
+[stage-0 8/10] RUN --mount=type=cache,id=s/ab0ecda4-7673-4667-9ce5-44e54bc862af-next/cache,target=/app/.next/cache --mount=type=cache,id=s/ab0ecda4-7673-4667-9ce5-44e54bc862af-node_modules/cache,target=/app/node_modules/.cache npm run build
+"npm run build" did not complete successfully: exit code: 1
+
+View in context
+
+npm warn config production Use `--omit=dev` instead.
+
+> anime-character-chat@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+   ▲ Next.js 15.3.2
+
+
+   Creating an optimized production build ...
+
+ ⚠ Compiled with warnings in 8.0s
+./src/app/api/auth/session/route.ts
+Attempted import error: 'getUserData' is not exported from '@/lib/firebase/admin-helpers' (imported as 'getUserData').
+
+Import trace for requested module:
+./src/app/api/auth/session/route.ts
+./src/app/api/auth/session/route.ts
+Attempted import error: 'updateUserActivity' is not exported from '@/lib/firebase/admin-helpers' (imported as 'updateUserActivity').
+
+Import trace for requested module:
+./src/app/api/auth/session/route.ts
+
+
+ ✓ Compiled successfully in 12.0s
+
+   Linting and checking validity of types ...
+
+Failed to compile.
+./src/app/api/auth/session/route.ts
+14:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/auth/signin/route.ts
+3:10  Error: 'cookies' is defined but never used.  @typescript-eslint/no-unused-vars
+17:26  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+25:11  Error: 'uid' is never reassigned. Use 'const' instead.  prefer-const
+25:16  Error: 'email' is never reassigned. Use 'const' instead.  prefer-const
+25:23  Error: 'name' is never reassigned. Use 'const' instead.  prefer-const
+25:29  Error: 'picture' is never reassigned. Use 'const' instead.  prefer-const
+25:38  Error: 'email_verified' is never reassigned. Use 'const' instead.  prefer-const
+31:7  Error: 'userRecord' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+33:25  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+60:16  Error: 'emailError' is defined but never used.  @typescript-eslint/no-unused-vars
+60:28  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+65:32  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+78:33  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+89:30  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+99:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+129:25  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+163:27  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/auth/signout/route.ts
+4:28  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/auth/sync-verification/route.ts
+54:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/auth/verify-email/route.ts
+21:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+43:16  Error: 'tokenError' is defined but never used.  @typescript-eslint/no-unused-vars
+43:28  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/characters/[id]/route.ts
+4:8  Error: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/characters/route.ts
+8:27  Error: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/conversation/[character]/chat/route.ts
+58:9  Error: 'activeSessionId' is never reassigned. Use 'const' instead.  prefer-const
+./src/app/api/conversation/[character]/history/[id]/route.ts
+44:9  Error: 'sessionData' is never reassigned. Use 'const' instead.  prefer-const
+./src/app/api/conversation/[character]/history/route.ts
+149:17  Error: 'lastUserMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+150:17  Error: 'lastAssistantMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+257:17  Error: 'lastUserMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+258:17  Error: 'lastAssistantMessage' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/conversation/[character]/voice/route.ts
+52:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/credits/webhook/route.ts
+2:10  Error: 'adminAuth' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/referral/claim/route.ts
+2:10  Error: 'adminAuth' is defined but never used.  @typescript-eslint/no-unused-vars
+5:28  Error: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/referral/code/route.ts
+9:27  Error: 'req' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/subscription/approve/route.ts
+4:10  Error: 'doc' is defined but never used.  @typescript-eslint/no-unused-vars
+4:15  Error: 'setDoc' is defined but never used.  @typescript-eslint/no-unused-vars
+4:23  Error: 'updateDoc' is defined but never used.  @typescript-eslint/no-unused-vars
+5:10  Error: 'db' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/subscription/cancel/route.ts
+86:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/subscription/charge/route.ts
+75:13  Error: 'planCredits' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/subscription/create/route.ts
+143:55  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/subscription/cron/active-subscriptions/route.ts
+5:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/subscription/cron/route.ts
+6:11  Error: 'authHeader' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+7:11  Error: 'cronSecret' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+43:84  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/subscription/process-recurring/route.ts
+9:28  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+53:76  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/api/subscription/status/route.ts
+3:10  Error: 'getUserDataAdmin' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/api/voice/tts/route.ts
+171:11  Error: 'userId' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/app/auth/signin/page.tsx
+51:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+101:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+118:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+271:20  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+./src/app/auth/signup/page.tsx
+48:21  Error: 'userData' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+51:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+68:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/auth/verify/page.tsx
+9:9  Error: 'router' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+47:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/app/chat/page.tsx
+7:32  Error: 'axios' is defined but never used.  @typescript-eslint/no-unused-vars
+9:34  Error: 'CHARACTER_CONTEXTS' is defined but never used.  @typescript-eslint/no-unused-vars
+12:32  Error: 'BillingSection' is defined but never used.  @typescript-eslint/no-unused-vars
+158:68  Error: 'loading' is defined but never used.  @typescript-eslint/no-unused-vars
+160:46  Error: 'setCharacters' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+283:34  Error: 'credits' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+305:34  Error: 'voiceVolume' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+306:34  Error: 'speechDetected' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+309:33  Error: 'audioRef' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+312:34  Error: 'isProcessing' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+313:48  Error: 'setCurrentAudio' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+446:33  Error: 'purchaseCredits' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+481:34  Error: 'analyserNode' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+482:34  Error: 'isProcessingAudio' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+484:34  Error: 'voiceDetectionActive' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+524:34  Error: 'planLoaded' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+616:30  Warning: React Hook useEffect has a missing dependency: 'fetchBillingData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+1095:93  Error: 'timestamp' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+1571:42  Error: 'parseError' is defined but never used.  @typescript-eslint/no-unused-vars
+1934:33  Error: 'playBeepSound' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+1936:89  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+2084:30  Warning: React Hook useEffect has a missing dependency: 'startVoiceRecording'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+2154:33  Error: 'initializeVoiceDetection' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2187:33  Error: 'startVoiceCall' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+2478:83  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+2567:43  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+3130:76  Error: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+3819:45  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+3819:69  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+4154:45  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+4297:77  Error: A `require()` style import is forbidden.  @typescript-eslint/no-require-imports
+./src/app/conversation/[character]/chat/route.ts
+18:13  Error: 'message' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+18:22  Error: 'character' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/app/page.tsx
+6:29  Error: 'CardDescription' is defined but never used.  @typescript-eslint/no-unused-vars
+6:46  Error: 'CardFooter' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/subscription/page.tsx
+315:31  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/app/subscription/success/page.tsx
+19:9  Error: 'subscriptionStatus' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/components/BillingSection.tsx
+8:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+79:6  Warning: React Hook useEffect has a missing dependency: 'fetchSubscriptionData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+./src/components/FirstResponseVoiceModal.tsx
+65:45  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+./src/components/PayPalCheckout.tsx
+24:42  Error: 'credits' is defined but never used.  @typescript-eslint/no-unused-vars
+24:51  Error: 'amount' is defined but never used.  @typescript-eslint/no-unused-vars
+76:35  Error: 'actions' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/components/SplashCursor.tsx
+78:9  Error: 'pointers' is never reassigned. Use 'const' instead.  prefer-const
+80:9  Error: 'config' is never reassigned. Use 'const' instead.  prefer-const
+153:39  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+156:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+157:20  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+312:11  Error: 'uniforms' is never reassigned. Use 'const' instead.  prefer-const
+974:11  Error: 'aspect' is never reassigned. Use 'const' instead.  prefer-const
+./src/components/ui/button.tsx
+42:32  Error: 'asChild' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/components/ui/card.tsx
+5:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+./src/components/ui/modal.tsx
+47:9  Error: 'getConfirmButtonStyles' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/lib/db.ts
+2:10  Error: 'MongoClient' is defined but never used.  @typescript-eslint/no-unused-vars
+11:25  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+14:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+./src/lib/firebase/auth.ts
+9:11  Error: 'FirebaseUser' is defined but never used.  @typescript-eslint/no-unused-vars
+178:16  Error: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/services/GeminiService.ts
+8:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+9:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+67:11  Error: 'chatHistory' is never reassigned. Use 'const' instead.  prefer-const
+./src/services/PayPalSubscriptionService.ts
+481:28  Error: 'subscriptionId' is defined but never used.  @typescript-eslint/no-unused-vars
+./src/services/SimplifiedVoiceService.ts
+186:13  Error: 'source' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+./src/services/xendit/XenditService.ts
+66:26  Error: 'requestBody' is defined but never used.  @typescript-eslint/no-unused-vars
+66:39  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+66:44  Error: 'signature' is defined but never used.  @typescript-eslint/no-unused-vars
+66:63  Error: 'webhookKey' is defined but never used.  @typescript-eslint/no-unused-vars
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
