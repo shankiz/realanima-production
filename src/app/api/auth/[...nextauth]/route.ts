@@ -1,8 +1,10 @@
 
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { FirebaseAdapter } from '@auth/firebase-adapter';
-import { adminAuth } from '@/lib/firebase/admin';
+import { MongoDBAdapter } from '@auth/mongodb-adapter';
+import { MongoClient } from 'mongodb';
+
+const client = new MongoClient(process.env.MONGODB_URI || 'mongodb://localhost:27017/anime-chat');
 
 const handler = NextAuth({
   providers: [
@@ -11,7 +13,7 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  adapter: FirebaseAdapter(adminAuth),
+  adapter: MongoDBAdapter(client),
   session: {
     strategy: 'jwt',
   },

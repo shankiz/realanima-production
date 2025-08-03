@@ -1,48 +1,44 @@
-# Placeholder backend code to demonstrate message deduction fixes.
 
-from flask import Flask, request, jsonify
-import time
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { User } from '@/models/User';
+import { connectToDatabase } from '@/lib/db';
 
-app = Flask(__name__)
-
-# Mock database (replace with actual database)
-user_data = {
-    "user1": {
-        "messagesLeft": 10,
-        "currentPlan": "basic"
-    }
-}
-
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    user_id = request.json.get('user_id')
-    message = request.json.get('message')
-
-    if user_id not in user_data:
-        return jsonify({"error": "User not found"}), 404
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession();
     
-    user = user_data[user_id]
-    messages_left = user["messagesLeft"]
-    current_plan = user["currentPlan"]
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if current_plan != 'ultimate' and messages_left <= 0:
-        return jsonify({"error": "Not enough messages left"}), 400
+    await connectToDatabase();
+    
+    const body = await request.json();
+    const { message, character } = body;
 
-    # Simulate message sending delay
-    time.sleep(1)
+    // Find user and deduct message
+    const user = await User.findOne({ email: session.user.email });
+    
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
-    response = f"Message sent successfully: {message}"
+    if (user.messagesRemaining <= 0) {
+      return NextResponse.json({ error: 'No messages remaining' }, { status: 403 });
+    }
 
-    # Update message count after successful response
-    final_messages_left = messages_left
-    if current_plan != 'ultimate':
-        final_messages_left = max(0, messages_left - 1)
-        user_data[user_id]["messagesLeft"] = final_messages_left
+    // Deduct message
+    user.messagesRemaining -= 1;
+    await user.save();
 
-    return jsonify({
-        "response": response,
-        "messagesLeft": -1 if current_plan == 'ultimate' else final_messages_left
-    })
+    return NextResponse.json({ 
+      success: true, 
+      messagesRemaining: user.messagesRemaining 
+    });
 
-if __name__ == '__main__':
-    app.run(debug=True)
+  } catch (error) {
+    console.error('Error in conversation route:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
