@@ -49,7 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
     }
 
     // Get character context
-    const characterContext = CHARACTER_CONTEXTS[character];
+    const characterContext = CHARACTER_CONTEXTS[character as keyof typeof CHARACTER_CONTEXTS];
     if (!characterContext) {
       return NextResponse.json({ error: 'Character not found' }, { status: 404 });
     }
