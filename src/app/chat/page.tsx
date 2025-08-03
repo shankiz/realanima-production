@@ -23,8 +23,8 @@ import { useSearchParams } from 'next/navigation';
 
                           // Close menu when clicking outside
                           useEffect(() => {
-                            const handleClickOutside = (event) => {
-                              if (menuRef.current && !menuRef.current.contains(event.target)) {
+                            const handleClickOutside = (event: MouseEvent) => {
+                              if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                                 setShowMenu(false);
                               }
                             };
