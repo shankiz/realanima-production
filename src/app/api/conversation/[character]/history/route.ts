@@ -183,7 +183,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
       });
 
     } catch (indexError) {
-      console.warn('⚠️ OrderBy query failed, trying without orderBy:', indexError.message);
+      console.warn('⚠️ OrderBy query failed, trying without orderBy:', indexError instanceof Error ? indexError.message : String(indexError));
 
       // Fallback: fetch without orderBy
       const conversationsSnapshot = await adminDb
