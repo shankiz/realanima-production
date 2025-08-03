@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error: unknown) {
     console.error('[SYNC] Error syncing verification status:', error);
-    return NextResponse.json({ error: 'Sync failed: ' + error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Sync failed: ' + errorMessage }, { status: 500 });
   }
 }
