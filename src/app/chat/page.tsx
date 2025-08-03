@@ -4326,7 +4326,7 @@ import { useSearchParams } from 'next/navigation';
                                             onClick={() => {
                                               // Generate new session ID with timestamp for uniqueness
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
-                                              const initialMessages = [{ role: 'assistant', content: getInitialMessage(character) }];
+                                              const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
 
                                               // Clear any existing chat cache
                                               if (voiceService) {
@@ -4352,7 +4352,7 @@ import { useSearchParams } from 'next/navigation';
 
                                               // Use timeout to ensure clean state transition
                                               setTimeout(() => {
-                                                setMessages(initialMessages.map(msg => ({ ...msg, role: msg.role === 'user' ? 'user' : 'assistant' })));
+                                                setMessages(initialMessages);
                                                 setShowChatSidebar(false);
 
                                                 // Save new session to localStorage with character validation
