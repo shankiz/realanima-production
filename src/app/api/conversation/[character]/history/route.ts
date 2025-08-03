@@ -134,7 +134,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
         .filter(session => {
           // Only include sessions that have actual messages
           return session.messages.length > 0 && 
-                 session.messages.some(msg => msg.content && msg.content.trim().length > 0);
+                 session.messages.some((msg: any) => msg.content && msg.content.trim().length > 0);
         })
         .map(session => {
           // Sort messages by timestamp
@@ -242,7 +242,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
         .filter(session => {
           // Only include sessions that have actual messages
           return session.messages.length > 0 && 
-                 session.messages.some(msg => msg.content && msg.content.trim().length > 0);
+                 session.messages.some((msg: any) => msg.content && msg.content.trim().length > 0);
         })
         .map(session => {
           session.messages.sort((a, b) => {
