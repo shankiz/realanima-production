@@ -88,7 +88,10 @@ import { useSearchParams } from 'next/navigation';
                         };
 
                         // Character card with minimal design
-                        const CharacterCard = ({ character, onClick }) => {
+                        const CharacterCard = ({ character, onClick }: {
+                          character: { id: string; name: string; description: string; };
+                          onClick: () => void;
+                        }) => {
                           // Characters that should have the NEW tag
                           const newCharacters = ['gojo', 'levi', 'mikasa', 'lawliet', 'hisoka', 'reigen', 'mob', 'kaneki'];
                           const isNew = newCharacters.includes(character.id);
