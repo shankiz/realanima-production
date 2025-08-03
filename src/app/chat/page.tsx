@@ -1278,7 +1278,7 @@ import { useSearchParams } from 'next/navigation';
                               return;
                             }
 
-                            const userMessage = { role: 'user', content: currentInput };
+                            const userMessage: Message = { role: 'user', content: currentInput };
                             setMessages(prev => [...prev, userMessage]);
                             
                             // Clear both the ref and state
