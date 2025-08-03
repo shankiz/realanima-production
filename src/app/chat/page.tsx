@@ -19,7 +19,7 @@ import { useSearchParams } from 'next/navigation';
                           currentCharacter: string | null;
                         }) => {
                           const [showMenu, setShowMenu] = useState(false);
-                          const menuRef = useRef(null);
+                          const menuRef = useRef<HTMLDivElement>(null);
 
                           // Close menu when clicking outside
                           useEffect(() => {
