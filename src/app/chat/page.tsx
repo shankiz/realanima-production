@@ -4352,7 +4352,7 @@ import { useSearchParams } from 'next/navigation';
 
                                               // Use timeout to ensure clean state transition
                                               setTimeout(() => {
-                                                setMessages(initialMessages);
+                                                setMessages(initialMessages.map(msg => ({ ...msg, role: msg.role === 'user' ? 'user' : 'assistant' })));
                                                 setShowChatSidebar(false);
 
                                                 // Save new session to localStorage with character validation
