@@ -37,8 +37,14 @@ export async function GET(request: NextRequest) {
       const { GET: getActiveSubscriptions } = await import('./active-subscriptions/route');
 
       const activeSubsResponse = await getActiveSubscriptions();
-      let activeSubscriptions = [];
-      let summary = {};
+      let activeSubscriptions: any[] = [];
+      let summary: {
+        totalSubscriptions?: number;
+        activeSubscriptions?: number;
+        cancelledButActive?: number;
+        premiumUsers?: number;
+        ultimateUsers?: number;
+      } = {};
 
       if (activeSubsResponse.ok) {
         const activeData = await activeSubsResponse.json();
