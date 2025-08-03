@@ -19,10 +19,11 @@ export async function POST(request: NextRequest) {
       await applyActionCode(auth, actionCode);
       console.log('[VERIFY_EMAIL] Email verification successful');
     } catch (error: unknown) {
-      console.error('[VERIFY_EMAIL] Failed to apply action code:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[VERIFY_EMAIL] Failed to apply action code:', errorMessage);
       return NextResponse.json({ 
         error: 'Invalid or expired verification code',
-        details: error.message 
+        details: errorMessage 
       }, { status: 400 });
     }
 
