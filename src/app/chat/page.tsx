@@ -295,7 +295,7 @@ import { useSearchParams } from 'next/navigation';
                           const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
                           const [voiceGenerationError, setVoiceGenerationError] = useState(false);
                           const [audioPlayingForMessage, setAudioPlayingForMessage] = useState<number | null>(null);
-                          const chatEndRef = useRef(null);
+                          const chatEndRef = useRef<HTMLDivElement>(null);
                           const [messagesLeft, setMessagesLeft] = useState<number | null>(null);
                           const [credits, setCredits] = useState<number | null>(null);
                           const [sessionId, setSessionId] = useState('');
