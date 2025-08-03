@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
     } else {
       console.log('[SIGNIN] User exists, updating if needed...');
       // Update existing user with fresh data
-      userData = userDoc.data();
+      userData = userDoc.data() as Record<string, unknown>;
       const updateData: Record<string, unknown> = {};
 
       const currentName = name || freshUserRecord.displayName;
