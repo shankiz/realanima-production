@@ -21,10 +21,10 @@ export default function SignInPage() {
   const [showVerifiedMessage, setShowVerifiedMessage] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect');
+  const redirectUrl = searchParams?.get('redirect');
 
   useEffect(() => {
-    if (searchParams.get('verified') === 'true') {
+    if (searchParams?.get('verified') === 'true') {
       setShowVerifiedMessage(true);
       // Clear the URL parameter
       router.replace('/auth/signin', { scroll: false });
