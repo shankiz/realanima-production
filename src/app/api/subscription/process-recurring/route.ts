@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 
-export async function processRecurringBilling(request: Request) {
-  return POST(request as NextRequest);
-}
-
 export async function POST(request: NextRequest) {
   try {
     console.log('🔄 Processing all recurring charges...');
