@@ -1024,7 +1024,7 @@ import { useSearchParams } from 'next/navigation';
                             }
 
                             const now = new Date();
-                            const diffInSeconds = Math.floor((now - date) / 1000);
+                            const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
                             console.log('⏰ Time difference:', diffInSeconds, 'seconds');
 
