@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     console.log('⏰ Timestamp:', new Date().toISOString());
 
     // Import and call the recurring billing processor directly
-    const { processRecurringBilling } = await import('../process-recurring/route');
+    const { POST: processRecurringBilling } = await import('../process-recurring/route');
 
     // Call the function directly instead of making HTTP request
     const mockRequest = new Request('http://localhost/api/subscription/process-recurring', {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    const billingResponse = await processRecurringBilling(mockRequest);
+    const billingResponse = await processRecurringBilling(mockRequest as any);
     const result = await billingResponse.json();
 
     if (billingResponse.ok) {
