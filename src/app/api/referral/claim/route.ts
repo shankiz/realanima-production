@@ -27,7 +27,7 @@ export async function POST() {
     }
 
     // Calculate total rewards
-    const totalRewards = user.pendingReferralRewards.reduce((sum, reward) => sum + reward.amount, 0);
+    const totalRewards = user.pendingReferralRewards.reduce((sum: number, reward: any) => sum + reward.amount, 0);
 
     // Add diamonds to user
     user.diamonds += totalRewards;
