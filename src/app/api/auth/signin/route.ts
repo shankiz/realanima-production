@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         if (existingUserByEmail.uid !== uid) {
           console.log(`[SIGNIN] UID mismatch detected: token ${uid} vs existing ${existingUserByEmail.uid}`);
           console.log(`[SIGNIN] Multiple Firebase Auth accounts detected for email: ${email}`);
-          
+
           // Return error requiring proper re-authentication with the correct account
           return NextResponse.json({ 
             error: 'Account conflict detected',
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         updateData.isVerified = currentVerified;
         console.log(`[SIGNIN] Updating verification status: ${userData.isVerified} -> ${currentVerified}`);
       }
-      
+
       // Ensure lastMessageReset field exists for all users
       if (!userData.lastMessageReset) {
         updateData.lastMessageReset = new Date();
