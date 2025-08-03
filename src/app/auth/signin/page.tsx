@@ -49,18 +49,19 @@ export default function SignInPage() {
       router.push(redirectUrl || '/chat');
     } catch (error: unknown) {
       console.error('Sign in error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
 
-      if (error.message.includes('verify your email')) {
+      if (errorMessage.includes('verify your email')) {
         setShowResendOption(true);
         setError('Please verify your email before signing in. Check your inbox and spam folder.');
-      } else if (error.message.includes('user-not-found')) {
+      } else if (errorMessage.includes('user-not-found')) {
         setError('No account found with this email address.');
-      } else if (error.message.includes('wrong-password') || error.message.includes('invalid-credential')) {
+      } else if (errorMessage.includes('wrong-password') || errorMessage.includes('invalid-credential')) {
         setError('Incorrect email or password.');
-      } else if (error.message.includes('too-many-requests')) {
+      } else if (errorMessage.includes('too-many-requests')) {
         setError('Too many failed attempts. Please try again later.');
       } else {
-        setError(error.message || 'Failed to sign in');
+        setError(errorMessage || 'Failed to sign in');
       }
     } finally {
       setLoading(false);
@@ -78,7 +79,8 @@ export default function SignInPage() {
       router.push(redirectUrl || '/chat');
     } catch (error: unknown) {
       console.error('Google sign-in error:', error);
-      setError(error.message || 'Failed to sign in with Google');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage || 'Failed to sign in with Google');
     } finally {
       setGoogleLoading(false);
     }
@@ -98,7 +100,8 @@ export default function SignInPage() {
       setResendMessage('Verification email sent! Check your inbox and spam folder.');
       setShowResendOption(false);
     } catch (error: unknown) {
-      setError(error.message || 'Failed to resend verification email');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage || 'Failed to resend verification email');
     } finally {
       setResendLoading(false);
     }
@@ -115,7 +118,8 @@ export default function SignInPage() {
       setResetEmailSent(true);
       setError('');
     } catch (error: unknown) {
-      setError(error.message || 'Failed to send reset email');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage || 'Failed to send reset email');
     }
   };
 
