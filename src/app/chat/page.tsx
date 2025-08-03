@@ -12,7 +12,12 @@ import { useSearchParams } from 'next/navigation';
                         import BillingSection from '@/components/BillingSection';
 
                         // Recent conversation item component with delete option
-                        const RecentConversationItem = ({ conversation, onClick, onDelete, currentCharacter }) => {
+                        const RecentConversationItem = ({ conversation, onClick, onDelete, currentCharacter }: {
+                          conversation: any;
+                          onClick: (id: string) => void;
+                          onDelete: (id: string) => void;
+                          currentCharacter: string | null;
+                        }) => {
                           const [showMenu, setShowMenu] = useState(false);
                           const menuRef = useRef(null);
 
