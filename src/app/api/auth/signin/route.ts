@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         try {
           freshUserRecord = await adminAuth.getUser(uid);
           console.log(`[SIGNIN] Fresh user record - emailVerified: ${freshUserRecord.emailVerified}`);
-        } catch (getUserError: any) {
+        } catch (getUserError: unknown) {
           console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError.message);
 
           // If we can't get the user record, but we have a valid token, create it
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       try {
         freshUserRecord = await adminAuth.getUser(uid);
         console.log(`[SIGNIN] Fresh user record - emailVerified: ${freshUserRecord.emailVerified}`);
-      } catch (getUserError: any) {
+      } catch (getUserError: unknown) {
         console.error(`[SIGNIN] Failed to get fresh user record: ${uid}`, getUserError.message);
         return NextResponse.json({ error: 'Failed to create user session' }, { status: 500 });
       }

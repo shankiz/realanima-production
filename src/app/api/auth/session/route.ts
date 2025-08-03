@@ -11,7 +11,7 @@ interface DecodedToken {
   email_verified?: boolean;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = cookies();
     const sessionCookie = cookieStore.get('session');

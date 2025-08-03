@@ -38,3 +38,28 @@ export async function updateUserCredits(userId: string, credits: number) {
     throw error;
   }
 }
+
+// Fix missing exports
+export async function getUserData(userId: string) {
+  try {
+    const userDoc = await adminDb.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      return null;
+    }
+    return userDoc.data();
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    throw error;
+  }
+}
+
+export async function updateUserActivity(userId: string) {
+  try {
+    await adminDb.collection('users').doc(userId).update({
+      lastActivity: new Date()
+    });
+  } catch (error) {
+    console.error('Error updating user activity:', error);
+    throw error;
+  }
+}
