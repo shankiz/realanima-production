@@ -163,7 +163,10 @@ import { useSearchParams } from 'next/navigation';
                         };
 
                         // Minimalist discover view
-                        const DiscoverView = ({ onSelectCharacter, loading }) => {
+                        const DiscoverView = ({ onSelectCharacter, loading }: {
+                          onSelectCharacter: (characterId: string) => void;
+                          loading: boolean;
+                        }) => {
                           const { user } = useAuth();
                           const [characters, setCharacters] = useState([
                             // Free Characters
