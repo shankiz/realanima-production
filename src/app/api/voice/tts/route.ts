@@ -6,7 +6,7 @@ const FISH_AUDIO_API_KEY = process.env.FISH_AUDIO_API_KEY;
 const FISH_AUDIO_API_URL = 'https://api.fish.audio/v1/tts';
 
 // Character voice mappings for Fish.Audio
-const VOICE_MAPPINGS = {
+const VOICE_MAPPINGS: Record<string, string> = {
   'gojo': '323dc6ca4f4f491996383de8be396425',
   'mikasa': '7ac4505f7f714a9181681b6c367f33bd',
   'tanjiro': '5926dcd0aae6441c8355ecb3b8bf28bb',
