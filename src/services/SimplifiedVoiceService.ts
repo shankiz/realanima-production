@@ -1,7 +1,4 @@
-
 import { CHARACTER_CONTEXTS } from './CharacterContexts';
-
-export { SimplifiedVoiceService };
 
 export class SimplifiedVoiceService {
   // Live transcription properties (merged from LiveTranscriptionService)
