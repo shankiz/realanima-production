@@ -902,7 +902,7 @@ import { useSearchParams } from 'next/navigation';
 
                                           setSessionId(conversationId);
                                           setTimeout(() => {
-                                              setMessages(initialMessages);
+                                            setMessages(initialMessages.map(msg => ({ ...msg, role: msg.role === 'user' ? 'user' : 'assistant' })));
 
                                               // Save to localStorage
                                               try {
