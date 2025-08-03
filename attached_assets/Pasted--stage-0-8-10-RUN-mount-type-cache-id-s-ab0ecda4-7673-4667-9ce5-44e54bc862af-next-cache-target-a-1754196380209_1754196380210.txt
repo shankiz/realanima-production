@@ -1,0 +1,66 @@
+[stage-0 8/10] RUN --mount=type=cache,id=s/ab0ecda4-7673-4667-9ce5-44e54bc862af-next/cache,target=/app/.next/cache --mount=type=cache,id=s/ab0ecda4-7673-4667-9ce5-44e54bc862af-node_modules/cache,target=/app/node_modules/.cache npm run build
+"npm run build" did not complete successfully: exit code: 1
+
+View in context
+
+npm warn config production Use `--omit=dev` instead.
+
+> anime-character-chat@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.3.2
+
+
+   Creating an optimized production build ...
+
+Failed to compile.
+
+./src/services/PayPalSubscriptionService.ts
+Error:   [31mx[0m Expected '}', got '<eof>'
+
+     ,-[/app/src/services/PayPalSubscriptionService.ts:481:1]
+ 478 |     }
+ 479 |   }
+ 480 | 
+ 481 |   async cancelSubscription(subscriptionId: string): Promise<{ success: boolean; error?: string }> {
+     :                                                                                                   ^
+     `----
+Caused by:
+    Syntax Error
+Import trace for requested module:
+./src/services/PayPalSubscriptionService.ts
+./src/components/PayPalSubscription.tsx
+./src/app/subscription/page.tsx
+./src/services/SimplifiedVoiceService.ts
+Module parse failed: Duplicate export 'SimplifiedVoiceService' (3:13)
+
+File was processed with these loaders:
+ * ./node_modules/next/dist/build/webpack/loaders/next-flight-client-module-loader.js
+ * ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+You may need an additional loader to handle the result of these loaders.
+| import { CHARACTER_CONTEXTS } from './CharacterContexts';
+| export { SimplifiedVoiceService };
+> export class SimplifiedVoiceService {
+|     constructor(deepgramApiKey, geminiApiKey){
+|         // Live transcription properties (merged from LiveTranscriptionService)
+Import trace for requested module:
+./src/services/SimplifiedVoiceService.ts
+./src/app/chat/page.tsx
+./src/app/api/characters/[id]/route.ts
+Module not found: Can't resolve '@/lib/db'
+https://nextjs.org/docs/messages/module-not-found
+./src/app/api/characters/[id]/route.ts
+Module not found: Can't resolve '@/models/Character'
+https://nextjs.org/docs/messages/module-not-found
+./src/app/api/characters/[id]/route.ts
+Module not found: Can't resolve '@/app/api/auth/[...nextauth]/route'
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
