@@ -1180,7 +1180,7 @@ import { useSearchParams } from 'next/navigation';
                               // No valid saved session found, create new one
                               console.log('🆕 Creating new chat session for character:', character);
                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
-                              const initialMessages = [{ role: 'assistant', content: getInitialMessage(character) }];
+                              const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
 
                               // Use setTimeout to ensure proper state clearing and prevent race conditions
                               setTimeout(() => {
@@ -1201,7 +1201,7 @@ import { useSearchParams } from 'next/navigation';
                               console.error('Error loading/saving session:', error);
                               // Fallback to new session
                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
-                              const initialMessages = [{ role: 'assistant', content: getInitialMessage(character) }];
+                              const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
 
                               setTimeout(() => {
                                 setSessionId(newSessionId);
