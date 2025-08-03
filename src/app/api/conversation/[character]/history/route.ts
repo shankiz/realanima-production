@@ -285,10 +285,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
 
   } catch (error) {
     console.error('Error fetching chat history:', error);
-    console.error('Error details:', error.message, error.stack);
+    console.error('Error details:', error instanceof Error ? error.message : String(error), error instanceof Error ? error.stack : undefined);
     return NextResponse.json({ 
       error: 'Internal server error',
-      details: error.message 
+      details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
 }
