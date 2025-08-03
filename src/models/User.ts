@@ -64,3 +64,6 @@ const UserSchema = new mongoose.Schema({
 });
 
 export const User = mongoose.models.User || mongoose.model('User', UserSchema);
+
+// Add default export for backward compatibility
+export default User;

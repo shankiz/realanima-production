@@ -32,3 +32,6 @@ const CharacterSchema = new mongoose.Schema({
 });
 
 export const Character = mongoose.models.Character || mongoose.model('Character', CharacterSchema);
+
+// Add default export for backward compatibility
+export default Character;
