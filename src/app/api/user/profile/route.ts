@@ -50,6 +50,11 @@ export async function GET(request: NextRequest) {
     }
 
     const userData = userDoc.data();
+    
+    if (!userData) {
+      return NextResponse.json({ error: 'User data not found' }, { status: 404 });
+    }
+
     const currentPlan = userData.currentPlan || 'free';
     const messageLimit = MESSAGE_LIMITS[currentPlan as keyof typeof MESSAGE_LIMITS] || MESSAGE_LIMITS.free;
 
