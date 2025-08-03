@@ -548,4 +548,29 @@ export class SimplifiedVoiceService {
       return null;
     }
   }
+
+  // Method for getting AI response to user message (used by voice route)
+  async get_response(character: string, message: string): Promise<string | null> {
+    try {
+      console.log('🔄 [SIMPLIFIED] Getting response for character:', character, 'message:', message);
+      
+      // Set the character context
+      this.setCharacter(character);
+      
+      // Get AI response using existing method
+      const response = await this.getGeminiResponse(message);
+      
+      if (!response) {
+        console.error('❌ [SIMPLIFIED] Failed to get AI response');
+        return null;
+      }
+
+      console.log('✅ [SIMPLIFIED] Generated response:', response);
+      return response;
+
+    } catch (error) {
+      console.error('❌ [SIMPLIFIED] get_response error:', error);
+      return null;
+    }
+  }
 }
