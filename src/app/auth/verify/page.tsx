@@ -6,7 +6,7 @@ import { applyActionCode, auth } from '@/lib/firebase/config';
 import Link from 'next/link';
 
 export default function VerifyEmailPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [error, setError] = useState('');
@@ -44,7 +44,7 @@ export default function VerifyEmailPage() {
           }
         }
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('❌ Email verification failed:', error);
         setStatus('error');
 

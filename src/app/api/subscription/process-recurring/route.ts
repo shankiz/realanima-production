@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 
@@ -33,12 +32,12 @@ export async function POST(request: NextRequest) {
       }
 
       const nextBillingDate = new Date(subscription.nextBillingDate);
-      
+
       // Check if it's time to charge this user
       if (now >= nextBillingDate) {
         try {
           console.log(`💳 Processing charge for user ${userId}`);
-          
+
           // Import and call the charge function directly instead of making HTTP request
           const { POST: chargeFunction } = await import('../charge/route');
           const mockChargeRequest = new Request('http://localhost/api/subscription/charge', {
@@ -49,22 +48,22 @@ export async function POST(request: NextRequest) {
               forceCharge: true,
             }),
           });
-          
+
           const chargeResponse = await chargeFunction(mockChargeRequest as any);
           const chargeResult = await chargeResponse.json();
-          
+
           results.push({
             userId,
             success: chargeResponse.ok,
             result: chargeResult,
           });
 
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(`❌ Failed to charge user ${userId}:`, error);
           results.push({
             userId,
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? (error as Error).message : 'Unknown error',
           });
         }
       }
@@ -81,12 +80,12 @@ export async function POST(request: NextRequest) {
       }
 
       const endDate = new Date(subscription.nextBillingDate);
-      
+
       // Check if access should end
       if (now >= endDate) {
         try {
           console.log(`⬇️ Downgrading expired cancelled subscription for user ${userId}`);
-          
+
           await adminDb.collection('users').doc(userId).update({
             currentPlan: 'free',
             credits: 10, // Reset to free tier credits
@@ -101,13 +100,13 @@ export async function POST(request: NextRequest) {
             action: 'downgraded_expired',
           });
 
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(`❌ Failed to downgrade expired user ${userId}:`, error);
           results.push({
             userId,
             success: false,
             action: 'downgrade_failed',
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? (error as Error).message : 'Unknown error',
           });
         }
       }
@@ -121,10 +120,10 @@ export async function POST(request: NextRequest) {
       results,
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Error processing recurring charges:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: error instanceof Error ? (error as Error).message : 'Internal server error' },
       { status: 500 }
     );
   }

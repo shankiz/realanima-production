@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
 
     // Collect all messages from the session
     const allMessages = [];
-    let sessionData = {
+    const sessionData = {
       id: id,
       character: character,
       createdAt: null,

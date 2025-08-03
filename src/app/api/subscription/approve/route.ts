@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PayPalSubscriptionService, SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+// import { doc, setDoc, updateDoc } from 'firebase/firestore';
+// import { db } from '@/lib/firebase/config';
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase/admin';
 
@@ -90,7 +89,7 @@ export async function POST(request: NextRequest) {
     });
 
     const planData = await planResponse.json();
-    
+
     if (!planResponse.ok) {
       console.error('PayPal plan creation error:', planData);
       return NextResponse.json({ error: 'Failed to create billing plan' }, { status: 500 });
@@ -143,7 +142,7 @@ export async function POST(request: NextRequest) {
       approvalUrl: subscriptionData.links.find((link: any) => link.rel === 'approve')?.href
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Subscription creation error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

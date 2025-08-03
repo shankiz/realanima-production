@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     // Verify this is coming from a legitimate cron service
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET || 'default-secret';
+    // const authHeader = request.headers.get('authorization');
+    // const cronSecret = process.env.CRON_SECRET;
 
     // TODO: Re-enable auth in production
     // if (authHeader !== `Bearer ${cronSecret}`) {
@@ -19,36 +19,36 @@ export async function GET(request: NextRequest) {
 
     // Import and call the recurring billing processor directly
     const { processRecurringBilling } = await import('../process-recurring/route');
-    
+
     // Call the function directly instead of making HTTP request
     const mockRequest = new Request('http://localhost/api/subscription/process-recurring', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
-    
+
     const billingResponse = await processRecurringBilling(mockRequest);
     const result = await billingResponse.json();
 
     if (billingResponse.ok) {
       console.log('✅ Billing processing completed');
       console.log(`📊 Billing Summary: ${result.processed || 0} operations processed`);
-      
+
       // Import and call the active subscriptions function directly
       const { GET: getActiveSubscriptions } = await import('./active-subscriptions/route');
       const mockActiveRequest = new Request('http://localhost/api/subscription/cron/active-subscriptions', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
-      
+
       const activeSubsResponse = await getActiveSubscriptions(mockActiveRequest as any);
       let activeSubscriptions = [];
       let summary = {};
-      
+
       if (activeSubsResponse.ok) {
         const activeData = await activeSubsResponse.json();
         activeSubscriptions = activeData.activeSubscriptions || [];
         summary = activeData.summary || {};
-        
+
         console.log('📈 Subscription Summary:');
         console.log(`   Total Active: ${activeSubscriptions.length}`);
         console.log(`   Premium Users: ${summary.premiumUsers || 0}`);
@@ -57,18 +57,18 @@ export async function GET(request: NextRequest) {
       } else {
         console.log('❌ Failed to fetch active subscriptions:', activeSubsResponse.status);
       }
-      
+
       const responseData = {
         success: true,
         timestamp: new Date().toISOString(),
         message: '✅ Recurring billing processed successfully',
-        
+
         billing: {
           processed: result.processed || 0,
           results: result.results || [],
           summary: `Processed ${result.processed || 0} billing operations`
         },
-        
+
         subscriptions: {
           summary: {
             totalSubscriptions: summary.totalSubscriptions || 0,
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
             premiumUsers: summary.premiumUsers || 0,
             ultimateUsers: summary.ultimateUsers || 0
           },
-          
+
           details: activeSubscriptions.map(sub => ({
             userId: sub.userId,
             email: sub.email,
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('💥 Cron job error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

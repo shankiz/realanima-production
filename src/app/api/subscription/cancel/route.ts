@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { verifyIdToken } from '@/lib/firebase/admin-helpers';
@@ -19,7 +18,7 @@ export async function POST(request: NextRequest) {
     // Get user's current subscription
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
-    
+
     if (!userDoc.exists) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
         createdAt: userData.lastUpdated || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
+
       await userRef.update({
         subscription: subscription,
         lastUpdated: new Date().toISOString(),
@@ -73,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
-    
+
     // Cancel the subscription (user keeps access until current billing period ends)
     await userRef.update({
       'subscription.status': 'cancelled',
@@ -102,7 +101,7 @@ export async function POST(request: NextRequest) {
       status: 'cancelled'
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ Cancel subscription error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },

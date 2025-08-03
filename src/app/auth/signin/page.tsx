@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -48,7 +47,7 @@ export default function SignInPage() {
     try {
       await signInWithEmail(formData.email, formData.password);
       router.push(redirectUrl || '/chat');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error);
 
       if (error.message.includes('verify your email')) {
@@ -77,9 +76,9 @@ export default function SignInPage() {
       console.log('Google sign-in successful:', result);
       await new Promise(resolve => setTimeout(resolve, 1000));
       router.push(redirectUrl || '/chat');
-    } catch (err: any) {
-      console.error('Google sign-in error:', err);
-      setError(err.message || 'Failed to sign in with Google');
+    } catch (error: unknown) {
+      console.error('Google sign-in error:', error);
+      setError(error.message || 'Failed to sign in with Google');
     } finally {
       setGoogleLoading(false);
     }
@@ -98,7 +97,7 @@ export default function SignInPage() {
       await resendEmailVerification(formData.email, formData.password);
       setResendMessage('Verification email sent! Check your inbox and spam folder.');
       setShowResendOption(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(error.message || 'Failed to resend verification email');
     } finally {
       setResendLoading(false);
@@ -115,7 +114,7 @@ export default function SignInPage() {
       await resetPassword(formData.email);
       setResetEmailSent(true);
       setError('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(error.message || 'Failed to send reset email');
     }
   };

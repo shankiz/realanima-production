@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState } from 'react';
 import { signUpWithEmail, resendEmailVerification } from '@/lib/firebase/auth';
@@ -45,12 +44,12 @@ export default function SignUp() {
     }
 
     try {
-      const { user, userData } = await signUpWithEmail(formData.email, formData.password, formData.name);
+      const { user } = await signUpWithEmail(formData.email, formData.password, formData.name);
       console.log('User created:', user.uid);
       setIsSignedUp(true);
-    } catch (err: any) {
-      console.error('Signup error:', err);
-      setError(err.message || 'An error occurred during signup');
+    } catch (error: unknown) {
+      console.error('Signup error:', error);
+      setError((error as Error).message || 'An error occurred during signup');
     } finally {
       setLoading(false);
     }
@@ -65,9 +64,9 @@ export default function SignUp() {
       console.log('Google sign-in successful:', result);
       await new Promise(resolve => setTimeout(resolve, 1000));
       router.push('/chat');
-    } catch (err: any) {
-      console.error('Google sign-in error:', err);
-      setError(err.message || 'Failed to sign in with Google');
+    } catch (error: unknown) {
+      console.error('Google sign-in error:', error);
+      setError((error as Error).message || 'Failed to sign in with Google');
     } finally {
       setGoogleLoading(false);
     }
@@ -77,8 +76,8 @@ export default function SignUp() {
     try {
       setError('');
       await resendEmailVerification(formData.email, formData.password);
-    } catch (err: any) {
-      setError(err.message || 'Failed to resend verification email');
+    } catch (error: unknown) {
+      setError((error as Error).message || 'Failed to resend verification email');
     }
   };
 
@@ -107,7 +106,7 @@ export default function SignUp() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            
+
             <div className="space-y-3">
               <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>Check your email</h2>
               <div className="space-y-2">

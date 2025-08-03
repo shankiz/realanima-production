@@ -24,17 +24,17 @@ const chunkCache = new Map<string, { chunk2Audio: string; timestamp: number }>()
 function cleanupCache() {
   const now = Date.now();
   const keysToDelete: string[] = [];
-  
+
   // Batch delete operations for better performance
   for (const [key, value] of chunkCache.entries()) {
     if (now - value.timestamp > 30000) {
       keysToDelete.push(key);
     }
   }
-  
+
   // Delete in batch
   keysToDelete.forEach(key => chunkCache.delete(key));
-  
+
   if (keysToDelete.length > 0) {
     console.log(`🧹 [TTS-CACHE] Cleaned up ${keysToDelete.length} old cache entries`);
   }
@@ -168,8 +168,7 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.split(' ')[1];
     const decodedToken = await adminAuth.verifyIdToken(token);
-    const userId = decodedToken.uid;
-
+    // const userId = user.uid;
     const body = await request.json();
     const { character, text, generateVoice = true, requestChunk } = body;
     console.log(`🔊 [TTS-PARALLEL] Request received for character: ${character}, chunk: ${requestChunk || 1}`);

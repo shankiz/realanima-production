@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
     console.log('[SIGNIN] Session cookie set successfully');
     return response;
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Session creation error:', error);
     return NextResponse.json({ 
       error: 'Failed to create session', 
