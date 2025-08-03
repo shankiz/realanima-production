@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
     
     // Get greeting text for the character
-    const greetingText = CHARACTER_GREETINGS[character] || CHARACTER_GREETINGS['gojo'];
+    const greetingText = CHARACTER_GREETINGS[character as keyof typeof CHARACTER_GREETINGS] || CHARACTER_GREETINGS['gojo'];
     
     // Generate TTS audio for the greeting
     let audioData = null;
