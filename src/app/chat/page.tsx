@@ -284,7 +284,13 @@ import { useSearchParams } from 'next/navigation';
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
                           const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-                          const [messages, setMessages] = useState([]);
+                          // Define message type
+                          interface Message {
+                            role: 'user' | 'assistant';
+                            content: string;
+                          }
+
+                          const [messages, setMessages] = useState<Message[]>([]);
                           const [isLoading, setIsLoading] = useState(false);
                           const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
                           const [voiceGenerationError, setVoiceGenerationError] = useState(false);
@@ -293,11 +299,25 @@ import { useSearchParams } from 'next/navigation';
                           const [messagesLeft, setMessagesLeft] = useState<number | null>(null);
                           const [credits, setCredits] = useState<number | null>(null);
                           const [sessionId, setSessionId] = useState('');
-                          const [recentConversations, setRecentConversations] = useState([]);
+                          // Define proper types for conversations
+                          interface RecentConversation {
+                            id: string;
+                            name: string;
+                            image: string;
+                            lastInteraction: string;
+                          }
+
+                          interface ChatHistoryItem {
+                            id: string;
+                            timestamp: any;
+                            lastMessage?: string;
+                          }
+
+                          const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
                           // Chat history states
-                          const [chatHistory, setChatHistory] = useState([]);
+                          const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
                           const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-                          const [loadingConversation, setLoadingConversation] = useState(null);
+                          const [loadingConversation, setLoadingConversation] = useState<string | null>(null);
                           const [historyCache, setHistoryCache] = useState(new Map());
 
                           // Debug character changes and clear history
@@ -670,7 +690,7 @@ import { useSearchParams } from 'next/navigation';
                           }, [user]);
 
                           // Add conversation to recents
-                          const addToRecents = (characterId) => {
+                          const addToRecents = (characterId: string) => {
                             if (!user) return;
 
                             const newConversation = {
@@ -694,7 +714,7 @@ import { useSearchParams } from 'next/navigation';
                           };
 
                           // Remove conversation from recents
-                          const removeFromRecents = (characterId) => {
+                          const removeFromRecents = (characterId: string) => {
                             if (!user) return;
 
                             setRecentConversations(prev => {
@@ -782,7 +802,7 @@ import { useSearchParams } from 'next/navigation';
                           };
 
                             // Load a specific conversation
-                            const loadConversation = async (conversationId) => {
+                            const loadConversation = async (conversationId: string) => {
                               if (!user || !character || loadingConversation === conversationId) return;
 
                               console.log('🔄 Loading conversation:', conversationId);
@@ -808,7 +828,7 @@ import { useSearchParams } from 'next/navigation';
                                       // Use the messages directly from the API response
                                       if (data.messages && data.messages.length > 0) {
                                           // Ensure proper message structure with correct roles
-                                          const structuredMessages = data.messages.map((msg, index) => {
+                                          const structuredMessages = data.messages.map((msg: any, index: number) => {
                                               // Ensure each message has the proper structure
                                               if (typeof msg === 'string') {
                                                   // If it's a string, assume it's alternating user/assistant
@@ -832,7 +852,7 @@ import { useSearchParams } from 'next/navigation';
                                           });
 
                                           // Add the initial greeting message if not present
-                                          const hasGreeting = structuredMessages.some(msg => 
+                                          const hasGreeting = structuredMessages.some((msg: Message) => 
                                               msg.role === 'assistant' && 
                                               msg.content === getInitialMessage(character)
                                           );
@@ -842,7 +862,7 @@ import { useSearchParams } from 'next/navigation';
                                               : [{ role: 'assistant', content: getInitialMessage(character) }, ...structuredMessages];
 
                                           console.log('💬 Setting structured messages:', messagesToSet.length, 'messages');
-                                          console.log('💬 Message structure:', messagesToSet.map(m => ({ role: m.role, preview: m.content.substring(0, 20) + '...' })));
+                                          console.log('💬 Message structure:', messagesToSet.map((m: Message) => ({ role: m.role, preview: m.content.substring(0, 20) + '...' })));
 
                                           // Clear current localStorage session when loading from history
                                           const storageKey = `chat_session_${user.uid}_${character}`;
@@ -959,7 +979,7 @@ import { useSearchParams } from 'next/navigation';
                           };
 
                           // Helper function to format time ago
-                          const getTimeAgo = (timestamp) => {
+                          const getTimeAgo = (timestamp: any) => {
                             console.log('🔍 Processing timestamp:', timestamp, 'Type:', typeof timestamp);
 
                             let date;
@@ -1011,7 +1031,7 @@ import { useSearchParams } from 'next/navigation';
                           };
 
                           // Delete conversation from history
-                          const deleteConversation = async (conversationId) => {
+                          const deleteConversation = async (conversationId: string) => {
                             if (!user || !conversationId) return;
 
                             try {
