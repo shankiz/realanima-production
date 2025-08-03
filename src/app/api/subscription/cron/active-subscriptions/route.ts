@@ -16,7 +16,7 @@ export async function GET() {
       .where('subscription.status', '==', 'cancelled')
       .get();
 
-    const activeSubscriptions = [];
+    const activeSubscriptions: any[] = [];
     const now = new Date();
 
     // Process active subscriptions
