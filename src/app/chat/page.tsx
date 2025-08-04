@@ -1706,7 +1706,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const getCharacterImage = (char) => {
+                          const getCharacterImage = (char: string) => {
                             switch(char) {
                               case 'gojo':
                                 return "/characters/gojo.png";
