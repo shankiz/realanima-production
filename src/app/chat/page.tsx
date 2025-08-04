@@ -355,7 +355,23 @@ import { useSearchParams } from 'next/navigation';
                           const [selectedSettingsTab, setSelectedSettingsTab] = useState('account');
                           const [showAccountManagement, setShowAccountManagement] = useState(false);
                           const [showBillingDropdown, setShowBillingDropdown] = useState(false);
-                          const [billingData, setBillingData] = useState(null);
+                          
+                          // Define billing data interface
+                          interface BillingData {
+                            currentPlan: string;
+                            credits: number;
+                            subscription: {
+                              status: string;
+                              planId: string;
+                              nextBillingDate: string;
+                              lastChargedAt?: string;
+                              cancelledAt?: string;
+                              cancelReason?: string;
+                              subscriptionId?: string;
+                            } | null;
+                          }
+                          
+                          const [billingData, setBillingData] = useState<BillingData | null>(null);
                           // Theme management
                           const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
                           
