@@ -2524,10 +2524,10 @@ import { useSearchParams } from 'next/navigation';
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                                        Want to hear {getCharacterName(character)}'s voice?
+                                        Want to hear {character ? getCharacterName(character) : 'this character'}'s voice?
                                       </h2>
                                       <p className="text-gray-400 text-sm leading-relaxed">
-                                        You just experienced the text response - now imagine hearing {getCharacterName(character)} say that in their actual voice!
+                                        You just experienced the text response - now imagine hearing {character ? getCharacterName(character) : 'this character'} say that in their actual voice!
                                       </p>
                                     </div>
 
