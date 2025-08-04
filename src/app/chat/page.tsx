@@ -2216,14 +2216,19 @@ import { useSearchParams } from 'next/navigation';
                               console.log('✅ [DEBUG] Voice detection initialized successfully');
                             } catch (error) {
                               console.error('❌ [DEBUG] Voice detection failed:', error);
-                              console.error('❌ [DEBUG] Error details:', error.name, error.message);
+                              
+                              if (error instanceof Error) {
+                                console.error('❌ [DEBUG] Error details:', error.name, error.message);
 
-                              if (error.name === 'NotAllowedError') {
-                                console.error('❌ [DEBUG] Microphone access denied by user');
-                              } else if (error.name === 'NotFoundError') {
-                                console.error('❌ [DEBUG] No microphone found');
-                              } else if (error.name === 'NotSupportedError') {
-                                console.error('❌ [DEBUG] Browser does not support getUserMedia');
+                                if (error.name === 'NotAllowedError') {
+                                  console.error('❌ [DEBUG] Microphone access denied by user');
+                                } else if (error.name === 'NotFoundError') {
+                                  console.error('❌ [DEBUG] No microphone found');
+                                } else if (error.name === 'NotSupportedError') {
+                                  console.error('❌ [DEBUG] Browser does not support getUserMedia');
+                                }
+                              } else {
+                                console.error('❌ [DEBUG] Unknown error type:', typeof error);
                               }
                             }
                           };
