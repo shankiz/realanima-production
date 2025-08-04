@@ -1587,7 +1587,9 @@ import { useSearchParams } from 'next/navigation';
                                 }
 
                                 // Add character to recents when user successfully sends a message
-                                addToRecents(character);
+                                if (character) {
+                                  addToRecents(character);
+                                }
                               } else {
                                 let errorMessage;
                                 try {
