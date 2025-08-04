@@ -1641,7 +1641,7 @@ import { useSearchParams } from 'next/navigation';
                             router.push(`/chat?character=${char}`);
                           };
 
-                          const getInitialMessage = (char) => {
+                          const getInitialMessage = (char: string) => {
                             switch(char) {
                               case 'gojo':
                                 return "Yo! The strongest sorcerer is here. What's up?";
