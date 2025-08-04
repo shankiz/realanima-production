@@ -4498,9 +4498,6 @@ import { useSearchParams } from 'next/navigation';
                                                             <div className="flex items-center justify-between mb-3">
                                                               <div className="flex items-center space-x-2">
                                                                 <div className="text-xs text-cyan-400 font-medium">{timeAgo}</div>
-                                                                <div className="text-xs text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full">
-                                                                  {messageCount} {messageCount === 1 ? 'message' : 'messages'}
-                                                                </div>
                                                               </div>
                                                               <button
                                                                 onClick={() => deleteConversation(conversation.id)}
