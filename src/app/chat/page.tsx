@@ -1591,7 +1591,7 @@ import { useSearchParams } from 'next/navigation';
                                   addToRecents(character);
                                 }
                               } else {
-                                let errorMessage;
+                                let errorMessage: Message;
                                 try {
                                   const errorData = await response.json();
 
@@ -1623,7 +1623,7 @@ import { useSearchParams } from 'next/navigation';
                               }
                             } catch (error) {
                               console.error('Error sending message:', error);
-                              const errorMessage = { 
+                              const errorMessage: Message = { 
                                 role: 'assistant', 
                                 content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐' 
                               };
