@@ -3559,6 +3559,7 @@ import { useSearchParams } from 'next/navigation';
                                                               setShowSettingsModal(false);
 
                                                               try {
+                                                                if (!user) return;
                                                                 const token = await user.getIdToken();
                                                                 console.log('🚫 Attempting to cancel subscription...');
 
