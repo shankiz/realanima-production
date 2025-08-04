@@ -3845,8 +3845,8 @@ import { useSearchParams } from 'next/navigation';
                                         <div className="absolute inset-0 rounded-full bg-cyan-400/10 animate-pulse shadow-2xl shadow-cyan-400/20"></div>
                                       )}
                                     </div>
-                                    <h2 className="text-3xl font-light text-white mb-2">{getCharacterName(character)}</h2>
-                                    <p className="text-gray-400 text-sm font-light">{getCharacterDescription(character)}</p>
+                                    <h2 className="text-3xl font-light text-white mb-2">{getCharacterName(character || 'gojo')}</h2>
+                                    <p className="text-gray-400 text-sm font-light">{getCharacterDescription(character || 'gojo')}</p>
                                   </div>
 
                                   {/* Call Status Display */}
