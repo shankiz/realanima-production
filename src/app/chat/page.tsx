@@ -4484,7 +4484,6 @@ import { useSearchParams } from 'next/navigation';
                                             <div className="space-y-4">
                                               {chatHistory.map((conversation, index) => {
                                                 const timeAgo = getTimeAgo(conversation.timestamp);
-                                                const messageCount = conversation.messageCount || 1;
 
                                                 return (
                                                   <div key={conversation.id || index} className="group">
