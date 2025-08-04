@@ -3835,8 +3835,8 @@ import { useSearchParams } from 'next/navigation';
                                   <div className="text-center mb-12">
                                     <div className="relative w-40 h-40 mx-auto mb-6">
                                       <Image 
-                                        src={getCharacterImage(character)}
-                                        alt={getCharacterName(character)}
+                                        src={getCharacterImage(character || 'gojo')}
+                                        alt={getCharacterName(character || 'gojo')}
                                         fill
                                         className="rounded-full object-cover"
                                       />
