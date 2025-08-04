@@ -3062,6 +3062,7 @@ import { useSearchParams } from 'next/navigation';
                                                             setIsDeleteHistoryLoading(true);
 
                                                             try {
+                                                              if (!user) return;
                                                               const token = await user.getIdToken();
                                                               const response = await fetch('/api/user/privacy/delete-history', {
                                                                 method: 'POST',
