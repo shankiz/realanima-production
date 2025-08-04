@@ -3582,13 +3582,14 @@ import { useSearchParams } from 'next/navigation';
                                                                   // Update billing data state immediately with cancelled status
                                                                   setBillingData(prev => prev ? {
                                                                     ...prev,
-                                                                    subscription: {
+                                                                    subscription: prev.subscription ? {
                                                                       ...prev.subscription,
                                                                       status: 'cancelled',
                                                                       cancelledAt: new Date().toISOString(),
                                                                       cancelReason: 'user_requested',
-                                                                      nextBillingDate: result.accessUntil || prev.subscription?.nextBillingDate
-                                                                    }
+                                                                      nextBillingDate: result.accessUntil || prev.subscription.nextBillingDate,
+                                                                      planId: prev.subscription.planId || 'unknown'
+                                                                    } : null
                                                                   } : null);
 
                                                                   showCustomAlert(
