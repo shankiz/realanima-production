@@ -1836,7 +1836,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const getCharacterDescription = (char) => {
+                          const getCharacterDescription = (char: string) => {
                             switch(char) {
                               case 'gojo':
                                 return "Jujutsu Kaisen";
