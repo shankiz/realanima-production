@@ -4255,8 +4255,8 @@ import { useSearchParams } from 'next/navigation';
                                           />
                                         </div>
                                       <div className="ml-3">
-                                        <h2 className="font-medium text-base">{getCharacterName(character)}</h2>
-                                        <p className="text-sm text-gray-400">{getCharacterDescription(character)}</p>
+                                        <h2 className="font-medium text-base">{getCharacterName(character || 'gojo')}</h2>
+                                        <p className="text-sm text-gray-400">{getCharacterDescription(character || 'gojo')}</p>
                                       </div>
                                     </div>
 
