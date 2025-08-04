@@ -4337,15 +4337,15 @@ import { useSearchParams } from 'next/navigation';
                                         <div className="flex items-center space-x-3">
                                           <div className="relative w-12 h-12">
                                             <Image 
-                                              src={getCharacterImage(character)}
-                                              alt={getCharacterName(character)}
+                                              src={getCharacterImage(character || 'gojo')}
+                                              alt={getCharacterName(character || 'gojo')}
                                               fill
                                               className="rounded-full object-cover"
                                             />
                                           </div>
                                           <div>
-                                            <h4 className="text-white font-medium text-sm">{getCharacterName(character)}</h4>
-                                            <p className="text-gray-400 text-xs">{getCharacterDescription(character)}</p>
+                                            <h4 className="text-white font-medium text-sm">{getCharacterName(character || 'gojo')}</h4>
+                                            <p className="text-gray-400 text-xs">{getCharacterDescription(character || 'gojo')}</p>
                                           </div>
                                         </div>
                                       </div>
