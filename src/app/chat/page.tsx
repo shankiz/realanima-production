@@ -278,7 +278,7 @@ import { useSearchParams } from 'next/navigation';
                           const { user, signOut, loading } = useAuth();
                           const router = useRouter();
                           const searchParams = useSearchParams();
-                          const character = searchParams?.get('character');
+                          const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
 
                           const [input, setInput] = useState('');
