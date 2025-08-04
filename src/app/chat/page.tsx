@@ -1439,7 +1439,7 @@ import { useSearchParams } from 'next/navigation';
                                 }
 
                                 // Step 3: Display text response
-                                const aiMessage = { role: 'assistant', content: aiResponseText };
+                                const aiMessage: Message = { role: 'assistant', content: aiResponseText };
                                 setMessages(prev => {
                                   const newMessages = [...prev, aiMessage];
 
