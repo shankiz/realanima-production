@@ -1966,7 +1966,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const navigateTo = (newView) => {
+                          const navigateTo = (newView: string) => {
                             if (newView === 'discover') {
                               router.push('/chat');
                             } else {
