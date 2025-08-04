@@ -4248,8 +4248,8 @@ import { useSearchParams } from 'next/navigation';
                                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
                                       <div className="relative w-10 h-10">
                                           <Image 
-                                            src={getCharacterImage(character)}
-                                            alt={getCharacterName(character)}
+                                            src={getCharacterImage(character || 'gojo')}
+                                            alt={getCharacterName(character || 'gojo')}
                                             fill
                                             className="rounded-full object-cover"
                                           />
