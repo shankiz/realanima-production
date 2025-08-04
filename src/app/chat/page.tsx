@@ -2387,7 +2387,7 @@ import { useSearchParams } from 'next/navigation';
                             setLiveTranscript('');
 
                             // Add call ended message
-                            const endMessage = { role: 'user', content: `📞 Call ended` };
+                            const endMessage: Message = { role: 'user', content: `📞 Call ended` };
                             setMessages(prev => [...prev, endMessage]);
 
                             // Hide call interface with smooth transition
