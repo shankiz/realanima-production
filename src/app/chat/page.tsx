@@ -4360,7 +4360,7 @@ import { useSearchParams } from 'next/navigation';
                                               
                                               // Generate new session ID with timestamp for uniqueness
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
-                                              const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
+                                              const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character || 'gojo') }];
 
                                               // Clear any existing chat cache
                                               if (voiceService) {
