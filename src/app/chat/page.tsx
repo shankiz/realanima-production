@@ -4516,13 +4516,15 @@ import { useSearchParams } from 'next/navigation';
                                                                 className="w-full text-left"
                                                                 disabled={loadingConversation !== null}
                                                             >
-                                                                {conversation.message && (
-                                                                    <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
-                                                                        <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
-                                                                            <span className="text-gray-300 font-medium">You:</span> {conversation.message.length > 80 
-                                                                                ? conversation.message.substring(0, 80) + '...' 
-                                                                                : conversation.message}
-                                                                        </div>
+                                                                      {conversation.lastMessage && (
+                                                                          <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
+                                                                              <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
+                                                                                  <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
+                                                                                      ? conversation.lastMessage.substring(0, 80) + '...' 
+                                                                                      : conversation.lastMessage}
+                                                                              </div>
+                                                                          </div>
+                                                                      )}
                                                                         {conversation.response && (
                                                                             <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
                                                                                 <span className="text-cyan-400 font-medium">{getCharacterName(character)}:</span> {conversation.response.length > 80 
