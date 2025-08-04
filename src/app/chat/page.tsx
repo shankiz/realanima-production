@@ -4356,6 +4356,8 @@ import { useSearchParams } from 'next/navigation';
                                           {/* New Chat */}
                                           <button 
                                             onClick={() => {
+                                              if (!user) return;
+                                              
                                               // Generate new session ID with timestamp for uniqueness
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
