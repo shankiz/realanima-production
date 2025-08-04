@@ -1771,7 +1771,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const getCharacterName = (char) => {
+                          const getCharacterName = (char: string) => {
                             switch(char) {
                               case 'gojo':
                                 return "Gojo Satoru";
