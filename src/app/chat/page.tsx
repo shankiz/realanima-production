@@ -3152,6 +3152,7 @@ import { useSearchParams } from 'next/navigation';
                                                           'Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data including:\n\n• All conversation history\n• Subscription data\n• Personal information\n• Account settings\n\nYou will be immediately signed out and cannot recover this data.',
                                                           async () => {
                                                             try {
+                                                              if (!user) return;
                                                               const token = await user.getIdToken();
                                                               const response = await fetch('/api/user/delete-account', {
                                                                 method: 'POST',
