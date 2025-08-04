@@ -1637,7 +1637,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const handleSelectCharacter = (char) => {
+                          const handleSelectCharacter = (char: string) => {
                             router.push(`/chat?character=${char}`);
                           };
 
