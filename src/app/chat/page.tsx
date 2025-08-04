@@ -1297,6 +1297,11 @@ import { useSearchParams } from 'next/navigation';
                             setIsLoading(true);
 
                             try {
+                              if (!user) {
+                                console.error('User not authenticated');
+                                return;
+                              }
+
                               const token = await user.getIdToken();
 
                               // Step 1: Get text response from chat API
