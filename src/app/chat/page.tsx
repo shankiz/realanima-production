@@ -363,9 +363,9 @@ import { useSearchParams } from 'next/navigation';
                             subscription: {
                               status: string;
                               planId: string;
-                              nextBillingDate: string;
-                              lastChargedAt?: string;
-                              cancelledAt?: string;
+                              nextBillingDate: string | { seconds: number } | Date | any;
+                              lastChargedAt?: string | { seconds: number; _seconds?: number } | Date | any;
+                              cancelledAt?: string | { seconds: number } | Date | any;
                               cancelReason?: string;
                               subscriptionId?: string;
                             } | null;
