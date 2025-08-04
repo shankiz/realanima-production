@@ -1901,7 +1901,7 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          const getCharacterPersonality = (char) => {
+                          const getCharacterPersonality = (char: string) => {
                             switch(char) {
                               case 'gojo':
                                 return "Loves to show off, playful, arrogant.";
