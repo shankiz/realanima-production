@@ -3915,7 +3915,7 @@ import { useSearchParams } from 'next/navigation';
                           // Authentication redirect happens in useEffect background
 
                           return (
-                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning>
+                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
