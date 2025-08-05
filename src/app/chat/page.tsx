@@ -107,10 +107,10 @@ import { useSearchParams } from 'next/navigation';
                             >
                               {/* Primary glass reflection */}
                               <div className="absolute inset-0 bg-gradient-to-br from-white/8 via-white/3 to-transparent opacity-80 rounded-2xl pointer-events-none"></div>
-
+                              
                               {/* Secondary glass layer for depth */}
                               <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/2 to-white/5 rounded-2xl pointer-events-none"></div>
-
+                              
                               <div className="relative h-40 overflow-hidden rounded-t-2xl">
                                 <Image 
                                   src={`/characters/${character.id}.png`}
@@ -122,7 +122,7 @@ import { useSearchParams } from 'next/navigation';
                                 />
                                 {/* Refined gradient overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-
+                                
                                 {/* NEW Tag - Top Right of Image */}
                                 {isNew && (
                                   <div className="absolute top-2 right-2 z-20">
@@ -131,31 +131,31 @@ import { useSearchParams } from 'next/navigation';
                                     </div>
                                   </div>
                                 )}
-
+                                
                                 {/* Glass rim highlight */}
                                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/25 to-transparent"></div>
                                 <div className="absolute top-0 bottom-0 left-0 w-0.5 bg-gradient-to-b from-white/15 via-transparent to-transparent"></div>
                                 <div className="absolute top-0 bottom-0 right-0 w-0.5 bg-gradient-to-b from-white/15 via-transparent to-transparent"></div>
                               </div>
-
+                              
                               <div className="relative p-3" style={{
                                 background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)'
                               }}>
                                 {/* Inner glass reflection for text area */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-white/3 via-white/1 to-transparent rounded-b-2xl pointer-events-none"></div>
-
+                                
                                 <div className="relative z-10">
                                   <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide">{character.name}</h3>
                                   <p className="text-gray-100/95 text-[10px] drop-shadow-md line-clamp-1">{character.description}</p>
                                 </div>
                               </div>
-
+                              
                               {/* Enhanced hover glow */}
                               <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/8 via-transparent to-purple-400/8 rounded-2xl"></div>
                                 <div className="absolute inset-0 bg-gradient-to-tl from-blue-400/5 via-transparent to-pink-400/5 rounded-2xl"></div>
                               </div>
-
+                              
                               {/* Subtle inner border glow */}
                               <div className="absolute inset-0.5 rounded-2xl border border-white/5 pointer-events-none group-hover:border-white/10 transition-colors duration-500"></div>
                             </div>
@@ -173,7 +173,7 @@ import { useSearchParams } from 'next/navigation';
                             { id: 'gojo', name: 'Gojo Satoru', description: 'Jujutsu Kaisen', tier: 'free' },
                             { id: 'mikasa', name: 'Mikasa Ackerman', description: 'Attack on Titan', tier: 'free' },
                             { id: 'megumin', name: 'Megumin', description: 'KonoSuba', tier: 'free' },
-
+                            
                             // Premium Characters
                             { id: 'eren', name: 'Eren Yeager', description: 'Attack on Titan', tier: 'premium' },
                             { id: 'tanjiro', name: 'Tanjiro Kamado', description: 'Demon Slayer', tier: 'premium' },
@@ -186,7 +186,7 @@ import { useSearchParams } from 'next/navigation';
                             { id: 'sailor', name: 'Sailor Moon (Usagi Tsukino)', description: 'Sailor Moon', tier: 'premium' },
                             { id: 'inuyasha', name: 'Inuyasha', description: 'Inuyasha', tier: 'premium' },
                             { id: 'kagome', name: 'Kagome Higurashi', description: 'Inuyasha', tier: 'premium' },
-
+                            
                             // Ultimate Characters
                             { id: 'levi', name: 'Levi Ackerman', description: 'Attack on Titan', tier: 'ultimate' },
                             { id: 'nezuko', name: 'Nezuko Kamado', description: 'Demon Slayer', tier: 'ultimate' },
@@ -311,7 +311,6 @@ import { useSearchParams } from 'next/navigation';
                             id: string;
                             timestamp: any;
                             lastMessage?: string;
-                            response?: string;
                           }
 
                           const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
@@ -356,7 +355,7 @@ import { useSearchParams } from 'next/navigation';
                           const [selectedSettingsTab, setSelectedSettingsTab] = useState('account');
                           const [showAccountManagement, setShowAccountManagement] = useState(false);
                           const [showBillingDropdown, setShowBillingDropdown] = useState(false);
-
+                          
                           // Define billing data interface
                           interface BillingData {
                             currentPlan: string;
@@ -371,11 +370,11 @@ import { useSearchParams } from 'next/navigation';
                               subscriptionId?: string;
                             } | null;
                           }
-
+                          
                           const [billingData, setBillingData] = useState<BillingData | null>(null);
                           // Theme management
                           const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
-
+                          
                           // Auto-scroll state management
                           const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
 
@@ -1297,7 +1296,7 @@ import { useSearchParams } from 'next/navigation';
 
                             const userMessage: Message = { role: 'user', content: currentInput };
                             setMessages(prev => [...prev, userMessage]);
-
+                            
                             // Clear both the ref and state
                             if (inputRef.current) {
                               inputRef.current.value = '';
@@ -1353,7 +1352,7 @@ import { useSearchParams } from 'next/navigation';
                                 // Step 2: Generate TTS using 2-chunk strategy if voice toggle is enabled
                                 let audioData = null;
                                 let secondChunkPromise = null;
-
+                                
                                 if (isVoiceResponseEnabled) {
                                   setIsGeneratingVoice(true);
                                   setVoiceGenerationError(false);
@@ -1375,15 +1374,15 @@ import { useSearchParams } from 'next/navigation';
                                     if (ttsResponse.ok) {
                                       const ttsData = await ttsResponse.json();
                                       console.log('🎯 [CHAT-TTS-2CHUNK] TTS Response:', ttsData.strategy, ttsData.isFirstChunk, ttsData.hasSecondChunk);
-
+                                      
                                       // Check if we got a successful response
                                       if (ttsData.success && ttsData.audio) {
                                         audioData = ttsData.audio;
-
+                                        
                                         // If this is the 2-chunk strategy and there's a second chunk
                                         if ((ttsData.strategy === '2chunk' || ttsData.strategy === '2chunk-parallel') && ttsData.hasSecondChunk) {
                                           console.log('🔄 [CHAT-TTS-2CHUNK] First chunk received, requesting second chunk immediately...');
-
+                                          
                                           // Request second chunk immediately (no delay)
                                           secondChunkPromise = (async () => {
                                             try {
@@ -1509,11 +1508,11 @@ import { useSearchParams } from 'next/navigation';
                                       } else {
                                         // No secondChunkPromise means we need to request chunk 2 from the server with retry logic
                                         console.log('🔍 [CHAT-TTS-2CHUNK] No second chunk promise, requesting chunk 2 from server with retry...');
-
+                                        
                                         // Retry mechanism with exponential backoff
                                         const requestChunk2WithRetry = async (attempt = 1, maxAttempts = 5) => {
                                           console.log(`🔄 [CHAT-TTS-2CHUNK] Attempt ${attempt} to get chunk 2...`);
-
+                                          
                                           try {
                                             const chunk2Response = await fetch('/api/voice/tts', {
                                               method: 'POST',
@@ -2233,7 +2232,7 @@ import { useSearchParams } from 'next/navigation';
                               console.log('✅ [DEBUG] Voice detection initialized successfully');
                             } catch (error) {
                               console.error('❌ [DEBUG] Voice detection failed:', error);
-
+                              
                               if (error instanceof Error) {
                                 console.error('❌ [DEBUG] Error details:', error.name, error.message);
 
@@ -2493,7 +2492,7 @@ import { useSearchParams } from 'next/navigation';
                                     >
                                       Choose Your Plan
                                     </button>
-
+                                    
                                     <p className="text-gray-500 text-xs mt-3 text-center">
                                       Available on Premium and Ultimate
                                     </p>
@@ -2520,7 +2519,7 @@ import { useSearchParams } from 'next/navigation';
                                 >
                                   {/* Gradient overlay */}
                                   <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 rounded-3xl pointer-events-none" />
-
+                                  
                                   <div className="relative p-6">
                                     {/* Close button */}
                                     <button
@@ -2585,7 +2584,7 @@ import { useSearchParams } from 'next/navigation';
                                     >
                                       Upgrade to Hear Their Voice
                                     </button>
-
+                                    
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
                                       Join thousands experiencing authentic character voices
@@ -2684,7 +2683,7 @@ import { useSearchParams } from 'next/navigation';
                             >
                               <div className="flex items-center justify-center min-h-screen p-4">
                                 <div 
-                                  className={`bg-gray-900/95 via-gray-800/95 to-gray-900/95 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-5xl transition-all duration-300 ease-out backdrop-blur-md ${
+                                  className={`bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-5xl transition-all duration-300 ease-out backdrop-blur-md ${
                                     showCreditModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
                                   onClick={(e) => e.stopPropagation()}
@@ -3016,10 +3015,10 @@ import { useSearchParams } from 'next/navigation';
                                                               const { resetPassword } = await import('@/lib/firebase/auth');
                                                               if (user?.email) {
                                                                 await resetPassword(user.email);
-
+                                                                
                                                                 // Close the confirmation modal first
                                                                 setShowConfirmModal(false);
-
+                                                                
                                                                 // Then show success alert after a brief delay
                                                                 setTimeout(() => {
                                                                   showCustomAlert(
@@ -3119,7 +3118,7 @@ import { useSearchParams } from 'next/navigation';
                                                               } else {
                                                                 // Close the confirmation modal first
                                                                 setShowConfirmModal(false);
-
+                                                                
                                                                 // Show error alert
                                                                 setTimeout(() => {
                                                                   showCustomAlert(
@@ -3131,10 +3130,10 @@ import { useSearchParams } from 'next/navigation';
                                                               }
                                                             } catch (error) {
                                                               console.error('Error deleting conversation history:', error);
-
+                                                              
                                                               // Close the confirmation modal first
                                                               setShowConfirmModal(false);
-
+                                                              
                                                               // Show error alert
                                                               setTimeout(() => {
                                                                 showCustomAlert(
@@ -3251,7 +3250,7 @@ import { useSearchParams } from 'next/navigation';
                                                   {currentUserPlan?.toUpperCase() || 'FREE'}
                                                 </div>
                                               </div>
-
+                                              
                                             </div>
 
                                             {/* Manage Billing Extension Panel */}
@@ -3635,7 +3634,7 @@ import { useSearchParams } from 'next/navigation';
                                                     <div className="bg-red-900/20 border border-red-500/50 rounded-xl p-3 mt-4">
                                                       <div className="flex items-center space-x-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833-.192 2.5 1.732 2.5z" />
+                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                                         </svg>
                                                         <div>
                                                           <p className="text-red-400 font-medium text-xs">Payment Failed</p>
@@ -3883,7 +3882,7 @@ import { useSearchParams } from 'next/navigation';
 
 
                                       {/* Live transcript display during listening */}
-                                      {callStatus === 'listening' && liveTranscriptDisplay && !showCallInterface && (
+                                      {callStatus === 'listening' && liveTranscriptDisplay && (
                                         <div className="mt-4 p-3 bg-black/40 border border-cyan-500/30 rounded-lg max-w-sm text-center">
                                           <div className="text-cyan-300 text-sm italic">
                                             "{liveTranscriptDisplay}"
@@ -4185,7 +4184,7 @@ import { useSearchParams } from 'next/navigation';
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings
@@ -4287,7 +4286,7 @@ import { useSearchParams } from 'next/navigation';
                                           <div 
                                             className={`block w-8 h-5 rounded-full cursor-pointer relative transition-colors duration-200 ${
                                               currentUserPlan === 'free' 
-                                                ? 'bg-gray-600 cursor-not-allowed' 
+                                                ? 'bg-gray-600' 
                                                 : isVoiceResponseEnabled 
                                                 ? 'bg-cyan-600' 
                                                 : 'bg-gray-700'
@@ -4346,7 +4345,8 @@ import { useSearchParams } from 'next/navigation';
                                           </div>
                                           <div>
                                             <h4 className="text-white font-medium text-sm">{getCharacterName(character || 'gojo')}</h4>
-                                            <p className="text-gray-400 text-xs">{getCharacterDescription(character || 'gojo')}</p                                          </div>
+                                            <p className="text-gray-400 text-xs">{getCharacterDescription(character || 'gojo')}</p>
+                                          </div>
                                         </div>
                                       </div>
 
@@ -4357,7 +4357,7 @@ import { useSearchParams } from 'next/navigation';
                                           <button 
                                             onClick={() => {
                                               if (!user) return;
-
+                                              
                                               // Generate new session ID with timestamp for uniqueness
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character || 'gojo') }];
@@ -4624,7 +4624,7 @@ import { useSearchParams } from 'next/navigation';
                                                 {msg.content}
                                               </div>
                                             </div>
-
+                                            
                                             {/* Audio Playing Indicator - Only show for AI messages when audio is playing and user has premium/ultimate */}
                                             {msg.role === 'assistant' && 
                                              audioPlayingForMessage === index && 
@@ -4692,7 +4692,7 @@ import { useSearchParams } from 'next/navigation';
                                               defaultValue={input}
                                               onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
-
+                                                
                                                 // Update React state with debouncing to reduce re-renders
                                                 if (updateTimeoutRef.current) {
                                                   clearTimeout(updateTimeoutRef.current);
@@ -4700,7 +4700,7 @@ import { useSearchParams } from 'next/navigation';
                                                 updateTimeoutRef.current = setTimeout(() => {
                                                   setInput(target.value);
                                                 }, 300);
-
+                                                
                                                 // Handle height adjustment immediately without blocking
                                                 requestAnimationFrame(() => {
                                                   target.style.height = 'auto';
