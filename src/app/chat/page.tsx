@@ -307,12 +307,6 @@ import { useSearchParams } from 'next/navigation';
                             lastInteraction: string;
                           }
 
-                          interface ChatHistoryItem {
-                            id: string;
-                            timestamp: any;
-                            lastMessage?: string;
-                          }
-
                           const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
                           // Chat history states
                           const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
@@ -1337,7 +1331,7 @@ import { useSearchParams } from 'next/navigation';
                                 const data = await response.json();
                                 const aiResponseText = data.response;
 
-                                // Check if this is the first-ever response for a free user
+                                // Check if this is the first-response modal for a free user
                                 const hasSeenFirstResponseModal = localStorage.getItem('firstResponseModalShown');
                                 if (currentUserPlan === 'free' && !hasSeenFirstResponseModal) {
                                   // Show the modal after 2.5 seconds to let user read the response
@@ -2580,7 +2574,7 @@ import { useSearchParams } from 'next/navigation';
                                         setShowFirstResponseVoiceModal(false);
                                         router.push('/subscription');
                                       }}
-                                      className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20 mb-3"
+                                      className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20"
                                     >
                                       Upgrade to Hear Their Voice
                                     </button>
@@ -2683,7 +2677,7 @@ import { useSearchParams } from 'next/navigation';
                             >
                               <div className="flex items-center justify-center min-h-screen p-4">
                                 <div 
-                                  className={`bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-5xl transition-all duration-300 ease-out backdrop-blur-md ${
+                                  className={`bg-gray-900/95 via-gray-800/95 to-gray-900/95 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-5xl transition-all duration-300 ease-out backdrop-blur-md ${
                                     showCreditModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
                                   onClick={(e) => e.stopPropagation()}
@@ -2883,7 +2877,7 @@ import { useSearchParams } from 'next/navigation';
                                     <div className="mt-8">
                                       <div className="flex items-center justify-center text-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 00-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                         </svg>
                                         <span className="text-gray-400 text-sm">Secure PayPal</span>
                                       </div>
@@ -3634,7 +3628,7 @@ import { useSearchParams } from 'next/navigation';
                                                     <div className="bg-red-900/20 border border-red-500/50 rounded-xl p-3 mt-4">
                                                       <div className="flex items-center space-x-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833-.192 2.5 1.732 2.5z" />
                                                         </svg>
                                                         <div>
                                                           <p className="text-red-400 font-medium text-xs">Payment Failed</p>
@@ -3882,7 +3876,7 @@ import { useSearchParams } from 'next/navigation';
 
 
                                       {/* Live transcript display during listening */}
-                                      {callStatus === 'listening' && liveTranscriptDisplay && (
+                                      {callStatus === 'listening' && liveTranscriptDisplay && !showCallInterface && (
                                         <div className="mt-4 p-3 bg-black/40 border border-cyan-500/30 rounded-lg max-w-sm text-center">
                                           <div className="text-cyan-300 text-sm italic">
                                             "{liveTranscriptDisplay}"
