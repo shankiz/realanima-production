@@ -3911,31 +3911,79 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          // Don't show blank screen - always render the UI structure
-                          // Authentication redirect happens in useEffect background
+                              // Don't show blank screen - always render the UI structure
+                              // Authentication redirect happens in useEffect background
 
-                          return (
-                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
-                              {/* Custom Modals */}
-                              <ConfirmModal
-                                isOpen={showConfirmModal}
-                                onClose={() => setShowConfirmModal(false)}
-                                onConfirm={modalConfig.onConfirm}
-                                title={modalConfig.title}
-                                message={modalConfig.message}
-                                confirmText={modalConfig.confirmText}
-                                cancelText={modalConfig.cancelText}
-                                type={modalConfig.type}
-                              />
+                              return (
+                                <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+                                  {/* Custom Modals */}
+                                  <ConfirmModal
+                                    isOpen={showConfirmModal}
+                                    onClose={() => setShowConfirmModal(false)}
+                                    onConfirm={modalConfig.onConfirm}
+                                    title={modalConfig.title}
+                                    message={modalConfig.message}
+                                    confirmText={modalConfig.confirmText}
+                                    cancelText={modalConfig.cancelText}
+                                    type={modalConfig.type}
+                                  />
 
-                              <AlertModal
-                                isOpen={showAlertModal}
-                                onClose={() => setShowAlertModal(false)}
-                                title={alertConfig.title}
-                                message={alertConfig.message}
-                                buttonText={alertConfig.buttonText}
-                                type={alertConfig.type}
-                              />
+                                  <AlertModal
+                                    isOpen={showAlertModal}
+                                    onClose={() => setShowAlertModal(false)}
+                                    title={alertConfig.title}
+                                    message={alertConfig.message}
+                                    buttonText={alertConfig.buttonText}
+                                    type={alertConfig.type}
+                                  />
+
+                                  {/* Quick Purchase Modal */}
+                                  <QuickPurchaseModal />
+
+                                  {/* Upgrade Prompt Modal */}
+                                  <UpgradePromptModal />
+
+                                  {/* First Response Voice Modal */}
+                                  <FirstResponseVoiceModal />
+
+                                  {/* Coming Soon Modal */}
+                                  <ComingSoonModal />
+
+                                  {/* Settings Modal Overlay */}
+                                  <SettingsModal />
+
+                                  {/* Call Interface Overlay */}
+                                  <CallInterface />
+
+                                  {/* Voice generation error notification - Fixed at top of chat area */}
+                                  {voiceGenerationError && (
+                                    <div className="fixed top-4 left-72 right-0 flex justify-center z-50 animate-fadeIn pointer-events-none">
+                                      <div className="bg-gray-900/95 border border-gray-700/50 rounded-lg px-4 py-2 shadow-lg backdrop-blur-sm">
+                                        <div className="text-gray-300 text-sm text-center flex items-center">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 8.5c-.77.833-.192 2.5 1.732 2.5z" />
+                                          </svg>
+                                          Couldn't generate voice
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Left Sidebar - Minimalist */}
+                                  <div className="w-72 border-r border-gray-900/50 flex flex-col bg-black">
+                                    {/* Rest of your sidebar content */}
+                                  </div>
+
+                                  {/* Main Content Area */}
+                                  {view === 'discover' ? (
+                                    <DiscoverView onSelectCharacter={handleSelectCharacter} loading={loading} />
+                                  ) : (
+                                    <div className="flex-1 flex flex-col relative">
+                                      {/* Rest of your chat interface */}
+                                    </div>
+                                  )}
+                                </div>
+                              );
 
                               {/* Quick Purchase Modal */}
                               <QuickPurchaseModal />
