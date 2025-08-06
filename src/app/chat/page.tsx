@@ -1241,7 +1241,7 @@ import { useSearchParams } from 'next/navigation';
                           // Initialize voice response state when plan changes, but allow user control
                           useEffect(() => {
                             if (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') {
-                              // For premium/ultimate users, check localStorage for their preference
+                              // Check localStorage for their preference
                               const savedPreference = localStorage.getItem('voiceResponseEnabled');
                               if (savedPreference !== null) {
                                 setIsVoiceResponseEnabled(savedPreference === 'true');
@@ -2888,7 +2888,7 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          // Settings Modal Component - Original with tabs
+                          // Settings Modal Component
                           const SettingsModal = () => (
                             <div 
                               className={`fixed inset-0 z-50 bg-black/70 transition-all duration-300 ease-out ${
@@ -3153,7 +3153,7 @@ import { useSearchParams } from 'next/navigation';
                                                     </button>
                                                     <div className="border-t border-gray-700/50 my-1"></div>
                                                     <button 
-                                                      onClick={() => {
+                                                      onClick={async () => {
                                                         setShowAccountManagement(false);
                                                         setShowSettingsModal(false);
 
@@ -3906,14 +3906,6 @@ import { useSearchParams } from 'next/navigation';
                           )
                         }
 
-                        const CallInterface = () => {
-                          return (
-                            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-                              {/* Call interface content */}
-                            </div>
-                          )
-                        }
-
                         // Don't show blank screen - always render the UI structure
                         // Authentication redirect happens in useEffect background
                         return (
@@ -4647,7 +4639,7 @@ import { useSearchParams } from 'next/navigation';
                                              (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
                                              isVoiceResponseEnabled && (
                                               <div className="ml-2 flex items-end pb-1">
-                                                <div className="w-6 h-6 bg-cyan-500/20 rounded-full flex items-center justify-center animate-pulse">
+                                                <div className="w-6 h-6 bg-cyan-500/24 rounded-full flex items-center justify-center animate-pulse">
                                                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
                                                     <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
                                                   </svg>
