@@ -2752,9 +2752,17 @@ import { useSearchParams } from 'next/navigation';
                                                 </svg>
                                               </button>
 
-                                              {/* Billing Extension Panel - Complete and Minimalist */}
+                                              {/* Billing Panel Backdrop */}
+                                              {showBillingDropdown && (
+                                                <div 
+                                                  className="fixed inset-0 z-40"
+                                                  onClick={() => setShowBillingDropdown(false)}
+                                                />
+                                              )}
+
+                                              {/* Billing Panel - Complete and Minimalist */}
                                               <div className={`absolute left-full w-80 bg-black/95 border border-gray-700/40 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out ${
-                                                showBillingDropdown ? 'translate-x-4 opacity-100 z-50' : 'translate-x-full opacity-0 pointer-events-none z-10'
+                                                showBillingDropdown ? 'translate-x-0 opacity-100 z-50' : 'translate-x-full opacity-0 pointer-events-none z-10'
                                               }`}
                                               style={{ 
                                                 height: '500px',
@@ -3130,14 +3138,6 @@ import { useSearchParams } from 'next/navigation';
                                                   )}
                                                 </div>
                                               </div>
-
-                                              {/* Billing Panel Backdrop */}
-                                              {showBillingDropdown && (
-                                                <div 
-                                                  className="fixed inset-0 z-40"
-                                                  onClick={() => setShowBillingDropdown(false)}
-                                                />
-                                              )}
                                             </div>
                                           </div>
 
