@@ -330,7 +330,7 @@ import { useSearchParams } from 'next/navigation';
 
                           const [placeholderText, setPlaceholderText] = useState('');
 
-                          
+
 
                           // Chat sidebar states
                           const [showChatSidebar, setShowChatSidebar] = useState(false);
@@ -501,12 +501,12 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          
+
 
                           // Theme management with persistence
 
 
-                          
+
 
                           // Handle sign out with proper cleanup
                           const handleSignOut = async () => {
@@ -1234,7 +1234,7 @@ import { useSearchParams } from 'next/navigation';
                             const currentInput = inputRef.current?.value || input;
                             if (currentInput.trim() === '') return;
 
-                            
+
 
                             // Check if user has messages left
                             if (messagesLeft === null || messagesLeft === 0) {
@@ -2148,7 +2148,7 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          
+
 
                           // Quick Purchase Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
@@ -3301,7 +3301,21 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          
+
+
+                          // Don't show blank screen - always render the UI structure
+                          // Authentication redirect happens in useEffect background
+                          // If loading, show a spinner. Otherwise, render the main app layout.
+                          if (loading) {
+                            return (
+                              <div className="flex justify-center items-center h-screen bg-black">
+                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
+                              </div>
+                            );
+                          }
+
+                          // If user is not logged in, they are redirected by useAuth or the useEffect hook below.
+                          // This ensures we don't show content without an authenticated user.
 
                           // Don't show blank screen - always render the UI structure
                           // Authentication redirect happens in useEffect background
@@ -4109,7 +4123,7 @@ import { useSearchParams } from 'next/navigation';
                                                 });
                                               }}
                                               placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none placeholder-typing scrollbar-custom box-border leading-relaxed break-words"
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custom box-border leading-relaxed break-words"
                                               id="chat-input-field"
                                               rows={1}
                                               onKeyDown={(e) => {
@@ -4181,4 +4195,4 @@ import { useSearchParams } from 'next/navigation';
                               )}
                             </div>
                           );
-                        }
+                        };
