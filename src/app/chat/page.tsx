@@ -3326,12 +3326,13 @@ import { useSearchParams } from 'next/navigation';
                           // This ensures we don't show content without an authenticated user.
 
                           // Don't show blank screen - always render the UI structure
-                          // Authentication redirect happens in useEffect background
+                        // Authentication redirect happens in useEffect background
+                        }
 
-                          return (
-                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
-                              {/* Custom Modals */}
-                              <ConfirmModal
+                        return (
+                          <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+                            {/* Custom Modals */}
+                            <ConfirmModal
                                 isOpen={showConfirmModal}
                                 onClose={() => setShowConfirmModal(false)}
                                 onConfirm={modalConfig.onConfirm}
