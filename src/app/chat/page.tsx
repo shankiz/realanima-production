@@ -330,23 +330,7 @@ import { useSearchParams } from 'next/navigation';
 
                           const [placeholderText, setPlaceholderText] = useState('');
 
-                          // Voice call states
-                          const [isCallActive, setIsCallActive] = useState(false);
-                          const [showCallInterface, setShowCallInterface] = useState(false);
-                          const [callStatus, setCallStatus] = useState(''); // 'calling', 'speaking', 'listening', 'processing'
-                          const [voiceVolume, setVoiceVolume] = useState(0);
-                          const [speechDetected, setSpeechDetected] = useState(false);
-
-                          // Voice services
-                          const audioRef = useRef<HTMLAudioElement>(null);
-                          const [isRecording, setIsRecording] = useState(false);
-                          const [liveTranscript, setLiveTranscript] = useState('');
-                          const [isProcessing, setIsProcessing] = useState(false);
-                          const [currentAudio, setCurrentAudio] = useState<string | null>(null);
-                          const [voiceService, setVoiceService] = useState<SimplifiedVoiceService | null>(null);
-
-                          // Live transcription states
-                          const [liveTranscriptDisplay, setLiveTranscriptDisplay] = useState('');
+                          
 
                           // Chat sidebar states
                           const [showChatSidebar, setShowChatSidebar] = useState(false);
@@ -383,7 +367,6 @@ import { useSearchParams } from 'next/navigation';
                           const [showConfirmModal, setShowConfirmModal] = useState(false);
                           const [showAlertModal, setShowAlertModal] = useState(false);
                           const [showCreditModal, setShowCreditModal] = useState(false);
-                          const [showComingSoonModal, setShowComingSoonModal] = useState(false);
                           const [showFirstResponseVoiceModal, setShowFirstResponseVoiceModal] = useState(false);
                           const [isDeleteHistoryLoading, setIsDeleteHistoryLoading] = useState(false);
                           const [modalConfig, setModalConfig] = useState({
@@ -518,35 +501,12 @@ import { useSearchParams } from 'next/navigation';
                             }
                           };
 
-                          // Critical state management refs to prevent race conditions
-                          const isListeningRef = useRef(false);
-                          const shouldStopListeningRef = useRef(false);
-                          const isProcessingRef = useRef(false);
-
-                          // Voice activity detection states (declared only once)
-                          const [voiceActivityTimeout, setVoiceActivityTimeout] = useState<NodeJS.Timeout | null>(null);
-                          const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-                          const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
-                          const [isProcessingAudio, setIsProcessingAudio] = useState(false);
-                          const [silenceTimer, setSilenceTimer] = useState<NodeJS.Timeout | null>(null);
-                          const [voiceDetectionActive, setVoiceDetectionActive] = useState(false);
+                          
 
                           // Theme management with persistence
 
 
-                          useEffect(() => {
-                            console.log('🔊 [DEBUG] Component mounted, setting up audio handler');
-                          }, []);
-
-                          useEffect(() => {
-                            if (currentAudio) {
-                              console.log('🔊 [DEBUG] Playing audio:', currentAudio.substring(0, 50) + '...');
-                              const audio = new Audio(currentAudio);
-                              audio.play().catch(error => {
-                                console.error('❌ [DEBUG] Audio playback failed:', error);
-                              });
-                            }
-                          }, [currentAudio]);
+                          
 
                           // Handle sign out with proper cleanup
                           const handleSignOut = async () => {
@@ -1274,11 +1234,7 @@ import { useSearchParams } from 'next/navigation';
                             const currentInput = inputRef.current?.value || input;
                             if (currentInput.trim() === '') return;
 
-                            // Prevent sending messages during voice processing
-                            if (isProcessingRef.current || callStatus === 'processing') {
-                              console.log('🔴 [DEBUG] Cannot send message - voice processing in progress');
-                              return;
-                            }
+                            
 
                             // Check if user has messages left
                             if (messagesLeft === null || messagesLeft === 0) {
@@ -2011,409 +1967,9 @@ import { useSearchParams } from 'next/navigation';
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
-                          // Initialize simplified voice service
-                          useEffect(() => {
-                            const initVoiceService = () => {
-                              try {
-                                const deepgramKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
-                                const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+                          
 
-                                if (!deepgramKey) {
-                                  console.error('❌ Deepgram API key not found');
-                                  return;
-                                }
-
-                                if (!geminiKey) {
-                                  console.error('❌ Gemini API key not found');
-                                  return;
-                                }
-
-                                const service = new SimplifiedVoiceService(deepgramKey, geminiKey);
-
-                                service.setCallbacks({
-                                  onTranscriptUpdate: (transcript: string, isFinal: boolean) => {
-                                    console.log(`📝 [DEBUG] Transcript update: "${transcript}" (final: ${isFinal})`);
-                                    setLiveTranscript(transcript);
-                                    setLiveTranscriptDisplay(transcript);
-
-                                    if (isFinal) {
-                                      console.log('🔄 [DEBUG] Final transcript received, processing...');
-                                      setCallStatus('processing');
-                                      setIsProcessing(true);
-                                      isProcessingRef.current = true;
-                                    }
-                                  },
-                                  onResponse: (text: string, audioData: string, userTranscript?: string) => {
-                                    console.log(`✅ [DEBUG] Got AI response: "${text}"`);
-
-                                    // Add user message first (from provided transcript)
-                                    if (userTranscript && userTranscript.trim()) {
-                                      const userMessage = {
-                                        role: 'user' as const,
-                                        content: userTranscript.trim(),
-                                      };
-                                      setMessages(prev => [...prev, userMessage]);
-                                      console.log('📝 [DEBUG] Added user message to chat:', userMessage.content);
-                                    }
-
-                                    // Add AI message to chat
-                                    const aiMessage = {
-                                      role: 'assistant' as const,
-                                      content: text,
-                                    };
-                                    setMessages(prev => [...prev, aiMessage]);
-                                    console.log('🤖 [DEBUG] Added AI message to chat:', text);
-
-                                    // Transition to speaking
-                                    console.log('🔄 [DEBUG] Transitioning to speaking status');
-                                    setCallStatus('speaking');
-
-                                    // Play audio response
-                                    console.log('🔊 [DEBUG] Playing AI audio response');
-                                    const audio = new Audio(audioData);
-
-                                    audio.onloadeddata = () => {
-                                      console.log('🔊 [DEBUG] AI audio loaded, duration:', audio.duration);
-                                    };
-
-                                    audio.onended = () => {
-                                      console.log('🔊 [DEBUG] AI audio finished playing');
-                                      console.log('🔄 [DEBUG] Transitioning back to listening');
-                                      setCallStatus('listening');
-
-                                      // Start listening again after a brief pause
-                                      setTimeout(() => {
-                                        console.log('🎤 [DEBUG] Restarting voice recording for next input');
-                                        startVoiceRecording();
-                                      }, 1000);
-                                    };
-
-                                    audio.onerror = (error) => {
-                                      console.error('❌ [DEBUG] AI audio playback error:', error);
-                                      console.log('🔄 [DEBUG] Fallback: Transitioning to listening after 2 seconds');
-                                      setTimeout(() => {
-                                        setCallStatus('listening');
-                                        startVoiceRecording();
-                                      }, 2000);
-                                    };
-
-                                    // Set volume and play
-                                    audio.volume = 1.0;
-                                    audio.play().catch(error => {
-                                      console.error('❌ [DEBUG] Failed to play AI audio:', error);
-                                      console.log('🔄 [DEBUG] Fallback: Transitioning to listening after 1 second');
-                                      setTimeout(() => {
-                                        setCallStatus('listening');
-                                        startVoiceRecording();
-                                      }, 1000);
-                                    });
-
-                                    // Reset states
-                                    setIsProcessing(false);
-                                    setIsRecording(false);
-                                    setLiveTranscript('');
-                                    setLiveTranscriptDisplay('');
-                                    isProcessingRef.current = false;
-                                  },
-                                  onError: (error: string) => {
-                                    console.error('❌ [DEBUG] Voice service error:', error);
-                                    console.log('🔄 [DEBUG] Resetting to listening state after error');
-
-                                    setIsProcessing(false);
-                                    setIsRecording(false);
-                                    setLiveTranscript('');
-                                    setLiveTranscriptDisplay('');
-                                    setCallStatus('listening');
-                                    isProcessingRef.current = false;
-
-                                    // Try to restart listening after error
-                                    setTimeout(() => {
-                                      console.log('🔄 [DEBUG] Attempting to restart voice recording after error');
-                                      startVoiceRecording();
-                                    }, 2000);
-                                  }
-                                });
-
-                                setVoiceService(service);
-                                console.log('✅ Simplified voice service initialized');
-                              } catch (error) {
-                                console.error('❌ Failed to initialize voice service:', error);
-                              }
-                            };
-
-                            initVoiceService();
-                          }, [character]);
-
-                          // Voice recording functions
-                          const startVoiceRecording = async () => {
-                            if (!voiceService) {
-                              console.log('🔄 [DEBUG] Voice service not ready, waiting...');
-                              return;
-                            }
-
-                            if (isRecording) {
-                              console.log('⚠️ [DEBUG] Already recording, skipping start');
-                              return;
-                            }
-
-                            try {
-                              console.log('🎤 [DEBUG] Starting voice recording...');
-                              console.log('🎤 [DEBUG] Current call status:', callStatus);
-
-                              // Clear any previous transcripts
-                              setLiveTranscript('');
-                              setLiveTranscriptDisplay('');
-                              setIsProcessing(false);
-
-                              // Start listening with live transcription
-                              await voiceService.startListening();
-
-                              // Set recording state after successful start
-                              setIsRecording(true);
-
-                              console.log('✅ [DEBUG] Voice recording started successfully');
-                              console.log('🎤 [DEBUG] User can now speak...');
-                            } catch (error) {
-                              console.error('❌ [DEBUG] Failed to start voice recording:', error);
-                              console.error('❌ [DEBUG] Error details:', error);
-                              setIsRecording(false);
-                              setCallStatus('listening'); // Keep in listening state for retry
-
-                              // Try to restart after a brief delay
-                              setTimeout(() => {
-                                console.log('🔄 [DEBUG] Retrying voice recording...');
-                                startVoiceRecording();
-                              }, 2000);
-                            }
-                          };
-
-                          const stopVoiceRecording = () => {
-                            if (!voiceService) {
-                              console.log('⚠️ [DEBUG] No voice service available');
-                              return;
-                            }
-
-                            console.log('⏹️ [DEBUG] Stopping voice recording...');
-                            console.log('🎤 [DEBUG] Current transcript before stop:', liveTranscript);
-
-                            try {
-                              voiceService.stopListening();
-                              console.log('✅ [DEBUG] Voice service stopped successfully');
-                            } catch (error) {
-                              console.error('❌ [DEBUG] Error stopping voice service:', error);
-                            }
-
-                            // Reset recording states
-                            setIsRecording(false);
-                            setIsProcessing(false);
-                            setLiveTranscript('');
-                            setLiveTranscriptDisplay('');
-
-                            console.log('✅ [DEBUG] Voice recording stopped and states reset');
-                          };
-
-                          const initializeVoiceDetection = async () => {
-                            try {
-                              console.log('🎤 [DEBUG] Requesting microphone access...');
-                              const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                              console.log('🎤 [DEBUG] Microphone access granted');
-
-                              console.log('🎤 [DEBUG] Creating audio context...');
-                              const context = new AudioContext();
-                              const analyser = context.createAnalyser();
-                              const source = context.createMediaStreamSource(stream);
-
-                              source.connect(analyser);
-                              console.log('🎤 [DEBUG] Audio nodes connected');
-
-                              setAudioContext(context);
-                              setAnalyserNode(analyser);
-                              setVoiceDetectionActive(true);
-
-                              console.log('✅ [DEBUG] Voice detection initialized successfully');
-                            } catch (error) {
-                              console.error('❌ [DEBUG] Voice detection failed:', error);
-
-                              if (error instanceof Error) {
-                                console.error('❌ [DEBUG] Error details:', error.name, error.message);
-
-                                if (error.name === 'NotAllowedError') {
-                                  console.error('❌ [DEBUG] Microphone access denied by user');
-                                } else if (error.name === 'NotFoundError') {
-                                  console.error('❌ [DEBUG] No microphone found');
-                                } else if (error.name === 'NotSupportedError') {
-                                  console.error('❌ [DEBUG] Browser does not support getUserMedia');
-                                }
-                              } else {
-                                console.error('❌ [DEBUG] Unknown error type:', typeof error);
-                              }
-                            }
-                          };
-
-                          const startVoiceCall = async () => {
-                            try {
-                              console.log('🎤 [DEBUG] Starting voice call...');
-                              console.log('🎤 [DEBUG] Character selected:', character);
-
-                              if (!voiceService) {
-                                console.error('❌ [DEBUG] Voice service not available');
-                                return;
-                              }
-
-                              if (!character) {
-                                console.error('❌ [DEBUG] No character selected!');
-                                return;
-                              }
-
-                              setIsCallActive(true);
-                              setCallStatus('calling');
-                              setShowCallInterface(true);
-                              console.log('📞 [DEBUG] Call activated - status set to connecting');
-
-                              // Set character in voice service
-                              voiceService.setCharacter(character);
-                              console.log('🎤 [DEBUG] Character set in voice service:', character);
-
-                              // Use the complete start call method
-                              console.log('🎤 [DEBUG] Starting complete call process...');
-                              const greetingData = await voiceService.startCall();
-
-                              if (!greetingData) {
-                                console.error('❌ [DEBUG] Failed to start call');
-                                throw new Error('Failed to start call');
-                              }
-
-                              console.log('🎤 [DEBUG] Call started successfully, greeting data:', greetingData);
-
-                              // Add greeting message to chat
-                              const greetingMessage = { 
-                                role: 'assistant' as const, 
-                                content: greetingData.text 
-                              };
-                              console.log('🎤 [DEBUG] Adding greeting message to chat:', greetingMessage);
-                              setMessages(prev => [...prev, greetingMessage]);
-
-                              // Transition to speaking status
-                              console.log('🎤 [DEBUG] Transitioning to speaking status');
-                              setCallStatus('speaking');
-
-                              // Play greeting audio
-                              console.log('🎤 [DEBUG] Playing greeting audio');
-                              const audio = new Audio(greetingData.audio);
-
-                              audio.onloadeddata = () => {
-                                console.log('🎤 [DEBUG] Greeting audio loaded, duration:', audio.duration);
-                              };
-
-                              audio.onended = () => {
-                                console.log('🎤 [DEBUG] Greeting audio finished playing');
-                                console.log('🎤 [DEBUG] Transitioning to listening mode');
-                                setCallStatus('listening');
-
-                                // Start listening for user input immediately
-                                console.log('🎤 [DEBUG] Starting voice recording for user input');
-                                startVoiceRecording();
-                              };
-
-                              audio.onerror = (error) => {
-                                console.error('❌ [DEBUG] Audio playback error:', error);
-                                console.log('🎤 [DEBUG] Fallback: Transitioning to listening after 3 seconds');
-                                setTimeout(() => {
-                                  setCallStatus('listening');
-                                  startVoiceRecording();
-                                }, 3000);
-                              };
-
-                              // Set volume and play
-                              audio.volume = 1.0;
-                              audio.play().catch(error => {
-                                console.error('❌ [DEBUG] Failed to play greeting audio:', error);
-                                console.log('🎤 [DEBUG] Fallback: Transitioning to listening after 2 seconds');
-                                setTimeout(() => {
-                                  setCallStatus('listening');
-                                  startVoiceRecording();
-                                }, 2000);
-                              });
-
-                              console.log('🎤 [DEBUG] Voice call initialization complete');
-
-                            } catch (error) {
-                              console.error('❌ [DEBUG] Voice call failed:', error);
-                              console.error('❌ [DEBUG] Error stack:', error);
-
-                              // Reset state on error
-                              setIsCallActive(false);
-                              setShowCallInterface(false);
-                              setCallStatus('');
-                            }
-                          };
-
-                          const endCall = () => {
-                            console.log('📞 [DEBUG] Ending call...');
-
-                            // Reset all critical refs immediately
-                            isProcessingRef.current = false;
-                            isListeningRef.current = false;
-                            shouldStopListeningRef.current = true;
-
-                            // CRITICAL: Stop the voice service first
-                            if (voiceService) {
-                              console.log('🛑 [DEBUG] Stopping voice service...');
-                              voiceService.stopListening();
-                            }
-
-                            // Stop voice recording
-                            if (isRecording) {
-                              console.log('🛑 [DEBUG] Stopping voice recording...');
-                              stopVoiceRecording();
-                            }
-
-                            // Stop voice detection
-                            setVoiceDetectionActive(false);
-
-                            // Close audio context if exists
-                            if (audioContext) {
-                              console.log('🛑 [DEBUG] Closing audio context...');
-                              audioContext.close();
-                            }
-
-                            // Clear any existing timers
-                            if (silenceTimer) {
-                              clearTimeout(silenceTimer);
-                              setSilenceTimer(null);
-                            }
-
-                            if (voiceActivityTimeout) {
-                              clearTimeout(voiceActivityTimeout);
-                              setVoiceActivityTimeout(null);
-                            }
-
-                            // Reset all states
-                            setIsCallActive(false);
-                            setCallStatus('');
-                            setIsRecording(false);
-                            setIsProcessing(false);
-                            setIsProcessingAudio(false);
-                            setAudioContext(null);
-                            setAnalyserNode(null);
-                            setVoiceActivityTimeout(null);
-                            setSilenceTimer(null);
-                            setVoiceVolume(0);
-                            setSpeechDetected(false);
-                            setLiveTranscriptDisplay('');
-                            setLiveTranscript('');
-
-                            // Add call ended message
-                            const endMessage: Message = { role: 'user', content: `📞 Call ended` };
-                            setMessages(prev => [...prev, endMessage]);
-
-                            // Hide call interface with smooth transition
-                            setTimeout(() => {
-                              setShowCallInterface(false);
-                            }, 300);
-
-                            console.log('✅ [DEBUG] Call ended successfully - all services stopped');
-                          };
+                          
 
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
@@ -2596,83 +2152,7 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          // Coming Soon Modal Component
-                          const ComingSoonModal = () => (
-                            <div 
-                              className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
-                                showComingSoonModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                              }`}
-                              onClick={() => setShowComingSoonModal(false)}
-                            >
-                              <div className="flex items-center justify-center min-h-screen p-4">
-                                <div 
-                                  className={`bg-gray-950/95 border border-gray-800/50 rounded-2xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out ${
-                                    showComingSoonModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-                                  }`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {/* Header */}
-                                  <div className="relative p-6 pb-4">
-                                    <button
-                                      onClick={() => setShowComingSoonModal(false)}
-                                      className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800/30"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    </button>
-                                    <div className="text-center">
-                                      {/* Voice Call Icon */}
-                                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                      </div>
-                                      <h2 className="text-xl font-semibold text-white mb-2">Voice Calls Coming Soon!</h2>
-                                      <p className="text-gray-400 text-sm leading-relaxed">
-                                        We're working hard to bring you real-time voice conversations with your favorite anime characters. 
-                                        This exciting feature will be available very soon!
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  {/* Content */}
-                                  <div className="px-6 pb-6">
-                                    <div className="bg-gray-900/50 border border-gray-800/30 rounded-xl p-4 mb-4">
-                                      <h3 className="text-white font-medium text-sm mb-2">What to expect:</h3>
-                                      <ul className="text-gray-300 text-sm space-y-1">
-                                        <li className="flex items-center">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                          </svg>
-                                          Real-time voice conversations
-                                        </li>
-                                        <li className="flex items-center">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                          </svg>
-                                          Character-specific voices
-                                        </li>
-                                        <li className="flex items-center">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                          </svg>
-                                          Natural speech recognition
-                                        </li>
-                                      </ul>
-                                    </div>
-
-                                    <button
-                                      onClick={() => setShowComingSoonModal(false)}
-                                      className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white py-3 px-4 rounded-lg transition-all font-medium"
-                                    >
-                                      Got it!
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
+                          
 
                           // Quick Purchase Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
@@ -3825,88 +3305,7 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                          // Call Interface Component
-                          const CallInterface = () => (
-                            <div className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 transition-all duration-500 ease-in-out ${
-                              showCallInterface ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95 pointer-events-none'
-                            }`}>
-                              <div className="flex flex-col h-screen justify-center items-center">
-                                {/* Character Profile Section */}
-                                <div className="flex flex-col items-center justify-center">
-                                  <div className="text-center mb-12">
-                                    <div className="relative w-40 h-40 mx-auto mb-6">
-                                      <Image 
-                                        src={getCharacterImage(character || 'gojo')}
-                                        alt={getCharacterName(character || 'gojo')}
-                                        fill
-                                        className="rounded-full object-cover"
-                                      />
-                                      {/* Subtle glow when speaking */}
-                                      {callStatus === 'speaking' && (
-                                        <div className="absolute inset-0 rounded-full bg-cyan-400/10 animate-pulse shadow-2xl shadow-cyan-400/20"></div>
-                                      )}
-                                    </div>
-                                    <h2 className="text-3xl font-light text-white mb-2">{getCharacterName(character || 'gojo')}</h2>
-                                    <p className="text-gray-400 text-sm font-light">{getCharacterDescription(character || 'gojo')}</p>
-                                  </div>
-
-                                  {/* Call Status Display */}
-                                  <div className="mb-16">
-                                    <div className="flex flex-col items-center space-y-3">
-                                      {callStatus === 'calling' && (
-                                        <div className="text-blue-400 text-sm font-light">
-                                          Connecting
-                                          <span className="inline-block ml-0.5">
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0.8s' }}>.</span>
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '1.6s' }}>.</span>
-                                          </span>
-                                        </div>
-                                      )}
-                                      {callStatus === 'speaking' && (
-                                        <span className="text-green-400 text-sm font-light animate-pulse">🔊 Speaking</span>
-                                      )}
-                                      {callStatus === 'listening' && (
-                                        <span className="text-cyan-400 text-sm font-light animate-pulse">🎤 Listening</span>
-                                      )}
-                                      {callStatus === 'processing' && (
-                                        <span className="text-amber-400 text-sm font-light">
-                                          🤔 Processing
-                                          <span className="inline-block ml-1">
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0.5s' }}>.</span>
-                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '1s' }}>.</span>
-                                          </span>
-                                        </span>
-                                      )}
-
-                                      {/* Live transcript display during listening */}
-                                      {callStatus === 'listening' && liveTranscriptDisplay && showCallInterface && (
-                                        <div className="mt-4 p-3 bg-black/40 border border-cyan-500/30 rounded-lg max-w-sm text-center">
-                                          <div className="text-cyan-300 text-sm italic">
-                                            "{liveTranscriptDisplay}"
-                                          </div>
-                                          <div className="text-xs text-cyan-400/60 mt-1">
-                                            Live transcription...
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* End Call Button */}
-                                  <button
-                                    onClick={endCall}
-                                    className="bg-red-500/80 hover:bg-red-500 text-white rounded-full p-5 transition-all duration-200 shadow-lg hover:shadow-red-500/20 flex items-center justify-center group"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-135 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                                      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          );
+                          
 
                           // Don't show blank screen - always render the UI structure
                           // Authentication redirect happens in useEffect background
@@ -3942,14 +3341,8 @@ import { useSearchParams } from 'next/navigation';
                               {/* First Response Voice Modal */}
                               <FirstResponseVoiceModal />
 
-                              {/* Coming Soon Modal */}
-                              <ComingSoonModal />
-
                               {/* Settings Modal Overlay */}
                               <SettingsModal />
-
-                              {/* Call Interface Overlay */}
-                              <CallInterface />
 
                               {/* Voice generation error notification - Fixed at top of chat area */}
                               {voiceGenerationError && (
