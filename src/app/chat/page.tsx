@@ -3909,7 +3909,7 @@ import { useSearchParams } from 'next/navigation';
                           // Don't show blank screen - always render the UI structure
                           // Authentication redirect happens in useEffect background
                           return (
-                          <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
                             {/* Custom Modals */}
                             <ConfirmModal
                                 isOpen={showConfirmModal}
