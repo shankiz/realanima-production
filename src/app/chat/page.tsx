@@ -309,6 +309,13 @@ import { useSearchParams } from 'next/navigation';
 
                           const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
                           // Chat history states
+                          interface ChatHistoryItem {
+                            id: string;
+                            character: string;
+                            timestamp: any;
+                            lastMessage?: string;
+                            response?: string;
+                          }
                           const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
                           const [isLoadingHistory, setIsLoadingHistory] = useState(false);
                           const [loadingConversation, setLoadingConversation] = useState<string | null>(null);
@@ -3628,7 +3635,7 @@ import { useSearchParams } from 'next/navigation';
                                                     <div className="bg-red-900/20 border border-red-500/50 rounded-xl p-3 mt-4">
                                                       <div className="flex items-center space-x-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833-.192 2.5 1.732 2.5z" />
+                                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833-.192 2.5 1.732 2.5z" />
                                                         </svg>
                                                         <div>
                                                           <p className="text-red-400 font-medium text-xs">Payment Failed</p>
@@ -3818,94 +3825,94 @@ import { useSearchParams } from 'next/navigation';
                             </div>
                           );
 
-                              // Call Interface Component
-                              const CallInterface = () => (
-                                <div className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 transition-all duration-500 ease-in-out ${
-                                  showCallInterface ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95 pointer-events-none'
-                                }`}>
-                                  <div className="flex flex-col h-screen justify-center items-center">
-                                    {/* Character Profile Section */}
-                                    <div className="flex flex-col items-center justify-center">
-                                      <div className="text-center mb-12">
-                                        <div className="relative w-40 h-40 mx-auto mb-6">
-                                          <Image 
-                                            src={getCharacterImage(character || 'gojo')}
-                                            alt={getCharacterName(character || 'gojo')}
-                                            fill
-                                            className="rounded-full object-cover"
-                                          />
-                                          {/* Subtle glow when speaking */}
-                                          {callStatus === 'speaking' && (
-                                            <div className="absolute inset-0 rounded-full bg-cyan-400/10 animate-pulse shadow-2xl shadow-cyan-400/20"></div>
-                                          )}
+                          // Call Interface Component
+                          const CallInterface = () => (
+                            <div className={`fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 transition-all duration-500 ease-in-out ${
+                              showCallInterface ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95 pointer-events-none'
+                            }`}>
+                              <div className="flex flex-col h-screen justify-center items-center">
+                                {/* Character Profile Section */}
+                                <div className="flex flex-col items-center justify-center">
+                                  <div className="text-center mb-12">
+                                    <div className="relative w-40 h-40 mx-auto mb-6">
+                                      <Image 
+                                        src={getCharacterImage(character || 'gojo')}
+                                        alt={getCharacterName(character || 'gojo')}
+                                        fill
+                                        className="rounded-full object-cover"
+                                      />
+                                      {/* Subtle glow when speaking */}
+                                      {callStatus === 'speaking' && (
+                                        <div className="absolute inset-0 rounded-full bg-cyan-400/10 animate-pulse shadow-2xl shadow-cyan-400/20"></div>
+                                      )}
+                                    </div>
+                                    <h2 className="text-3xl font-light text-white mb-2">{getCharacterName(character || 'gojo')}</h2>
+                                    <p className="text-gray-400 text-sm font-light">{getCharacterDescription(character || 'gojo')}</p>
+                                  </div>
+
+                                  {/* Call Status Display */}
+                                  <div className="mb-16">
+                                    <div className="flex flex-col items-center space-y-3">
+                                      {callStatus === 'calling' && (
+                                        <div className="text-blue-400 text-sm font-light">
+                                          Connecting
+                                          <span className="inline-block ml-0.5">
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0.8s' }}>.</span>
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '1.6s' }}>.</span>
+                                          </span>
                                         </div>
-                                        <h2 className="text-3xl font-light text-white mb-2">{getCharacterName(character || 'gojo')}</h2>
-                                        <p className="text-gray-400 text-sm font-light">{getCharacterDescription(character || 'gojo')}</p>
-                                      </div>
+                                      )}
+                                      {callStatus === 'speaking' && (
+                                        <span className="text-green-400 text-sm font-light animate-pulse">🔊 Speaking</span>
+                                      )}
+                                      {callStatus === 'listening' && (
+                                        <span className="text-cyan-400 text-sm font-light animate-pulse">🎤 Listening</span>
+                                      )}
+                                      {callStatus === 'processing' && (
+                                        <span className="text-amber-400 text-sm font-light">
+                                          🤔 Processing
+                                          <span className="inline-block ml-1">
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0.5s' }}>.</span>
+                                            <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '1s' }}>.</span>
+                                          </span>
+                                        </span>
+                                      )}
 
-                                      {/* Call Status Display */}
-                                      <div className="mb-16">
-                                        <div className="flex flex-col items-center space-y-3">
-                                          {callStatus === 'calling' && (
-                                            <div className="text-blue-400 text-sm font-light">
-                                              Connecting
-                                              <span className="inline-block ml-0.5">
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '0.8s' }}>.</span>
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_2.5s_ease-in-out_infinite]" style={{ animationDelay: '1.6s' }}>.</span>
-                                              </span>
-                                            </div>
-                                          )}
-                                          {callStatus === 'speaking' && (
-                                            <span className="text-green-400 text-sm font-light animate-pulse">🔊 Speaking</span>
-                                          )}
-                                          {callStatus === 'listening' && (
-                                            <span className="text-cyan-400 text-sm font-light animate-pulse">🎤 Listening</span>
-                                          )}
-                                          {callStatus === 'processing' && (
-                                            <span className="text-amber-400 text-sm font-light">
-                                              🤔 Processing
-                                              <span className="inline-block ml-1">
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0s' }}>.</span>
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '0.5s' }}>.</span>
-                                                <span className="inline-block opacity-0 animate-[fadeInOut_1.5s_ease-in-out_infinite]" style={{ animationDelay: '1s' }}>.</span>
-                                              </span>
-                                            </span>
-                                          )}
-
-                                          {/* Live transcript display during listening */}
-                                          {callStatus === 'listening' && liveTranscriptDisplay && showCallInterface && (
-                                            <div className="mt-4 p-3 bg-black/40 border border-cyan-500/30 rounded-lg max-w-sm text-center">
-                                              <div className="text-cyan-300 text-sm italic">
-                                                "{liveTranscriptDisplay}"
-                                              </div>
-                                              <div className="text-xs text-cyan-400/60 mt-1">
-                                                Live transcription...
-                                              </div>
-                                            </div>
-                                          )}
+                                      {/* Live transcript display during listening */}
+                                      {callStatus === 'listening' && liveTranscriptDisplay && showCallInterface && (
+                                        <div className="mt-4 p-3 bg-black/40 border border-cyan-500/30 rounded-lg max-w-sm text-center">
+                                          <div className="text-cyan-300 text-sm italic">
+                                            "{liveTranscriptDisplay}"
+                                          </div>
+                                          <div className="text-xs text-cyan-400/60 mt-1">
+                                            Live transcription...
+                                          </div>
                                         </div>
-                                      </div>
-
-                                      {/* End Call Button */}
-                                      <button
-                                        onClick={endCall}
-                                        className="bg-red-500/80 hover:bg-red-500 text-white rounded-full p-5 transition-all duration-200 shadow-lg hover:shadow-red-500/20 flex items-center justify-center group"
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-135 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
-                                        </svg>
-                                      </button>
+                                      )}
                                     </div>
                                   </div>
-                                </div>
-                              );
 
-                              // Don't show blank screen - always render the UI structure
-                              // Authentication redirect happens in useEffect background
-                              return (
-                                <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
-                                {/* Custom Modals */}
+                                  {/* End Call Button */}
+                                  <button
+                                    onClick={endCall}
+                                    className="bg-red-500/80 hover:bg-red-500 text-white rounded-full p-5 transition-all duration-200 shadow-lg hover:shadow-red-500/20 flex items-center justify-center group"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 transform rotate-135 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+
+                          // Don't show blank screen - always render the UI structure
+                          // Authentication redirect happens in useEffect background
+                          return (
+                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+                              {/* Custom Modals */}
                             <ConfirmModal
                                 isOpen={showConfirmModal}
                                 onClose={() => setShowConfirmModal(false)}
@@ -4187,7 +4194,7 @@ import { useSearchParams } from 'next/navigation';
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings
