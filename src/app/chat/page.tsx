@@ -1967,10 +1967,6 @@ import { useSearchParams } from 'next/navigation';
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
-                          
-
-                          
-
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
                             <div 
@@ -4185,6 +4181,4 @@ import { useSearchParams } from 'next/navigation';
                               )}
                             </div>
                           );
-
-
                         }
