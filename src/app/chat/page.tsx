@@ -3330,8 +3330,8 @@ import { useSearchParams } from 'next/navigation';
 
                           return (
                             <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
-                            {/* Custom Modals */}
-                            <ConfirmModal
+                              {/* Custom Modals */}
+                              <ConfirmModal
                                 isOpen={showConfirmModal}
                                 onClose={() => setShowConfirmModal(false)}
                                 onConfirm={modalConfig.onConfirm}
