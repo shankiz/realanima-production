@@ -274,7 +274,8 @@ import { useSearchParams } from 'next/navigation';
                         };
 
                         // Main Chat component with minimalist design
-                        export default function Chat() {
+export default function Chat() {
+  const { user, signOut, loading } = useAuth();
                           const { user, signOut, loading } = useAuth();
                           const router = useRouter();
                           const searchParams = useSearchParams();
