@@ -44,7 +44,7 @@ export class GeminiService {
         });
       } catch (error) {
         console.error(`Error creating model for ${character}:`, error);
-        throw new Error(`Failed to initialize Gemini model: ${error.message}`);
+        throw new Error(`Failed to initialize Gemini model: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 
