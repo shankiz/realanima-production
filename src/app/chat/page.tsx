@@ -3980,7 +3980,7 @@ export default function Chat() {
 
                                   {/* Character Description - border made invisible */}
                                   <div className="text-center py-2 bg-black">
-                                    <p className="text-sm text-gray-400">{getCharacterPersonality(character)}</p>
+                                    <p className="text-sm text-gray-400">{getCharacterPersonality(character || 'gojo')}</p>
                                   </div>
 
                                   {/* Chat Messages */}
