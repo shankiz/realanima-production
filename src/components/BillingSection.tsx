@@ -210,10 +210,6 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
               {subscription.cancelledAt && (
                 <p>Cancelled on: {formatDate(subscription.cancelledAt)}</p>
               )}
-
-              {subscription.subscriptionId && (
-                <p className="text-xs text-gray-500">ID: {subscription.subscriptionId}</p>
-              )}
             </>
           )}
 
