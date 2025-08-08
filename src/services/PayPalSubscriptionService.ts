@@ -294,7 +294,7 @@ export class PayPalSubscriptionService {
       console.log(`💳 Charging recurring subscription ${subscriptionId} with vault token ${paymentTokenId}`);
 
       // Get plan details - using full monthly prices
-      const plans = {
+      const plans: Record<string, { price: string; description: string }> = {
         premium: { price: '3.88', description: 'Premium Plan - Daily Billing' },
         ultimate: { price: '6.88', description: 'Ultimate Plan - Daily Billing' }
       };
