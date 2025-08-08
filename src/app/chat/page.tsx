@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
                         import { useRouter } from 'next/navigation';
                         import Image from 'next/image';
@@ -276,7 +276,6 @@ import { useSearchParams } from 'next/navigation';
                         // Main Chat component with minimalist design
 export default function Chat() {
   const { user, signOut, loading } = useAuth();
-                          const { user, signOut, loading } = useAuth();
                           const router = useRouter();
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
@@ -1976,6 +1975,15 @@ export default function Chat() {
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
+                          // Early return for loading state
+                          if (loading) {
+                            return (
+                              <div className="flex justify-center items-center h-screen bg-black">
+                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
+                              </div>
+                            );
+                          }
+
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
                             <div 
@@ -3308,24 +3316,9 @@ export default function Chat() {
                                 </div>
                               </div>
                             </div>
-                          )}
-
+          );
 
           // Main component return
-          if (loading) {
-            return (
-              <div className="flex justify-center items-center h-screen bg-black">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
-              </div>
-            );
-          }
-
-          // If user is not logged in, they are redirected by useAuth or the useEffect hook below.
-          // This ensures we don't show content without an authenticated user.
-
-          // Don't show blank screen - always render the UI structure
-          // Authentication redirect happens in useEffect background
-
           return (
             <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
                               {/* Custom Modals */}
@@ -3936,6 +3929,7 @@ export default function Chat() {
                                                                 className="w-full text-left"
                                                                 disabled={loadingConversation !== null}
                                                             >
+                                                                <div>
                                                                       {conversation.lastMessage && (
                                                                           <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
                                                                               <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
@@ -3953,7 +3947,6 @@ export default function Chat() {
                                                                             </div>
                                                                         )}
                                                                     </div>
-                                                                )}
                                                             </button>
                                                         </div>
                                                     )}
