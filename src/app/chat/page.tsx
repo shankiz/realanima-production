@@ -3311,8 +3311,22 @@ import { useSearchParams } from 'next/navigation';
 
 
           // Main component return
+          if (loading) {
+            return (
+              <div className="flex justify-center items-center h-screen bg-black">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
+              </div>
+            );
+          }
+
+          // If user is not logged in, they are redirected by useAuth or the useEffect hook below.
+          // This ensures we don't show content without an authenticated user.
+
+          // Don't show blank screen - always render the UI structure
+          // Authentication redirect happens in useEffect background
+
           return (
-                            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
