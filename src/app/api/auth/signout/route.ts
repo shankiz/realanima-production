@@ -1,7 +1,7 @@
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.json({ success: true });
     
@@ -13,4 +13,8 @@ export async function POST() {
     console.error('Error signing out:', error);
     return NextResponse.json({ error: 'Signout failed' }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
 }
