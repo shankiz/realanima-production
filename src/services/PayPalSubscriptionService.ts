@@ -433,7 +433,7 @@ export class PayPalSubscriptionService {
       console.error(`❌ Recurring billing failed for subscription ${subscriptionId}:`, error);
       return {
         success: false,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       };
     }
   }
