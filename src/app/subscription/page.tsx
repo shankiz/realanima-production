@@ -141,22 +141,24 @@ export default function Subscription() {
     }, 2000);
 
     // Refresh user plan data after successful payment
-    try {
-      const token = await user.getIdToken();
-      const response = await fetch('/api/user/profile', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+    if (user) {
+      try {
+        const token = await user.getIdToken();
+        const response = await fetch('/api/user/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setCurrentUserPlan(data.currentPlan || 'free');
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUserPlan(data.currentPlan || 'free');
+        }
+      } catch (error) {
+        console.error('Error refreshing user plan:', error);
       }
-    } catch (error) {
-      console.error('Error refreshing user plan:', error);
     }
   };
 
