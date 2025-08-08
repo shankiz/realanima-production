@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { applyActionCode, auth } from '@/lib/firebase/config';
 import Link from 'next/link';
 
-export default function VerifyEmailPage() {
-  // const router = useRouter();
+function VerifyEmailForm() {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [error, setError] = useState('');
@@ -50,7 +49,7 @@ export default function VerifyEmailPage() {
 
         // Type check the error to safely access properties
         const errorCode = (error as any)?.code;
-        
+
         if (errorCode === 'auth/expired-action-code') {
           setError('This verification link has expired. Please request a new one.');
         } else if (errorCode === 'auth/invalid-action-code') {
@@ -124,5 +123,13 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyEmailForm />
+    </Suspense>
   );
 }
