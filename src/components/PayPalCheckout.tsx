@@ -107,9 +107,10 @@ export default function PayPalCheckout({ credits, amount, packageType, onSuccess
               }
             } catch (error) {
               console.error('Approve error:', error);
-              setMessage(`Sorry, your transaction could not be processed: ${error}`);
+              const errorMessage = error instanceof Error ? error.message : String(error);
+              setMessage(`Sorry, your transaction could not be processed: ${errorMessage}`);
               if (onError) {
-                onError(error.toString());
+                onError(errorMessage);
               }
             }
           }}
