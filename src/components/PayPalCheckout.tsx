@@ -14,7 +14,7 @@ interface PayPalCheckoutProps {
 }
 
 const initialOptions = {
-  "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AfcTYZp_s7XcNTTZWIRZdUAj5oshKGO8mG-IuKuLxtU2Bf2o2dCZtVyNvOZrDfRRR303Mo0tBixx8idn",
+  clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "AfcTYZp_s7XcNTTZWIRZdUAj5oshKGO8mG-IuKuLxtU2Bf2o2dCZtVyNvOZrDfRRR303Mo0tBixx8idn",
   currency: "USD",
   intent: "capture",
   components: "buttons",
