@@ -484,7 +484,7 @@ export class PayPalSubscriptionService {
       return { success: true };
     } catch (error) {
       console.error('Error canceling subscription:', error);
-      return { success: false, error: 'Failed to cancel subscription' };
+      return { success: false, error: error instanceof Error ? error.message : 'Failed to cancel subscription' };
     }
   }
 }
