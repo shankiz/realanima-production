@@ -4057,7 +4057,7 @@ export default function Chat() {
                                               />
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
-                                              {getCharacterName(character)} is thinking
+                                              {getCharacterName(character || 'gojo')} is thinking
                                               <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
