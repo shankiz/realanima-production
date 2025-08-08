@@ -3775,17 +3775,8 @@ export default function Chat() {
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character || 'gojo') }];
 
-                                              // Clear any existing chat cache
-                                              if (voiceService) {
-                                                try {
-                                                  const { GeminiService } = require('@/services/GeminiService');
-                                                  const geminiService = new GeminiService(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
-                                                  geminiService.clearChat(sessionId);
-                                                  console.log('🧹 Cleared previous chat cache for new session');
-                                                } catch (error) {
-                                                  console.warn('⚠️ Could not clear chat cache:', error);
-                                                }
-                                              }
+                                              // Clear any existing chat cache if needed
+                                              console.log('🧹 Starting new chat session - clearing previous context');
 
                                               // Clear localStorage session for this specific character
                                               const storageKey = `chat_session_${user.uid}_${character}`;
