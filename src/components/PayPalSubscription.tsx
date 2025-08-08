@@ -134,7 +134,7 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
               setIsLoading(false);
             }
           }}
-          onApprove={async (data) => {
+          onApprove={async (data: any) => {
             try {
               setIsLoading(true);
               setMessage('Processing subscription approval...');
