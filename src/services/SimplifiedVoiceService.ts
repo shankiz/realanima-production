@@ -378,7 +378,7 @@ export class SimplifiedVoiceService {
 
   private async getGeminiResponse(message: string): Promise<string | null> {
     try {
-      const characterContext = CHARACTER_CONTEXTS[this.currentCharacter] || CHARACTER_CONTEXTS['gojo'];
+      const characterContext = CHARACTER_CONTEXTS[this.currentCharacter as keyof typeof CHARACTER_CONTEXTS] || CHARACTER_CONTEXTS['gojo'];
       const prompt = `${characterContext}\n\nThis is a VOICE CALL - use the special voice call rules with (laugh), (breath), (break), etc. Give complete responses in 1-2 full sentences. Always finish your thoughts completely - don't cut off mid-sentence.`;
 
       const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + this.geminiApiKey, {
