@@ -3,10 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const response = NextResponse.json({ success: true });
+    const response = NextResponse.json({ success: true, message: 'Signed out successfully' });
     
     // Clear session cookie
-    response.cookies.delete('__session');
+    response.cookies.set('__session', '', {
+      expires: new Date(0),
+      path: '/'
+    });
     
     return response;
   } catch (error) {
@@ -16,5 +19,5 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
 }
