@@ -3932,7 +3932,7 @@ export default function Chat() {
                                                                       )}
                                                                         {conversation.response && (
                                                                             <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
-                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character)}:</span> {conversation.response.length > 80 
+                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
                                                                                     ? conversation.response.substring(0, 80) + '...' 
                                                                                     : conversation.response}
                                                                             </div>
