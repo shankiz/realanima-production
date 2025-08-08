@@ -471,7 +471,7 @@ export class SimplifiedVoiceService {
 
       } catch (fetchError) {
         clearTimeout(timeoutId);
-        if (fetchError.name === 'AbortError') {
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
           throw new Error('TTS request timed out');
         }
         throw fetchError;
