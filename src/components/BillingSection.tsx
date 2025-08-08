@@ -183,12 +183,6 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
           <p>Credits: {subscriptionData.credits || 0}</p>
 
           {/* Show subscription details if user has premium/ultimate plan */}
-          {console.log('🔍 Rendering check:', {
-            currentUserPlan,
-            isPremiumOrUltimate: (currentUserPlan === 'premium' || currentUserPlan === 'ultimate'),
-            hasSubscription: !!subscription,
-            subscriptionStatus: subscription?.status
-          })}
           {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && subscription && (
             <>
               <p>Status: <span className={`${
