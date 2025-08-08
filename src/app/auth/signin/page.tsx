@@ -1,12 +1,13 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { signInWithEmail, signInWithGoogle, resendEmailVerification, resetPassword } from '@/lib/firebase/auth';
 
-export default function SignInPage() {
+function SignInForm() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -288,5 +289,17 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+      </div>
+    }>
+      <SignInForm />
+    </Suspense>
   );
 }
