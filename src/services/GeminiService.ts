@@ -96,7 +96,7 @@ export class GeminiService {
 
     } catch (error) {
       console.error(`Error creating chat for ${sessionId}-${character}:`, error);
-      throw new Error(`Failed to initialize chat session: ${error.message}`);
+      throw new Error(`Failed to initialize chat session: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
