@@ -4012,8 +4012,8 @@ export default function Chat() {
                                             {msg.role === 'assistant' && (
                                               <div className="relative w-8 h-8 mr-2">
                                                 <Image 
-                                                  src={getCharacterImage(character)}
-                                                  alt={getCharacterName(character)}
+                                                  src={getCharacterImage(character || 'gojo')}
+                                                  alt={getCharacterName(character || 'gojo')}
                                                   fill
                                                   className="rounded-full object-cover"
                                                 />
