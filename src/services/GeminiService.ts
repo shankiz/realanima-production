@@ -121,7 +121,7 @@ export class GeminiService {
 
     } catch (error) {
       console.error('❌ [GEMINI] Error:', error);
-      throw new Error(`Failed to generate response: ${error.message}`);
+      throw new Error(`Failed to generate response: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
