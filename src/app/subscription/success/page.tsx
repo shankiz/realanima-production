@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function SubscriptionSuccessPage() {
+function SubscriptionSuccessContent() {
   const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
 
@@ -42,7 +42,7 @@ export default function SubscriptionSuccessPage() {
           </div>
 
           <div className="space-y-3">
-            <Link 
+            <Link
               href="/chat"
               className="block w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-lg transition-all duration-300"
               onClick={() => {
@@ -54,13 +54,13 @@ export default function SubscriptionSuccessPage() {
             >
               Start Chatting
             </Link>
-            <Link 
+            <Link
               href="/profile"
               className="block w-full bg-gray-700 text-white py-3 rounded-2xl font-semibold hover:bg-gray-600 transition-all duration-300"
             >
               View Profile
             </Link>
-            <Link 
+            <Link
               href="/"
               className="block w-full text-purple-400 hover:text-purple-300 transition-colors duration-300 py-2"
             >
@@ -70,5 +70,13 @@ export default function SubscriptionSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SubscriptionSuccessPage() {
+  return (
+    <Suspense fallback={null}>
+      <SubscriptionSuccessContent />
+    </Suspense>
   );
 }
