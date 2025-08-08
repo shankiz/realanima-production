@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
                         import { useRouter } from 'next/navigation';
                         import Image from 'next/image';
@@ -10,6 +10,15 @@ import { useSearchParams } from 'next/navigation';
                         import { useAuth } from '@/app/AuthProvider';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
+
+// Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div />}> 
+      <Chat />
+    </Suspense>
+  );
+}
 
                         // Recent conversation item component with delete option
                         const RecentConversationItem = ({ conversation, onClick, onDelete, currentCharacter }: {
@@ -274,7 +283,7 @@ import { useSearchParams } from 'next/navigation';
                         };
 
                         // Main Chat component with minimalist design
-export default function Chat() {
+function Chat() {
   const { user, signOut, loading } = useAuth();
                           const router = useRouter();
                           const searchParams = useSearchParams();
