@@ -11,6 +11,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
     }
 
     const token = authHeader.split('Bearer ')[1];
+    
+    if (!adminAuth) {
+      console.error('[CHAT] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+
+    if (!adminDb) {
+      console.error('[CHAT] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
