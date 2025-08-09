@@ -5,6 +5,14 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🔄 Processing all recurring charges...');
 
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 500 }
+      );
+    }
+
     // Get all users with active subscriptions
     const usersSnapshot = await adminDb.collection('users')
       .where('subscription.status', '==', 'active')
