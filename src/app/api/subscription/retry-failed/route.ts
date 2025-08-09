@@ -1,7 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
-import { verifyIdToken } from '@/lib/firebase/admin-helpers';
+import { adminDb, adminAuth } from '@/lib/firebase/admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,10 +10,21 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    const decodedToken = await verifyIdToken(token);
+    
+    if (!adminAuth) {
+      console.error('❌ Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
+    }
+    
+    const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
     console.log(`🔄 Retrying failed payment for user: ${uid}`);
+
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
 
     // Get user's subscription
     const userRef = adminDb.collection('users').doc(uid);
