@@ -14,45 +14,16 @@ console.log('FIREBASE_PROJECT_ID value:', process.env.FIREBASE_PROJECT_ID);
 console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
 
-// Clean and validate private key - handle multiple formats
+// Clean private key - handle environment variable escaping
 let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
-  // Remove any quotes that might have been added
-  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1');
-  // Replace escaped newlines with actual newlines
-  privateKey = privateKey.replace(/\\n/g, '\n');
-  
-  // Remove any extra whitespace and ensure proper line endings
-  privateKey = privateKey.trim();
-  
-  // Ensure proper formatting and structure
+  // Remove quotes and convert escaped newlines to actual newlines
+  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1').replace(/\\n/g, '\n');
+
+  // Basic validation
   if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
-    console.error('❌ Private key does not appear to be properly formatted');
+    console.error('❌ Private key format is invalid');
     privateKey = undefined;
-  } else {
-    // Additional validation: check if the key has the proper structure
-    const lines = privateKey.split('\n');
-    if (lines.length < 3) {
-      console.error('❌ Private key does not have enough lines');
-      privateKey = undefined;
-    } else {
-      // Reconstruct the key to ensure proper formatting
-      const beginLine = '-----BEGIN PRIVATE KEY-----';
-      const endLine = '-----END PRIVATE KEY-----';
-      const keyContent = lines.slice(1, -1).join('').replace(/\s/g, '');
-      
-      // Rebuild the key with proper line breaks every 64 characters
-      const formattedKeyContent = keyContent.match(/.{1,64}/g)?.join('\n') || '';
-      privateKey = `${beginLine}\n${formattedKeyContent}\n${endLine}`;
-      
-      console.log('🔧 Reconstructed private key with proper formatting');
-      console.log('🔍 Final key length:', privateKey.length);
-      console.log('🔍 Final key structure:', {
-        hasBegin: privateKey.includes(beginLine),
-        hasEnd: privateKey.includes(endLine),
-        lineCount: privateKey.split('\n').length
-      });
-    }
   }
 }
 
@@ -95,12 +66,12 @@ try {
     // Only initialize if we have real credentials and not during build
     if (privateKey && process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && !isBuildTime) {
       console.log('🔥 Initializing Firebase Admin with credentials...');
-      
+
       // Validate private key format before attempting to initialize
       if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
         throw new Error('Private key format is invalid - missing BEGIN/END markers');
       }
-      
+
       app = initializeApp({
         credential: cert(firebaseAdminConfig),
         projectId: process.env.FIREBASE_PROJECT_ID,
@@ -130,7 +101,7 @@ try {
     hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
     isBuildTime
   });
-  
+
   // Don't throw during build time or if it's a key parsing error
   if (isBuildTime || (error instanceof Error && error.message.includes('Failed to parse private key'))) {
     console.warn('Firebase Admin initialization failed - continuing without Firebase Admin');
@@ -148,7 +119,7 @@ export async function verifyIdToken(idToken: string) {
   if (!adminAuth) {
     throw new Error('Firebase Admin not initialized');
   }
-  
+
   try {
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     return decodedToken;
