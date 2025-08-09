@@ -24,7 +24,7 @@ if (privateKey) {
   // Ensure proper formatting
   if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
     console.error('❌ Private key does not appear to be properly formatted');
-    privateKey = null;
+    privateKey = undefined;
   }
 }
 
