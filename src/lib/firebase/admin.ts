@@ -21,10 +21,38 @@ if (privateKey) {
   privateKey = privateKey.replace(/^["'](.*)["']$/, '$1');
   // Replace escaped newlines with actual newlines
   privateKey = privateKey.replace(/\\n/g, '\n');
-  // Ensure proper formatting
-  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+  
+  // Remove any extra whitespace and ensure proper line endings
+  privateKey = privateKey.trim();
+  
+  // Ensure proper formatting and structure
+  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
     console.error('❌ Private key does not appear to be properly formatted');
     privateKey = undefined;
+  } else {
+    // Additional validation: check if the key has the proper structure
+    const lines = privateKey.split('\n');
+    if (lines.length < 3) {
+      console.error('❌ Private key does not have enough lines');
+      privateKey = undefined;
+    } else {
+      // Reconstruct the key to ensure proper formatting
+      const beginLine = '-----BEGIN PRIVATE KEY-----';
+      const endLine = '-----END PRIVATE KEY-----';
+      const keyContent = lines.slice(1, -1).join('').replace(/\s/g, '');
+      
+      // Rebuild the key with proper line breaks every 64 characters
+      const formattedKeyContent = keyContent.match(/.{1,64}/g)?.join('\n') || '';
+      privateKey = `${beginLine}\n${formattedKeyContent}\n${endLine}`;
+      
+      console.log('🔧 Reconstructed private key with proper formatting');
+      console.log('🔍 Final key length:', privateKey.length);
+      console.log('🔍 Final key structure:', {
+        hasBegin: privateKey.includes(beginLine),
+        hasEnd: privateKey.includes(endLine),
+        lineCount: privateKey.split('\n').length
+      });
+    }
   }
 }
 
