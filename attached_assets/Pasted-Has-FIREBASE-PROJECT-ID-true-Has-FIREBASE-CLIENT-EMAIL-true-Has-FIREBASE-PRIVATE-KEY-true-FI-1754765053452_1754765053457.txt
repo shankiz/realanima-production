@@ -1,0 +1,154 @@
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+Has FIREBASE_PRIVATE_KEY: true
+
+FIREBASE_PROJECT_ID value: realanima-ai
+
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+
+FIREBASE_PRIVATE_KEY length: 1731
+🔥 Initializing Firebase Admin with credentials...
+
+🔍 Environment Debug Info:
+NODE_ENV: production
+
+RAILWAY: undefined
+VERCEL: undefined
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+
+Has FIREBASE_PRIVATE_KEY: true
+FIREBASE_PROJECT_ID value: realanima-ai
+
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY length: 1731
+
+🔥 Initializing Firebase Admin with credentials...
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/message-reset/manual/route.js:1:6001) {
+  errorInfo: [Object],
+  codePrefix: 'app'
+}
+Config used: {
+  projectId: 'realanima-ai',
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+  privateKeyLength: 1703,
+  hasPrivateKey: true,
+  hasProjectId: true,
+  hasClientEmail: true
+}
+Error: Failed to initialize Firebase Admin: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/message-reset/manual/route.js:1:6685)
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/subscription/cancel/route.js:1:3947) {
+  errorInfo: [Object],
+  codePrefix: 'app'
+}
+Config used: {
+  projectId: 'realanima-ai',
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+  privateKeyLength: 1703,
+  hasPrivateKey: true,
+  hasProjectId: true,
+  hasClientEmail: true
+}
+
+🔍 Environment Debug Info:
+NODE_ENV: production
+
+RAILWAY: undefined
+VERCEL: undefined
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+Has FIREBASE_PRIVATE_KEY: true
+FIREBASE_PROJECT_ID value: realanima-ai
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY length: 1731
+🔥 Initializing Firebase Admin with credentials...
+🔍 Environment Debug Info:
+NODE_ENV: production
+RAILWAY: undefined
+VERCEL: undefined
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+Has FIREBASE_PRIVATE_KEY: true
+FIREBASE_PROJECT_ID value: realanima-ai
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY length: 1731
+🔥 Initializing Firebase Admin with credentials...
+
+Error: Failed to initialize Firebase Admin: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/subscription/cancel/route.js:1:4631)
+
+🔍 Environment Debug Info:
+NODE_ENV: production
+RAILWAY: undefined
+VERCEL: undefined
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+Has FIREBASE_PRIVATE_KEY: true
+FIREBASE_PROJECT_ID value: realanima-ai
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY length: 1731
+🔥 Initializing Firebase Admin with credentials...
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/user/deduct-message/route.js:1:3161) {
+  errorInfo: [Object],
+  codePrefix: 'app'
+}
+Config used: {
+  projectId: 'realanima-ai',
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+  privateKeyLength: 1703,
+  hasPrivateKey: true,
+  hasProjectId: true,
+  hasClientEmail: true
+}
+Error: Failed to initialize Firebase Admin: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/user/deduct-message/route.js:1:3845)
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/credits/complete/route.js:1:7267) {
+  errorInfo: [Object],
+  codePrefix: 'app'
+}
+Config used: {
+  projectId: 'realanima-ai',
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+  privateKeyLength: 1703,
+  hasPrivateKey: true,
+  hasProjectId: true,
+  hasClientEmail: true
+}
+Error: Failed to initialize Firebase Admin: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/credits/complete/route.js:1:7951)
+
+🔍 Environment Debug Info:
+NODE_ENV: production
+RAILWAY: undefined
+VERCEL: undefined
+Has FIREBASE_PROJECT_ID: true
+Has FIREBASE_CLIENT_EMAIL: true
+Has FIREBASE_PRIVATE_KEY: true
+FIREBASE_PROJECT_ID value: realanima-ai
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY length: 1731
+🔥 Initializing Firebase Admin with credentials...
+
+
+> Build error occurred
+
+[Error: Failed to collect page data for /api/message-reset/manual] {
+  type: 'Error'
+}
