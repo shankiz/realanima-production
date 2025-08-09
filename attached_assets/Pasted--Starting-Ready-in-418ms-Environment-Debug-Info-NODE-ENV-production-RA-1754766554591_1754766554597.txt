@@ -1,0 +1,107 @@
+ 
+
+ ✓ Starting...
+
+ ✓ Ready in 418ms
+
+🔍 Environment Debug Info:
+
+NODE_ENV: production
+
+RAILWAY: undefined
+
+VERCEL: undefined
+
+Has FIREBASE_PROJECT_ID: true
+
+Has FIREBASE_CLIENT_EMAIL: true
+
+Has FIREBASE_PRIVATE_KEY: true
+
+FIREBASE_PROJECT_ID value: realanima-ai
+
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+
+FIREBASE_PRIVATE_KEY length: 1702
+
+🔥 Initializing Firebase Admin with credentials...
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/chunks/1102.js:1:5822) {
+
+  errorInfo: [Object],
+
+  codePrefix: 'app'
+
+}
+
+Config used: {
+
+  projectId: 'realanima-ai',
+
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+
+  privateKeyLength: 1702,
+
+  privateKeyPreview: '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w...',
+
+  hasPrivateKey: true,
+
+  hasProjectId: true,
+
+  hasClientEmail: true,
+
+  isBuildTime: false
+
+}
+
+Firebase Admin initialization failed - continuing without Firebase Admin
+
+🚀 Initializing message reset service...
+
+🚀 Starting automated message reset service...
+
+📅 Reset interval: 120 seconds
+
+⏰ Check interval: 30 seconds
+
+💳 Credit limits: { free: 30, premium: 200, ultimate: 500 }
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🌍 PayPal Environment: sandbox
+
+🔗 PayPal Base URL: https://api-m.sandbox.paypal.com
+
+🌍 PayPal Environment: sandbox
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
+
+🔍 Checking for users needing message reset...
+
+❌ Firebase Admin not initialized
