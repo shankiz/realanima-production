@@ -10,6 +10,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[SIGNIN] Verifying ID token...');
+    
+    if (!adminAuth) {
+      console.error('[SIGNIN] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+    
     let decodedToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(idToken);
@@ -91,6 +97,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists in Firestore (use the token UID)
+    if (!adminDb) {
+      console.error('[SIGNIN] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+    
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
 
