@@ -19,23 +19,36 @@ let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
   console.log('🔧 Original key length:', privateKey.length);
   
-  // Clean up the key using a more direct approach
+  // Clean up the key more carefully
   try {
-    // Remove outer quotes and convert escaped newlines
-    privateKey = privateKey.replace(/^["'](.*)["']$/, '$1').replace(/\\n/g, '\n');
+    // First, remove any outer quotes if present
+    if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || 
+        (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
+      privateKey = privateKey.slice(1, -1);
+    }
+    
+    // Convert escaped newlines to actual newlines
+    privateKey = privateKey.replace(/\\n/g, '\n');
     
     // Validate key structure
     if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
       throw new Error('Invalid private key format');
     }
     
-    // Use Buffer to ensure proper encoding
-    const keyBuffer = Buffer.from(privateKey, 'utf8');
-    privateKey = keyBuffer.toString('utf8');
+    // Ensure proper line breaks around the key markers
+    privateKey = privateKey
+      .replace(/-----BEGIN PRIVATE KEY-----\s*/, '-----BEGIN PRIVATE KEY-----\n')
+      .replace(/\s*-----END PRIVATE KEY-----/, '\n-----END PRIVATE KEY-----');
+    
+    // Remove any extra whitespace between lines but preserve the structure
+    const lines = privateKey.split('\n');
+    const cleanedLines = lines.map(line => line.trim()).filter(line => line.length > 0);
+    privateKey = cleanedLines.join('\n');
     
     console.log('🔧 Cleaned key length:', privateKey.length);
     console.log('🔧 Key starts with:', privateKey.substring(0, 30));
     console.log('🔧 Key ends with:', privateKey.substring(privateKey.length - 30));
+    console.log('🔧 Key line count:', privateKey.split('\n').length);
     
   } catch (error) {
     console.error('❌ Error cleaning private key:', error);
