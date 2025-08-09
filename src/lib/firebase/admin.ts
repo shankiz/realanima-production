@@ -3,7 +3,41 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import crypto from 'crypto';
 
+<<<<<<< HEAD
 // (removed duplicate normalizePrivateKey definition)
+=======
+function normalizePrivateKey(rawKey?: string | null): string | null {
+  if (!rawKey) return null;
+
+  let key = rawKey.trim();
+
+  // Remove BOM and zero-width/invisible characters that can break PEM parsing
+  key = key.replace(/\uFEFF/g, '').replace(/[\u200B-\u200D\u2060\u00A0]/g, '');
+
+  // If wrapped in quotes, strip them
+  if (key.startsWith('"') && key.endsWith('"')) {
+    key = key.slice(1, -1);
+  }
+
+  // Replace escaped newlines and remove any carriage returns
+  key = key.replace(/\\n/g, '\n').replace(/\r/g, '');
+
+  // If this looks like a base64 string (no header/footer but long and base64y), try to decode
+  const looksLikeBase64 = !key.includes('-----BEGIN') && /^[A-Za-z0-9+/=\r\n]+$/.test(key) && key.length > 100;
+  if (looksLikeBase64) {
+    try {
+      const decoded = Buffer.from(key, 'base64').toString('utf8').trim();
+      if (decoded.includes('-----BEGIN') && decoded.includes('PRIVATE KEY-----')) {
+        key = decoded;
+      }
+    } catch {
+      // ignore decode error; will fall back to original
+    }
+  }
+
+  return key;
+}
+>>>>>>> c8a18d54e3d693f3024cbb8d27724096f1e6a674
 
 function normalizePemStructure(pem: string): string {
   const begin = '-----BEGIN PRIVATE KEY-----';
@@ -74,6 +108,41 @@ function parseServiceAccountFromEnv(): ServiceAccount | null {
 
   return null;
 }
+<<<<<<< HEAD
+=======
+
+function normalizePrivateKey(rawKey?: string | null): string | null {
+  if (!rawKey) return null;
+
+  let key = rawKey.trim();
+
+  // Remove BOM and zero-width/invisible characters that can break PEM parsing
+  key = key.replace(/\uFEFF/g, '').replace(/[\u200B-\u200D\u2060\u00A0]/g, '');
+
+  // If wrapped in quotes, strip them
+  if (key.startsWith('"') && key.endsWith('"')) {
+    key = key.slice(1, -1);
+  }
+
+  // Replace escaped newlines and remove any carriage returns
+  key = key.replace(/\\n/g, '\n').replace(/\r/g, '');
+
+  // If this looks like a base64 string (no header/footer but long and base64y), try to decode
+  const looksLikeBase64 = !key.includes('-----BEGIN') && /^[A-Za-z0-9+/=\r\n]+$/.test(key) && key.length > 100;
+  if (looksLikeBase64) {
+    try {
+      const decoded = Buffer.from(key, 'base64').toString('utf8').trim();
+      if (decoded.includes('-----BEGIN') && decoded.includes('PRIVATE KEY-----')) {
+        key = decoded;
+      }
+    } catch {
+      // ignore decode error; will fall back to original
+    }
+  }
+
+  return key;
+}
+>>>>>>> c8a18d54e3d693f3024cbb8d27724096f1e6a674
 
 // Debug environment variables
 console.log('🔍 Environment Debug Info:');
@@ -93,6 +162,10 @@ console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
 
 // Clean private key - robust processing
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c8a18d54e3d693f3024cbb8d27724096f1e6a674
 // Prefer base64 variant if present to avoid newline mangling by platforms
 let privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY_BASE64)
   || normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY);
@@ -100,6 +173,15 @@ let privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY_BASE64)
 if (privateKey) {
   // Rebuild PEM structure to avoid ASN.1 errors due to wrapping
   privateKey = normalizePemStructure(privateKey);
+<<<<<<< HEAD
+=======
+=======
+let privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY) 
+  || normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY_BASE64);
+
+if (privateKey) {
+>>>>>>> 1c32a98c55754dd2d38933c38f82552c30799ddf
+>>>>>>> c8a18d54e3d693f3024cbb8d27724096f1e6a674
   console.log('🔧 Original key length:', process.env.FIREBASE_PRIVATE_KEY?.length || process.env.FIREBASE_PRIVATE_KEY_BASE64?.length);
   console.log('🔧 Processed key length:', privateKey.length);
   console.log('🔧 Key starts with:', privateKey.substring(0, 30));
