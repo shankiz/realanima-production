@@ -6,6 +6,11 @@ import { FieldValue } from 'firebase-admin/firestore';
 // POST /api/user/deduct-message - Deduct one credit/message
 export async function POST(req: NextRequest) {
   try {
+    // Check if Firebase Admin is initialized
+    if (!adminAuth || !adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
+    }
+
     const token = req.headers.get('authorization')?.replace('Bearer ', '');
     
     if (!token) {
