@@ -6,6 +6,14 @@ export async function GET() {
   try {
     console.log('📊 Fetching active subscriptions...');
 
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 500 }
+      );
+    }
+
     // Get all users with active subscriptions
     const activeSnapshot = await adminDb.collection('users')
       .where('subscription.status', '==', 'active')
