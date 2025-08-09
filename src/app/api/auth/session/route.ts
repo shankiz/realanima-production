@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifySessionCookie } from '@/lib/firebase/admin';
+import { verifySessionCookie, verifyIdToken } from '@/lib/firebase/admin';
 import { getUserData, updateUserActivity } from '@/lib/firebase/admin-helpers';
 
 interface DecodedToken {
