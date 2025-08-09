@@ -14,6 +14,12 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
+    
+    if (!adminAuth) {
+      console.error('❌ Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
 
     if (!decodedToken) {
@@ -107,6 +113,11 @@ export async function POST(request: NextRequest) {
     console.log('💾 Saving subscription data:', subscriptionData);
 
     try {
+      if (!adminDb) {
+        console.error('❌ Firebase Admin DB not initialized');
+        return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+      }
+      
       // Save to Firestore using admin SDK
       const subscriptionRef = adminDb.collection('subscriptions').doc(subscriptionId);
       await subscriptionRef.set(subscriptionData);
