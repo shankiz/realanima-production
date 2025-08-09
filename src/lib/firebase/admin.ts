@@ -2,6 +2,38 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
+function normalizePrivateKey(rawKey?: string | null): string | null {
+  if (!rawKey) return null;
+
+  let key = rawKey.trim();
+
+  // Remove BOM and zero-width/invisible characters that can break PEM parsing
+  key = key.replace(/\uFEFF/g, '').replace(/[\u200B-\u200D\u2060\u00A0]/g, '');
+
+  // If wrapped in quotes, strip them
+  if (key.startsWith('"') && key.endsWith('"')) {
+    key = key.slice(1, -1);
+  }
+
+  // Replace escaped newlines and remove any carriage returns
+  key = key.replace(/\\n/g, '\n').replace(/\r/g, '');
+
+  // If this looks like a base64 string (no header/footer but long and base64y), try to decode
+  const looksLikeBase64 = !key.includes('-----BEGIN') && /^[A-Za-z0-9+/=\r\n]+$/.test(key) && key.length > 100;
+  if (looksLikeBase64) {
+    try {
+      const decoded = Buffer.from(key, 'base64').toString('utf8').trim();
+      if (decoded.includes('-----BEGIN') && decoded.includes('PRIVATE KEY-----')) {
+        key = decoded;
+      }
+    } catch {
+      // ignore decode error; will fall back to original
+    }
+  }
+
+  return key;
+}
+
 // Debug environment variables
 console.log('🔍 Environment Debug Info:');
 console.log('NODE_ENV:', process.env.NODE_ENV);
@@ -14,17 +46,15 @@ console.log('FIREBASE_PROJECT_ID value:', process.env.FIREBASE_PROJECT_ID);
 console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
 
-// Clean private key - minimal processing
-let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+// Clean private key - robust processing
+let privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY) 
+  || normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY_BASE64);
+
 if (privateKey) {
-  console.log('🔧 Original key length:', privateKey.length);
-  
-  // Only convert escaped newlines to actual newlines - that's it!
-  privateKey = privateKey.replace(/\\n/g, '\n');
-  
+  console.log('🔧 Original key length:', process.env.FIREBASE_PRIVATE_KEY?.length || process.env.FIREBASE_PRIVATE_KEY_BASE64?.length);
   console.log('🔧 Processed key length:', privateKey.length);
   console.log('🔧 Key starts with:', privateKey.substring(0, 30));
-  console.log('🔧 Key ends with:', privateKey.substring(privateKey.length - 30));
+  console.log('🔧 Key ends with:', privateKey.substring(Math.max(0, privateKey.length - 30)));
 }
 
 // Check if we're in build time and missing env vars
