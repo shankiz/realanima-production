@@ -14,6 +14,17 @@ export async function GET(
     }
 
     const token = authHeader.split('Bearer ')[1];
+    
+    if (!adminAuth) {
+      console.error('[HISTORY_DEBUG] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+
+    if (!adminDb) {
+      console.error('[HISTORY_DEBUG] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
