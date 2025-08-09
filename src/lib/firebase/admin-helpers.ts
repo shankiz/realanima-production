@@ -5,6 +5,10 @@
 import { adminAuth, adminDb } from './admin';
 
 export async function verifyIdToken(idToken: string) {
+  if (!adminAuth) {
+    throw new Error('Firebase Admin not initialized');
+  }
+  
   try {
     const decodedToken = await adminAuth.verifyIdToken(idToken);
     return decodedToken;
@@ -15,6 +19,10 @@ export async function verifyIdToken(idToken: string) {
 }
 
 export async function getUserDataAdmin(userId: string) {
+  if (!adminDb) {
+    throw new Error('Firebase Admin not initialized');
+  }
+  
   try {
     const userDoc = await adminDb.collection('users').doc(userId).get();
     if (!userDoc.exists) {
@@ -28,6 +36,10 @@ export async function getUserDataAdmin(userId: string) {
 }
 
 export async function updateUserCredits(userId: string, credits: number) {
+  if (!adminDb) {
+    throw new Error('Firebase Admin not initialized');
+  }
+  
   try {
     await adminDb.collection('users').doc(userId).update({
       credits,
@@ -41,6 +53,10 @@ export async function updateUserCredits(userId: string, credits: number) {
 
 // Fix missing exports
 export async function getUserData(userId: string) {
+  if (!adminDb) {
+    throw new Error('Firebase Admin not initialized');
+  }
+  
   try {
     const userDoc = await adminDb.collection('users').doc(userId).get();
     if (!userDoc.exists) {
@@ -54,6 +70,10 @@ export async function getUserData(userId: string) {
 }
 
 export async function updateUserActivity(userId: string) {
+  if (!adminDb) {
+    throw new Error('Firebase Admin not initialized');
+  }
+  
   try {
     await adminDb.collection('users').doc(userId).update({
       lastActivity: new Date()
