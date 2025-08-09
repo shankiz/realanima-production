@@ -17,12 +17,53 @@ console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.le
 // Clean private key - handle environment variable escaping
 let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
+  console.log('🔧 Raw private key length:', privateKey.length);
+  console.log('🔧 Raw private key preview:', privateKey.substring(0, 100) + '...');
+  
   // Remove quotes and convert escaped newlines to actual newlines
   privateKey = privateKey.replace(/^["'](.*)["']$/, '$1').replace(/\\n/g, '\n');
-
-  // Basic validation
-  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
-    console.error('❌ Private key format is invalid');
+  
+  // Additional cleaning for production environments
+  privateKey = privateKey.trim();
+  
+  // Handle cases where the key might have different line ending formats
+  if (privateKey.includes('\\n')) {
+    // Still has escaped newlines, try different approach
+    privateKey = privateKey.replace(/\\n/g, '\n');
+  }
+  
+  // Ensure proper structure - sometimes keys get corrupted
+  const beginMarker = '-----BEGIN PRIVATE KEY-----';
+  const endMarker = '-----END PRIVATE KEY-----';
+  
+  if (privateKey.includes(beginMarker) && privateKey.includes(endMarker)) {
+    // Extract just the key content between markers
+    const beginIndex = privateKey.indexOf(beginMarker);
+    const endIndex = privateKey.indexOf(endMarker) + endMarker.length;
+    
+    if (beginIndex !== -1 && endIndex !== -1) {
+      privateKey = privateKey.substring(beginIndex, endIndex);
+      
+      // Ensure proper line breaks
+      if (!privateKey.includes('\n')) {
+        // Key is all on one line, need to add proper line breaks
+        const lines = privateKey.split(beginMarker)[1].split(endMarker)[0].trim();
+        const keyContent = lines.replace(/\s/g, '');
+        
+        // Split into 64-character lines
+        const formattedLines = [];
+        for (let i = 0; i < keyContent.length; i += 64) {
+          formattedLines.push(keyContent.substring(i, i + 64));
+        }
+        
+        privateKey = beginMarker + '\n' + formattedLines.join('\n') + '\n' + endMarker;
+      }
+      
+      console.log('🔧 Processed private key length:', privateKey.length);
+      console.log('🔧 Processed private key preview:', privateKey.substring(0, 100) + '...');
+    }
+  } else {
+    console.error('❌ Private key format is invalid - missing markers');
     privateKey = undefined;
   }
 }
