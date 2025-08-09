@@ -13,6 +13,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ char
     }
 
     const token = authHeader.split('Bearer ')[1];
+    
+    if (!adminAuth) {
+      console.error('[HISTORY] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+
+    if (!adminDb) {
+      console.error('[HISTORY] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
     console.log('✅ User authenticated:', uid);
