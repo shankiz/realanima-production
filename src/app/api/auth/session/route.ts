@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifyIdToken } from '@/lib/firebase/admin';
+import { verifySessionCookie } from '@/lib/firebase/admin';
 import { getUserData, updateUserActivity } from '@/lib/firebase/admin-helpers';
 
 interface DecodedToken {
@@ -23,7 +23,7 @@ export async function GET() {
     // Verify the session token
     let decodedToken: DecodedToken;
     try {
-      decodedToken = await verifyIdToken(sessionCookie.value);
+      decodedToken = await verifySessionCookie(sessionCookie.value);
     } catch (error) {
       console.error('Token verification failed:', error);
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });

@@ -212,4 +212,19 @@ export async function verifyIdToken(idToken: string) {
   }
 }
 
+// Helper function to verify Firebase session cookie
+export async function verifySessionCookie(sessionCookie: string) {
+  if (!adminAuth) {
+    throw new Error('Firebase Admin not initialized');
+  }
+
+  try {
+    const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
+    return decodedToken;
+  } catch (error) {
+    console.error('Error verifying session cookie:', error);
+    throw error;
+  }
+}
+
 export default app;
