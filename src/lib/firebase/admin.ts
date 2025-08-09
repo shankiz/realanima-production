@@ -17,45 +17,28 @@ console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.le
 // Clean private key - handle environment variable escaping
 let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
-  console.log('🔧 Raw private key length:', privateKey.length);
-  console.log('🔧 Raw private key first 50 chars:', JSON.stringify(privateKey.substring(0, 50)));
+  console.log('🔧 Original key length:', privateKey.length);
   
-  // Remove outer quotes if present
-  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1');
-  
-  // Convert escaped newlines to actual newlines
-  privateKey = privateKey.replace(/\\n/g, '\n');
-  
-  // Trim whitespace
-  privateKey = privateKey.trim();
-  
-  console.log('🔧 After basic cleaning length:', privateKey.length);
-  console.log('🔧 After basic cleaning first 50 chars:', JSON.stringify(privateKey.substring(0, 50)));
-  
-  // Check if we have proper markers
-  if (privateKey.includes('-----BEGIN PRIVATE KEY-----') && privateKey.includes('-----END PRIVATE KEY-----')) {
-    // Force proper RSA key format by reconstructing it
-    const keyContent = privateKey
-      .replace('-----BEGIN PRIVATE KEY-----', '')
-      .replace('-----END PRIVATE KEY-----', '')
-      .replace(/\s/g, ''); // Remove all whitespace including newlines
+  // Clean up the key using a more direct approach
+  try {
+    // Remove outer quotes and convert escaped newlines
+    privateKey = privateKey.replace(/^["'](.*)["']$/, '$1').replace(/\\n/g, '\n');
     
-    console.log('🔧 Extracted key content length:', keyContent.length);
-    console.log('🔧 Key content first 50 chars:', keyContent.substring(0, 50));
-    
-    // Reconstruct with proper formatting (64 chars per line)
-    const lines = [];
-    for (let i = 0; i < keyContent.length; i += 64) {
-      lines.push(keyContent.substring(i, i + 64));
+    // Validate key structure
+    if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
+      throw new Error('Invalid private key format');
     }
     
-    privateKey = '-----BEGIN PRIVATE KEY-----\n' + lines.join('\n') + '\n-----END PRIVATE KEY-----';
+    // Use Buffer to ensure proper encoding
+    const keyBuffer = Buffer.from(privateKey, 'utf8');
+    privateKey = keyBuffer.toString('utf8');
     
-    console.log('🔧 Final reconstructed key length:', privateKey.length);
-    console.log('🔧 Final key first 100 chars:', privateKey.substring(0, 100));
-    console.log('🔧 Final key last 50 chars:', privateKey.substring(privateKey.length - 50));
-  } else {
-    console.error('❌ Private key format is invalid - missing markers');
+    console.log('🔧 Cleaned key length:', privateKey.length);
+    console.log('🔧 Key starts with:', privateKey.substring(0, 30));
+    console.log('🔧 Key ends with:', privateKey.substring(privateKey.length - 30));
+    
+  } catch (error) {
+    console.error('❌ Error cleaning private key:', error);
     privateKey = undefined;
   }
 }
