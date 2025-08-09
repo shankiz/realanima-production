@@ -12,6 +12,12 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
+    
+    if (!adminAuth) {
+      console.error('❌ Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
 
     if (!decodedToken) {
