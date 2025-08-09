@@ -10,10 +10,21 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.split('Bearer ')[1];
+    
+    if (!adminAuth) {
+      console.error('❌ Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
     // Get user's current data
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
+    
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
     
