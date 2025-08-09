@@ -10,6 +10,7 @@ console.log('VERCEL:', process.env.VERCEL);
 console.log('Has FIREBASE_PROJECT_ID:', !!process.env.FIREBASE_PROJECT_ID);
 console.log('Has FIREBASE_CLIENT_EMAIL:', !!process.env.FIREBASE_CLIENT_EMAIL);
 console.log('Has FIREBASE_PRIVATE_KEY:', !!process.env.FIREBASE_PRIVATE_KEY);
+console.log('Has FIREBASE_PRIVATE_KEY_BASE64:', !!process.env.FIREBASE_PRIVATE_KEY_BASE64);
 console.log('FIREBASE_PROJECT_ID value:', process.env.FIREBASE_PROJECT_ID);
 console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
@@ -81,13 +82,18 @@ function normalizePrivateKey(rawInput: string): string {
 }
 
 // Prefer explicit BASE64 env if provided to avoid escaping issues on hosts
-let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-const privateKeyBase64 = process.env.FIREBASE_PRIVATE_KEY_BASE64 || '';
+const rawKey = process.env.FIREBASE_PRIVATE_KEY || '';
+const base64Key = (process.env.FIREBASE_PRIVATE_KEY_BASE64 || '').trim();
+let privateKey = '';
 
 try {
-  if (privateKeyBase64 && !privateKey) {
+  if (base64Key) {
     console.log('🔧 Using FIREBASE_PRIVATE_KEY_BASE64 to construct PEM');
-    privateKey = Buffer.from(privateKeyBase64, 'base64').toString('utf8');
+    const cleanedB64 = base64Key.replace(/\s+/g, '');
+    privateKey = Buffer.from(cleanedB64, 'base64').toString('utf8');
+  } else if (rawKey) {
+    console.log('🔧 Using FIREBASE_PRIVATE_KEY (raw) to construct PEM');
+    privateKey = rawKey;
   }
 
   if (privateKey) {
