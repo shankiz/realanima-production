@@ -15,6 +15,16 @@ export async function POST(
 
     const token = authHeader.split(' ')[1];
 
+    if (!adminAuth) {
+      console.error('[VOICE] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+
+    if (!adminDb) {
+      console.error('[VOICE] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+
     // Verify the Firebase token
     const decodedToken = await adminAuth.verifyIdToken(token);
     const userId = decodedToken.uid;
