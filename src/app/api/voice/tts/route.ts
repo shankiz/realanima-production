@@ -160,6 +160,11 @@ export async function POST(request: NextRequest) {
   console.log('🔊 [TTS-PARALLEL] Request received');
 
   try {
+    // Check if Firebase Admin is initialized
+    if (!adminAuth) {
+      return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
+    }
+
     // Authenticate user
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
