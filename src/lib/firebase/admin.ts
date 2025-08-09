@@ -212,7 +212,6 @@ export async function verifyIdToken(idToken: string) {
   }
 }
 
-<<<<<<< HEAD
 // Helper function to verify Firebase session cookie
 export async function verifySessionCookie(sessionCookie: string) {
   if (!adminAuth) {
@@ -229,6 +228,3 @@ export async function verifySessionCookie(sessionCookie: string) {
 }
 
 export default app;
-=======
-export default app;
->>>>>>> f7dbce4eecb2b133df573f8ee7e1f779454de5ed
