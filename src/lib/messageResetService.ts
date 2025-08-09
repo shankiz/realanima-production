@@ -45,6 +45,11 @@ class MessageResetService {
     try {
       console.log('🔍 Checking for users needing message reset...');
       
+      if (!adminDb) {
+        console.error('❌ Firebase Admin not initialized');
+        return;
+      }
+      
       const now = new Date();
       const cutoffTime = new Date(now.getTime() - this.RESET_INTERVAL_MS);
 
@@ -97,6 +102,11 @@ class MessageResetService {
   // Manual reset method for testing
   async manualReset(userId?: string) {
     try {
+      if (!adminDb) {
+        console.error('❌ Firebase Admin not initialized');
+        return;
+      }
+      
       if (userId) {
         // Reset specific user
         const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -128,6 +138,11 @@ class MessageResetService {
   async forceResetAllUsers() {
     try {
       console.log('🔧 Force resetting ALL users...');
+      
+      if (!adminDb) {
+        console.error('❌ Firebase Admin not initialized');
+        return;
+      }
       
       const usersSnapshot = await adminDb.collection('users').get();
       
