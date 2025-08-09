@@ -1,0 +1,103 @@
+Starting Container
+
+npm warn config production Use `--omit=dev` instead.
+
+ 
+
+> anime-character-chat@0.1.0 start
+
+> next start
+
+ 
+
+   ▲ Next.js 15.3.2
+
+   - Local:        http://localhost:8080
+
+   - Network:      http://10.250.16.98:8080
+
+ 
+
+ ✓ Starting...
+
+ ✓ Ready in 469ms
+
+🔍 Environment Debug Info:
+
+NODE_ENV: production
+
+RAILWAY: undefined
+
+VERCEL: undefined
+
+Has FIREBASE_PROJECT_ID: true
+
+Has FIREBASE_CLIENT_EMAIL: true
+
+Has FIREBASE_PRIVATE_KEY: true
+
+FIREBASE_PROJECT_ID value: realanima-ai
+
+FIREBASE_CLIENT_EMAIL value: firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com
+
+FIREBASE_PRIVATE_KEY length: 1702
+
+🔧 Raw private key length: 1702
+
+🔧 Raw private key first 50 chars: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w"
+
+🔧 After basic cleaning length: 1702
+
+🔧 After basic cleaning first 50 chars: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w"
+
+🔧 Extracted key content length: 1623
+
+🔧 Key content first 50 chars: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQ
+
+🔧 Final reconstructed key length: 1702
+
+🔧 Final key first 100 chars: -----BEGIN PRIVATE KEY-----
+
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCqrozAdNgqTKXR
+
+B2AovKl
+
+🔧 Final key last 50 chars: 
+
+RWzDylRrPxDDfY121XCWGY=
+
+-----END PRIVATE KEY-----
+
+🔥 Initializing Firebase Admin with credentials...
+
+❌ Firebase Admin initialization error: Error: Failed to parse private key: Error: Too few bytes to read ASN.1 value.
+
+    at <unknown> (.next/server/app/api/auth/session/route.js:1:5248) {
+
+  errorInfo: [Object],
+
+  codePrefix: 'app'
+
+}
+
+Config used: {
+
+  projectId: 'realanima-ai',
+
+  clientEmail: 'firebase-adminsdk-fbsvc@realanima-ai.iam.gserviceaccount.com',
+
+  privateKeyLength: 1702,
+
+  privateKeyPreview: '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w...',
+
+  hasPrivateKey: true,
+
+  hasProjectId: true,
+
+  hasClientEmail: true,
+
+  isBuildTime: false
+
+}
+
+Firebase Admin initialization failed - continuing without Firebase Admin
