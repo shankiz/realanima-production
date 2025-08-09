@@ -6,7 +6,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
 // Check if we're in build time and missing env vars
-const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.VERCEL && !process.env.RAILWAY;
+const isBuildTime = process.env.NODE_ENV === 'production' && !privateKey && !process.env.FIREBASE_PROJECT_ID;
 
 if (!privateKey && !isBuildTime) {
   throw new Error('FIREBASE_PRIVATE_KEY environment variable is not set');
@@ -38,23 +38,29 @@ try {
   if (getApps().length === 0) {
     // Only initialize if we have real credentials
     if (privateKey && process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL) {
+      console.log('🔥 Initializing Firebase Admin with credentials...');
       app = initializeApp({
         credential: cert(firebaseAdminConfig),
         projectId: process.env.FIREBASE_PROJECT_ID,
       });
+      console.log('✅ Firebase Admin initialized successfully');
     } else {
-      // Create a dummy app for build time
+      console.warn('⚠️ Firebase Admin: Missing credentials, skipping initialization');
       app = null;
     }
   } else {
     app = getApps()[0];
+    console.log('✅ Firebase Admin: Using existing app');
   }
 } catch (error) {
-  console.error('Firebase Admin initialization error:', error);
+  console.error('❌ Firebase Admin initialization error:', error);
   console.error('Config used:', {
     projectId: firebaseAdminConfig.projectId,
     clientEmail: firebaseAdminConfig.clientEmail,
-    privateKeyLength: firebaseAdminConfig.privateKey?.length
+    privateKeyLength: firebaseAdminConfig.privateKey?.length,
+    hasPrivateKey: !!privateKey,
+    hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+    hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL
   });
   
   // Don't throw during build time
