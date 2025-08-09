@@ -2,6 +2,18 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// Debug environment variables
+console.log('🔍 Environment Debug Info:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('RAILWAY:', process.env.RAILWAY);
+console.log('VERCEL:', process.env.VERCEL);
+console.log('Has FIREBASE_PROJECT_ID:', !!process.env.FIREBASE_PROJECT_ID);
+console.log('Has FIREBASE_CLIENT_EMAIL:', !!process.env.FIREBASE_CLIENT_EMAIL);
+console.log('Has FIREBASE_PRIVATE_KEY:', !!process.env.FIREBASE_PRIVATE_KEY);
+console.log('FIREBASE_PROJECT_ID value:', process.env.FIREBASE_PROJECT_ID);
+console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
+
 // Clean and validate private key
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
@@ -22,7 +34,12 @@ if (!process.env.FIREBASE_CLIENT_EMAIL && !isBuildTime) {
 
 // If we're missing required env vars during build, create dummy config
 if (!privateKey || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL) {
-  console.warn('Firebase Admin: Missing environment variables during build time');
+  console.warn('⚠️ Firebase Admin: Missing environment variables during build time');
+  console.warn('Missing:', {
+    privateKey: !privateKey,
+    projectId: !process.env.FIREBASE_PROJECT_ID,
+    clientEmail: !process.env.FIREBASE_CLIENT_EMAIL
+  });
 }
 
 const firebaseAdminConfig = {
