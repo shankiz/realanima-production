@@ -29,6 +29,11 @@ export async function POST(request: NextRequest) {
       }
 
       // Get order from Firestore
+      if (!adminDb) {
+        console.error('❌ Firebase Admin not initialized');
+        return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+      }
+      
       const orderDoc = await adminDb.collection('orders').doc(orderId).get();
 
       if (!orderDoc.exists) {
