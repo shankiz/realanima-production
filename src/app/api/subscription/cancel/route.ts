@@ -16,6 +16,11 @@ export async function POST(request: NextRequest) {
     console.log(`🚫 Cancelling subscription for user: ${uid}`);
 
     // Get user's current subscription
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+    }
+    
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
 
