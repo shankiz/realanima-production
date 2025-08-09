@@ -18,50 +18,42 @@ console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.le
 let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
   console.log('🔧 Raw private key length:', privateKey.length);
-  console.log('🔧 Raw private key preview:', privateKey.substring(0, 100) + '...');
+  console.log('🔧 Raw private key first 50 chars:', JSON.stringify(privateKey.substring(0, 50)));
   
-  // Remove quotes and convert escaped newlines to actual newlines
-  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1').replace(/\\n/g, '\n');
+  // Remove outer quotes if present
+  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1');
   
-  // Additional cleaning for production environments
+  // Convert escaped newlines to actual newlines
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  // Trim whitespace
   privateKey = privateKey.trim();
   
-  // Handle cases where the key might have different line ending formats
-  if (privateKey.includes('\\n')) {
-    // Still has escaped newlines, try different approach
-    privateKey = privateKey.replace(/\\n/g, '\n');
-  }
+  console.log('🔧 After basic cleaning length:', privateKey.length);
+  console.log('🔧 After basic cleaning first 50 chars:', JSON.stringify(privateKey.substring(0, 50)));
   
-  // Ensure proper structure - sometimes keys get corrupted
-  const beginMarker = '-----BEGIN PRIVATE KEY-----';
-  const endMarker = '-----END PRIVATE KEY-----';
-  
-  if (privateKey.includes(beginMarker) && privateKey.includes(endMarker)) {
-    // Extract just the key content between markers
-    const beginIndex = privateKey.indexOf(beginMarker);
-    const endIndex = privateKey.indexOf(endMarker) + endMarker.length;
+  // Check if we have proper markers
+  if (privateKey.includes('-----BEGIN PRIVATE KEY-----') && privateKey.includes('-----END PRIVATE KEY-----')) {
+    // Force proper RSA key format by reconstructing it
+    const keyContent = privateKey
+      .replace('-----BEGIN PRIVATE KEY-----', '')
+      .replace('-----END PRIVATE KEY-----', '')
+      .replace(/\s/g, ''); // Remove all whitespace including newlines
     
-    if (beginIndex !== -1 && endIndex !== -1) {
-      privateKey = privateKey.substring(beginIndex, endIndex);
-      
-      // Ensure proper line breaks
-      if (!privateKey.includes('\n')) {
-        // Key is all on one line, need to add proper line breaks
-        const lines = privateKey.split(beginMarker)[1].split(endMarker)[0].trim();
-        const keyContent = lines.replace(/\s/g, '');
-        
-        // Split into 64-character lines
-        const formattedLines = [];
-        for (let i = 0; i < keyContent.length; i += 64) {
-          formattedLines.push(keyContent.substring(i, i + 64));
-        }
-        
-        privateKey = beginMarker + '\n' + formattedLines.join('\n') + '\n' + endMarker;
-      }
-      
-      console.log('🔧 Processed private key length:', privateKey.length);
-      console.log('🔧 Processed private key preview:', privateKey.substring(0, 100) + '...');
+    console.log('🔧 Extracted key content length:', keyContent.length);
+    console.log('🔧 Key content first 50 chars:', keyContent.substring(0, 50));
+    
+    // Reconstruct with proper formatting (64 chars per line)
+    const lines = [];
+    for (let i = 0; i < keyContent.length; i += 64) {
+      lines.push(keyContent.substring(i, i + 64));
     }
+    
+    privateKey = '-----BEGIN PRIVATE KEY-----\n' + lines.join('\n') + '\n-----END PRIVATE KEY-----';
+    
+    console.log('🔧 Final reconstructed key length:', privateKey.length);
+    console.log('🔧 Final key first 100 chars:', privateKey.substring(0, 100));
+    console.log('🔧 Final key last 50 chars:', privateKey.substring(privateKey.length - 50));
   } else {
     console.error('❌ Private key format is invalid - missing markers');
     privateKey = undefined;
