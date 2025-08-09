@@ -17,6 +17,14 @@ export async function POST(request: NextRequest) {
     console.log(`💳 Processing charge for user ${userId}`);
 
     // Get user data
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json(
+        { success: false, error: 'Database not available' },
+        { status: 500 }
+      );
+    }
+    
     const userDoc = await adminDb.collection('users').doc(userId).get();
     if (!userDoc.exists) {
       return NextResponse.json(
