@@ -14,8 +14,19 @@ console.log('FIREBASE_PROJECT_ID value:', process.env.FIREBASE_PROJECT_ID);
 console.log('FIREBASE_CLIENT_EMAIL value:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
 
-// Clean and validate private key
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+// Clean and validate private key - handle multiple formats
+let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+if (privateKey) {
+  // Remove any quotes that might have been added
+  privateKey = privateKey.replace(/^["'](.*)["']$/, '$1');
+  // Replace escaped newlines with actual newlines
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  // Ensure proper formatting
+  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+    console.error('❌ Private key does not appear to be properly formatted');
+    privateKey = null;
+  }
+}
 
 // Check if we're in build time and missing env vars
 const isBuildTime = process.env.NODE_ENV === 'production' && !privateKey && !process.env.FIREBASE_PROJECT_ID;
@@ -53,16 +64,26 @@ let app;
 try {
   // Check if Firebase Admin app is already initialized
   if (getApps().length === 0) {
-    // Only initialize if we have real credentials
-    if (privateKey && process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL) {
+    // Only initialize if we have real credentials and not during build
+    if (privateKey && process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && !isBuildTime) {
       console.log('🔥 Initializing Firebase Admin with credentials...');
+      
+      // Validate private key format before attempting to initialize
+      if (!privateKey.includes('-----BEGIN PRIVATE KEY-----') || !privateKey.includes('-----END PRIVATE KEY-----')) {
+        throw new Error('Private key format is invalid - missing BEGIN/END markers');
+      }
+      
       app = initializeApp({
         credential: cert(firebaseAdminConfig),
         projectId: process.env.FIREBASE_PROJECT_ID,
       });
       console.log('✅ Firebase Admin initialized successfully');
     } else {
-      console.warn('⚠️ Firebase Admin: Missing credentials, skipping initialization');
+      if (isBuildTime) {
+        console.warn('⚠️ Firebase Admin: Skipping initialization during build time');
+      } else {
+        console.warn('⚠️ Firebase Admin: Missing credentials, skipping initialization');
+      }
       app = null;
     }
   } else {
@@ -75,14 +96,16 @@ try {
     projectId: firebaseAdminConfig.projectId,
     clientEmail: firebaseAdminConfig.clientEmail,
     privateKeyLength: firebaseAdminConfig.privateKey?.length,
+    privateKeyPreview: firebaseAdminConfig.privateKey?.substring(0, 50) + '...',
     hasPrivateKey: !!privateKey,
     hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
-    hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL
+    hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+    isBuildTime
   });
   
-  // Don't throw during build time
-  if (isBuildTime) {
-    console.warn('Firebase Admin initialization failed during build time - this is expected');
+  // Don't throw during build time or if it's a key parsing error
+  if (isBuildTime || (error instanceof Error && error.message.includes('Failed to parse private key'))) {
+    console.warn('Firebase Admin initialization failed - continuing without Firebase Admin');
     app = null;
   } else {
     throw new Error(`Failed to initialize Firebase Admin: ${error instanceof Error ? error.message : 'Unknown error'}`);
