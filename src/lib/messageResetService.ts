@@ -164,6 +164,10 @@ class MessageResetService {
         const messageLimit = this.MESSAGE_LIMITS[currentPlan as keyof typeof this.MESSAGE_LIMITS] || this.MESSAGE_LIMITS.free;
 
         try {
+          if (!adminDb) {
+            throw new Error('Firebase Admin not initialized');
+          }
+          
           await adminDb.collection('users').doc(userId).update({
             messagesLeft: messageLimit,
             lastMessageReset: new Date()
