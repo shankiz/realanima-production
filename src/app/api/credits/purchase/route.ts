@@ -52,6 +52,17 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
+    
+    if (!adminAuth) {
+      console.error('[CREDITS_PURCHASE] Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Authentication service unavailable' }, { status: 500 });
+    }
+
+    if (!adminDb) {
+      console.error('[CREDITS_PURCHASE] Firestore not initialized');
+      return NextResponse.json({ error: 'Database service unavailable' }, { status: 500 });
+    }
+    
     const decodedToken = await adminAuth.verifyIdToken(token);
     console.log('✅ Token verified for user:', decodedToken.uid);
 
