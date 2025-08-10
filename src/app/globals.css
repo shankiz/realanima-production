@@ -89,7 +89,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
   margin: 0;
-
+}
 
 /* Minimal Sidebar Styling */
 .sidebar-left {
@@ -135,8 +135,6 @@
   }
 }
 
-}
-
 ::-webkit-scrollbar-thumb {
   background: rgba(75, 85, 99, 0.4);
   border-radius: 2px;
@@ -156,6 +154,7 @@
 /* Clean, minimal chat bubbles */
 .message-bubble {
   max-width: 70%;
+}
 
 /* Custom scrollbar styling for textarea */
 .scrollbar-custom::-webkit-scrollbar {
@@ -189,8 +188,6 @@
 textarea:focus::placeholder {
   opacity: 0.3;
 }
-
-
 
 textarea {
   text-align: left;
@@ -468,15 +465,6 @@ textarea.break-words {
 
 .light .bg-gray-600 { background-color: #94a3b8 !important; }
 
-/* Light mode text colors */
-.light .text-white { color: #0f172a !important; }
-.light .text-gray-100 { color: #1e293b !important; }
-.light .text-gray-200 { color: #334155 !important; }
-.light .text-gray-300 { color: #475569 !important; }
-.light .text-gray-400 { color: #64748b !important; }
-.light .text-gray-500 { color: #64748b !important; }
-.light .text-gray-600 { color: #475569 !important; }
-
 /* Fix gradient text in light mode */
 .light .bg-gradient-to-r.from-cyan-400.to-purple-400,
 body.light .bg-gradient-to-r.from-cyan-400.to-purple-400 {
@@ -551,14 +539,18 @@ body.light .bg-black\/10 {
 }
 
 /* Character card backgrounds */
-body.light [class*="bg-black/40"] {
+.light [class*="bg-black/40"],
+body.light [class*="bg-black/40"],
+[class*="light"] [class*="bg-black/40"] {
   background-color: rgba(255, 255, 255, 0.95) !important;
   border: 2px solid rgba(148, 163, 184, 0.5) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   backdrop-filter: blur(12px) !important;
 }
 
-body.light [class*="bg-black/60"]:hover {
+.light [class*="bg-black/60"]:hover,
+body.light [class*="bg-black/60"]:hover,
+[class*="light"] [class*="bg-black/60"]:hover {
   background-color: rgba(248, 250, 252, 1) !important;
   border: 2px solid rgba(148, 163, 184, 0.7) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
