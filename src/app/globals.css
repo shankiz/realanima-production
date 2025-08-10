@@ -1501,7 +1501,7 @@ body.light .text-white.font-semibold {
 }
 
 /* Character description styling in light mode */
-body.light .text-gray-100/95 {
+body.light .text-gray-100\/95 {
   color: #374151 !important;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8) !important;
 }
