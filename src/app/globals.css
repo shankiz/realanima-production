@@ -37,24 +37,24 @@
 }
 
 @keyframes slideInFromTop {
-  from { 
-    opacity: 0; 
-    transform: translateY(-100%) translateX(-50%); 
+  from {
+    opacity: 0;
+    transform: translateY(-100%) translateX(-50%);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) translateX(-50%); 
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
   }
 }
 
 @keyframes slideOutToTop {
-  from { 
-    opacity: 1; 
-    transform: translateY(-100%) translateX(-50%); 
+  from {
+    opacity: 1;
+    transform: translateY(-100%) translateX(-50%);
   }
-  to { 
-    opacity: 0; 
-    transform: translateY(-100%) translateX(-50%); 
+  to {
+    opacity: 0;
+    transform: translateY(-100%) translateX(-50%);
   }
 }
 
@@ -67,11 +67,11 @@
 }
 
 @keyframes dotPulse {
-  0%, 60%, 100% { 
-    opacity: 0.3; 
+  0%, 60%, 100% {
+    opacity: 0.3;
   }
-  30% { 
-    opacity: 1; 
+  30% {
+    opacity: 1;
   }
 }
 
@@ -384,10 +384,10 @@ textarea.break-words {
 }
 
 @keyframes float {
-  0%, 100% { 
+  0%, 100% {
     transform: translateY(0px) scale(1);
   }
-  50% { 
+  50% {
     transform: translateY(-6px) scale(1.01);
   }
 }
@@ -1585,15 +1585,19 @@ body.light div[class*="grid"] div[class*="cursor-pointer"][class*="border"][clas
 
 /* Target specific Tailwind classes used in character cards */
 body.light .border-white\/10 {
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  border-width: 2px !important;
 }
 
 body.light .hover\:border-white\/20:hover {
-  border-color: rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(0, 0, 0, 0.4) !important;
+  border-width: 2px !important;
 }
 
 body.light .bg-white\/5 {
-  background-color: rgba(255, 255, 255, 0.98) !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Character card inner content backgrounds */

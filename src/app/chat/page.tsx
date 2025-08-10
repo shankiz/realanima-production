@@ -432,12 +432,48 @@ function Chat() {
                             const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' || 'system'
                             setTheme(savedTheme)
 
-                            // Don't apply theme globally on initial load - keep it scoped to chat page only
+                            // Apply theme class to body element for proper styling
+                            const applyTheme = (themeToApply: string) => {
+                              document.body.classList.remove('light', 'dark')
+                              if (themeToApply === 'system') {
+                                const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+                                document.body.classList.add(systemTheme)
+                              } else {
+                                document.body.classList.add(themeToApply)
+                              }
+                            }
+
+                            applyTheme(savedTheme)
+
+                            // Listen for system theme changes if using system theme
+                            const mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
+                            const handleSystemThemeChange = () => {
+                              if (savedTheme === 'system') {
+                                applyTheme('system')
+                              }
+                            }
+                            mediaQuery.addEventListener('change', handleSystemThemeChange)
+
+                            return () => {
+                              mediaQuery.removeEventListener('change', handleSystemThemeChange)
+                            }
                           }, [])
 
                           useEffect(() => {
-                            // Only save theme to localStorage, don't apply to body
+                            // Save theme and apply to body element
                             localStorage.setItem('theme', theme)
+
+                            const applyTheme = (themeToApply: string) => {
+                              document.body.classList.remove('light', 'dark')
+                              if (themeToApply === 'system') {
+                                const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+                                document.body.classList.add(systemTheme)
+                              } else {
+                                document.body.classList.add(themeToApply)
+                              }
+                            }
+
+                            applyTheme(theme)
                           }, [theme])
 
                           // Load auto-scroll preference from localStorage
@@ -1456,7 +1492,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -2025,7 +2061,7 @@ function Chat() {
                                       {/* Voice Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
