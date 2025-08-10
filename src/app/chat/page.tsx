@@ -114,31 +114,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       style={{
         // Improve scroll performance by skipping offscreen work
         contentVisibility: 'auto',
-        containIntrinsicSize: '160px 160px',
-        // Light mode overrides
-        ...(document.body.classList.contains('light') && {
-          backgroundColor: 'rgba(255, 255, 255, 0.98)',
-          borderColor: 'rgba(0, 0, 0, 0.15)',
-          borderWidth: '2px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
-        })
+        containIntrinsicSize: '160px 160px'
       } as any}
-      onMouseEnter={(e) => {
-        if (document.body.classList.contains('light')) {
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
-          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.3)';
-          e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-          e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (document.body.classList.contains('light')) {
-          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-          e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.15)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-          e.currentTarget.style.transform = '';
-        }
-      }}
                             >
       <div className="relative h-40 overflow-hidden rounded-t-xl">
                                 <Image 
@@ -167,27 +144,10 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 <div className="absolute top-0 bottom-0 right-0 w-0.5 bg-gradient-to-b from-white/15 via-transparent to-transparent"></div>
                               </div>
 
-      <div className="relative p-3 bg-black/20" style={{
-        ...(document.body.classList.contains('light') && {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(12px)',
-          borderTop: '1px solid rgba(0, 0, 0, 0.08)'
-        })
-      }}>
+      <div className="relative p-3 bg-black/20">
         <div className="relative z-10">
-                                  <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide" style={{
-                                    ...(document.body.classList.contains('light') && {
-                                      color: '#111827',
-                                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.9)',
-                                      fontWeight: '600'
-                                    })
-                                  }}>{character.name}</h3>
-                                  <p className="text-gray-100 text-[10px] drop-shadow-md line-clamp-1 font-medium" style={{
-                                    ...(document.body.classList.contains('light') && {
-                                      color: '#374151',
-                                      textShadow: '0 1px 1px rgba(255, 255, 255, 0.8)'
-                                    })
-                                  }}>{character.description}</p>
+                                  <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide">{character.name}</h3>
+                                  <p className="text-gray-100 text-[10px] drop-shadow-md line-clamp-1 font-medium">{character.description}</p>
                                 </div>
                               </div>
     </div>
@@ -432,48 +392,12 @@ function Chat() {
                             const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' || 'system'
                             setTheme(savedTheme)
 
-                            // Apply theme class to body element for proper styling
-                            const applyTheme = (themeToApply: string) => {
-                              document.body.classList.remove('light', 'dark')
-                              if (themeToApply === 'system') {
-                                const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
-                                document.body.classList.add(systemTheme)
-                              } else {
-                                document.body.classList.add(themeToApply)
-                              }
-                            }
-
-                            applyTheme(savedTheme)
-
-                            // Listen for system theme changes if using system theme
-                            const mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
-                            const handleSystemThemeChange = () => {
-                              if (savedTheme === 'system') {
-                                applyTheme('system')
-                              }
-                            }
-                            mediaQuery.addEventListener('change', handleSystemThemeChange)
-
-                            return () => {
-                              mediaQuery.removeEventListener('change', handleSystemThemeChange)
-                            }
+                            // Don't apply theme globally on initial load - keep it scoped to chat page only
                           }, [])
 
                           useEffect(() => {
-                            // Save theme and apply to body element
+                            // Only save theme to localStorage, don't apply to body
                             localStorage.setItem('theme', theme)
-
-                            const applyTheme = (themeToApply: string) => {
-                              document.body.classList.remove('light', 'dark')
-                              if (themeToApply === 'system') {
-                                const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
-                                document.body.classList.add(systemTheme)
-                              } else {
-                                document.body.classList.add(themeToApply)
-                              }
-                            }
-
-                            applyTheme(theme)
                           }, [theme])
 
                           // Load auto-scroll preference from localStorage
@@ -1492,7 +1416,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
+                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -2061,7 +1985,7 @@ function Chat() {
                                       {/* Voice Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
