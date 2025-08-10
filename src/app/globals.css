@@ -446,17 +446,20 @@ textarea.break-words {
 }
 
 /* Light mode specific overrides for your chat interface */
+.light,
 body.light {
   background-color: #f8fafc !important;
   color: #0f172a !important;
 }
 
 /* Fix gradient text in light mode */
+.light .bg-gradient-to-r.from-cyan-400.to-purple-400,
 body.light .bg-gradient-to-r.from-cyan-400.to-purple-400 {
   background: linear-gradient(to right, #0891b2, #7c3aed) !important;
 }
 
 /* Alternative approach - make gradient text solid in light mode */
+.light .bg-gradient-to-r.from-cyan-400.to-purple-400.bg-clip-text.text-transparent,
 body.light .bg-gradient-to-r.from-cyan-400.to-purple-400.bg-clip-text.text-transparent {
   background: none !important;
   -webkit-background-clip: unset !important;
