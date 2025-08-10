@@ -1568,65 +1568,78 @@ body.light .cursor-pointer .text-white {
   font-weight: 500 !important;
 }
 
-/* Character card specific targeting for light mode */
-body.light .grid .cursor-pointer {
+/* Ultra-specific character card targeting for light mode - Maximum CSS specificity */
+body.light div[class*="grid"] div[class*="cursor-pointer"][class*="border"][class*="rounded-xl"] {
   background-color: rgba(255, 255, 255, 0.98) !important;
-  border: 2px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border: 2px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
   transition: all 0.2s ease !important;
 }
 
-body.light .grid .cursor-pointer:hover {
+body.light div[class*="grid"] div[class*="cursor-pointer"][class*="border"][class*="rounded-xl"]:hover {
   background-color: rgba(255, 255, 255, 1) !important;
-  border: 2px solid rgba(0, 0, 0, 0.25) !important;
+  border: 2px solid rgba(0, 0, 0, 0.3) !important;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-2px) scale(1.02) !important;
 }
 
-/* Character card backgrounds specifically */
-body.light .grid .cursor-pointer.border-white\/10 {
-  border-color: rgba(0, 0, 0, 0.12) !important;
+/* Target specific Tailwind classes used in character cards */
+body.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
-body.light .grid .cursor-pointer.bg-white\/5 {
+body.light .hover\:border-white\/20:hover {
+  border-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+body.light .bg-white\/5 {
   background-color: rgba(255, 255, 255, 0.98) !important;
 }
 
-body.light .grid .cursor-pointer:hover.hover\:border-white\/20 {
-  border-color: rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Character card inner content for light mode */
-body.light .grid .cursor-pointer .bg-black\/20 {
+/* Character card inner content backgrounds */
+body.light div[class*="cursor-pointer"] div[class*="bg-black\/20"] {
   background-color: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(12px) !important;
   border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Character card gradient overlay for light mode */
-body.light .grid .cursor-pointer .bg-gradient-to-t {
+/* Character card gradient overlays */
+body.light div[class*="cursor-pointer"] div[class*="bg-gradient-to-t"] {
   background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4)) !important;
 }
 
-/* Character card glass rim effects for light mode */
-body.light .grid .cursor-pointer .bg-gradient-to-r {
+body.light div[class*="cursor-pointer"] div[class*="bg-gradient-to-r"] {
   background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.05), transparent) !important;
 }
 
-body.light .grid .cursor-pointer .bg-gradient-to-b {
+body.light div[class*="cursor-pointer"] div[class*="bg-gradient-to-b"] {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), transparent, transparent) !important;
 }
 
-/* Fallback for any character card that isn't in a grid */
-body.light .cursor-pointer.rounded-xl.border {
+/* Extra fallback with even higher specificity */
+body.light .cursor-pointer.rounded-xl.border.border-white\/10.bg-white\/5 {
   background-color: rgba(255, 255, 255, 0.98) !important;
-  border: 2px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border: 2px solid rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
-body.light .cursor-pointer.rounded-xl.border:hover {
+body.light .cursor-pointer.rounded-xl.border.border-white\/10.bg-white\/5:hover {
   background-color: rgba(255, 255, 255, 1) !important;
-  border: 2px solid rgba(0, 0, 0, 0.25) !important;
+  border: 2px solid rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+/* Universal character card fix - Targets all divs with these specific classes */
+body.light div.cursor-pointer.border.rounded-xl {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light div.cursor-pointer.border.rounded-xl:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: rgba(0, 0, 0, 0.3) !important;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-2px) scale(1.02) !important;
 }
