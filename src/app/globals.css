@@ -1170,8 +1170,6 @@ body.light .premium-glow {
 
 body.light .ultimate-glow {
   box-shadow: 0 0 12px rgba(245, 158, 11, 0.25), 0 2px 8px rgba(245, 158, 11, 0.15) !important;
-}
-
 /* Billing management container for light mode */
 .light .bg-black\/95,
 body.light .bg-black\/95 {
