@@ -397,19 +397,7 @@ function Chat() {
                           }, [])
 
                           useEffect(() => {
-                            const applyTheme = (currentTheme: 'light' | 'dark' | 'system') => {
-                              const body = document.body
-                              body.classList.remove('light', 'dark')
-
-                              if (currentTheme === 'system') {
-                                // For system preference, we'll default to dark mode
-                                body.classList.add('dark')
-                              } else {
-                                body.classList.add(currentTheme)
-                              }
-                            }
-
-                            applyTheme(theme)
+                            // Only save theme to localStorage, don't apply to body
                             localStorage.setItem('theme', theme)
                           }, [theme])
 
@@ -3305,7 +3293,7 @@ function Chat() {
 
           // Main component return
           return (
-            <div className="flex h-screen bg-black text-white overflow-hidden" suppressHydrationWarning={true}>
+            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
