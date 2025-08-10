@@ -452,6 +452,112 @@ body.light {
   color: #0f172a !important;
 }
 
+/* Universal light mode selectors - works for both scoped and body application */
+.light .bg-black,
+.light .bg-black\/98,
+.light .bg-black\/90,
+.light .bg-black\/80,
+.light .bg-black\/70,
+.light .bg-black\/60,
+.light .bg-black\/50,
+.light .bg-black\/40,
+.light .bg-black\/30,
+.light .bg-black\/20,
+.light .bg-black\/10,
+.light .bg-gray-950,
+.light .bg-gray-950\/95,
+.light .bg-gray-950\/90,
+.light .bg-gray-950\/80,
+.light .bg-gray-950\/60,
+.light .bg-gray-950\/50,
+.light .bg-gray-900,
+.light .bg-gray-900\/98,
+.light .bg-gray-900\/95,
+.light .bg-gray-900\/90,
+.light .bg-gray-900\/50,
+.light .bg-gray-900\/40,
+.light .bg-gray-900\/30,
+.light .bg-gray-900\/20,
+.light .bg-gray-800,
+.light .bg-gray-800\/80,
+.light .bg-gray-800\/50,
+.light .bg-gray-800\/40,
+.light .bg-gray-800\/30,
+.light .bg-gray-800\/20,
+.light .bg-gray-800\/10,
+.light .bg-gray-700,
+.light .bg-gray-700\/50,
+.light .bg-gray-600 {
+  background-color: var(--light-bg) !important;
+}
+
+.light .text-white,
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300,
+.light .text-gray-400,
+.light .text-gray-500,
+.light .text-gray-600 {
+  color: var(--light-text) !important;
+}
+
+/* Light mode CSS variables for consistency */
+.light {
+  --light-bg: #ffffff;
+  --light-bg-secondary: #f8fafc;
+  --light-bg-tertiary: #f1f5f9;
+  --light-text: #0f172a;
+  --light-text-secondary: #334155;
+  --light-text-muted: #64748b;
+  --light-border: #e2e8f0;
+}
+
+/* Specific light mode background overrides */
+.light .bg-black { background-color: #ffffff !important; }
+.light .bg-black\/98 { background-color: rgba(255, 255, 255, 0.98) !important; }
+.light .bg-black\/90 { background-color: rgba(255, 255, 255, 0.9) !important; }
+.light .bg-black\/80 { background-color: rgba(255, 255, 255, 0.8) !important; }
+.light .bg-black\/70 { background-color: rgba(0, 0, 0, 0.1) !important; }
+.light .bg-black\/60 { background-color: rgba(241, 245, 249, 0.8) !important; }
+.light .bg-black\/50 { background-color: rgba(255, 255, 255, 0.5) !important; }
+.light .bg-black\/40 { background-color: rgba(241, 245, 249, 0.6) !important; }
+.light .bg-black\/30 { background-color: rgba(241, 245, 249, 0.4) !important; }
+.light .bg-black\/20 { background-color: rgba(241, 245, 249, 0.3) !important; }
+.light .bg-black\/10 { background-color: rgba(241, 245, 249, 0.2) !important; }
+
+.light .bg-gray-950 { background-color: #ffffff !important; }
+.light .bg-gray-950\/95 { background-color: rgba(255, 255, 255, 0.95) !important; }
+.light .bg-gray-950\/90 { background-color: rgba(248, 250, 252, 0.95) !important; }
+.light .bg-gray-950\/80 { background-color: rgba(248, 250, 252, 0.9) !important; }
+.light .bg-gray-950\/60 { background-color: rgba(241, 245, 249, 0.8) !important; }
+.light .bg-gray-950\/50 { background-color: rgba(248, 250, 252, 0.8) !important; }
+
+.light .bg-gray-900 { background-color: #f1f5f9 !important; }
+.light .bg-gray-900\/98 { background-color: rgba(255, 255, 255, 0.98) !important; }
+.light .bg-gray-900\/95 { background-color: rgba(248, 250, 252, 0.95) !important; }
+.light .bg-gray-900\/90 { background-color: rgba(248, 250, 252, 0.95) !important; }
+.light .bg-gray-900\/50 { background-color: rgba(241, 245, 249, 0.8) !important; }
+.light .bg-gray-900\/40 { background-color: rgba(241, 245, 249, 0.6) !important; }
+.light .bg-gray-900\/30 { background-color: rgba(226, 232, 240, 0.4) !important; }
+.light .bg-gray-900\/20 { background-color: rgba(248, 250, 252, 0.8) !important; }
+
+.light .bg-gray-800 { background-color: #e2e8f0 !important; }
+.light .bg-gray-800\/80 { background-color: rgba(248, 250, 252, 0.9) !important; }
+.light .bg-gray-800\/50 { background-color: rgba(226, 232, 240, 0.7) !important; }
+.light .bg-gray-800\/40 { background-color: rgba(226, 232, 240, 0.4) !important; }
+.light .bg-gray-800\/30 { background-color: rgba(226, 232, 240, 0.5) !important; }
+.light .bg-gray-800\/20 { background-color: rgba(226, 232, 240, 0.3) !important; }
+.light .bg-gray-800\/10 { background-color: rgba(226, 232, 240, 0.2) !important; }
+
+/* Light mode text colors */
+.light .text-white { color: #0f172a !important; }
+.light .text-gray-100 { color: #1e293b !important; }
+.light .text-gray-200 { color: #334155 !important; }
+.light .text-gray-300 { color: #475569 !important; }
+.light .text-gray-400 { color: #64748b !important; }
+.light .text-gray-500 { color: #64748b !important; }
+.light .text-gray-600 { color: #475569 !important; }
+
 /* Fix gradient text in light mode */
 .light .bg-gradient-to-r.from-cyan-400.to-purple-400,
 body.light .bg-gradient-to-r.from-cyan-400.to-purple-400 {
@@ -470,46 +576,57 @@ body.light .bg-gradient-to-r.from-cyan-400.to-purple-400.bg-clip-text.text-trans
 }
 
 /* Core background colors for light mode */
+.light .bg-black,
 body.light .bg-black {
   background-color: #ffffff !important;
 }
 
+.light .bg-black\/98,
 body.light .bg-black\/98 {
   background-color: rgba(255, 255, 255, 0.98) !important;
 }
 
+.light .bg-black\/90,
 body.light .bg-black\/90 {
   background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
+.light .bg-black\/80,
 body.light .bg-black\/80 {
   background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
+.light .bg-black\/70,
 body.light .bg-black\/70 {
   background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
+.light .bg-black\/60,
 body.light .bg-black\/60 {
   background-color: rgba(241, 245, 249, 0.8) !important;
 }
 
+.light .bg-black\/50,
 body.light .bg-black\/50 {
   background-color: rgba(255, 255, 255, 0.5) !important;
 }
 
+.light .bg-black\/40,
 body.light .bg-black\/40 {
   background-color: rgba(241, 245, 249, 0.6) !important;
 }
 
+.light .bg-black\/30,
 body.light .bg-black\/30 {
   background-color: rgba(241, 245, 249, 0.4) !important;
 }
 
+.light .bg-black\/20,
 body.light .bg-black\/20 {
   background-color: rgba(241, 245, 249, 0.3) !important;
 }
 
+.light .bg-black\/10,
 body.light .bg-black\/10 {
   background-color: rgba(241, 245, 249, 0.2) !important;
 }
