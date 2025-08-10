@@ -1506,6 +1506,68 @@ body.light .text-gray-100\/95 {
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8) !important;
 }
 
+/* Comprehensive anime series text fixes for light mode */
+body.light .text-gray-100 {
+  color: #1f2937 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+body.light .text-gray-200 {
+  color: #374151 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7) !important;
+}
+
+body.light .text-gray-300 {
+  color: #4b5563 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+body.light .text-white {
+  color: #111827 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+body.light .text-white\/90 {
+  color: #1f2937 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+body.light .text-white\/80 {
+  color: #374151 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7) !important;
+}
+
+body.light .text-white\/70 {
+  color: #4b5563 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+body.light .text-white\/60 {
+  color: #6b7280 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Character card specific text styling for light mode */
+body.light [class*="text-gray"] {
+  color: #374151 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+body.light [class*="text-white"] {
+  color: #1f2937 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Specific targeting for anime series text in character cards */
+body.light .cursor-pointer .text-gray-100,
+body.light .cursor-pointer .text-gray-200,
+body.light .cursor-pointer .text-gray-300,
+body.light .cursor-pointer .text-white {
+  color: #1f2937 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+}
+
 /* Character card border fixes for light mode */
 body.light .border-white\/10 {
   border-color: rgba(0, 0, 0, 0.15) !important;
