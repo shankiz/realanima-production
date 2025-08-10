@@ -1258,6 +1258,7 @@ body.light .ultimate-glow {
 }
 
 /* Billing management container for light mode */
+.light .bg-black\/95,
 body.light .bg-black\/95 {
   background-color: rgba(255, 255, 255, 0.98) !important;
   border: 1px solid rgba(203, 213, 225, 0.6) !important;
@@ -1265,9 +1266,17 @@ body.light .bg-black\/95 {
 }
 
 /* Billing section card backgrounds */
+.light .bg-gray-800\/40,
 body.light .bg-gray-800\/40 {
   background-color: rgba(248, 250, 252, 0.9) !important;
   border: 1px solid rgba(203, 213, 225, 0.4) !important;
+}
+
+/* Additional billing container fixes */
+.light .bg-black\/90,
+body.light .bg-black\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
 }
 
 /* Plan status badges in light mode */
@@ -1715,9 +1724,31 @@ body.light .drop-shadow-md {
 }
 
 /* Character card content backgrounds for light mode */
+.light .bg-black\/20,
 body.light .bg-black\/20 {
   background-color: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(8px) !important;
+}
+
+/* Anime series text in character cards for light mode */
+.light .text-black,
+body.light .text-black {
+  color: #111827 !important;
+}
+
+.light .text-black\/80,
+body.light .text-black\/80 {
+  color: #374151 !important;
+}
+
+.light .text-black\/70,
+body.light .text-black\/70 {
+  color: #475569 !important;
+}
+
+.light .text-black\/60,
+body.light .text-black\/60 {
+  color: #64748b !important;
 }
 
 /* Character name styling in light mode */
