@@ -112,7 +112,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       className="border border-white/10 rounded-xl overflow-hidden transition-transform duration-150 hover:border-white/20 cursor-pointer bg-white/5 hover:scale-[1.01] group relative transform-gpu"
       onClick={onClick}
       style={{
-        background: 'rgba(255,255,255,0.02)',
         // Improve scroll performance by skipping offscreen work
         contentVisibility: 'auto',
         containIntrinsicSize: '160px 160px'
@@ -148,7 +147,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       <div className="relative p-3 bg-black/20">
         <div className="relative z-10">
                                   <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide">{character.name}</h3>
-                                  <p className="text-gray-100/95 text-[10px] drop-shadow-md line-clamp-1 font-medium">{character.description}</p>
+                                  <p className="text-gray-100 text-[10px] drop-shadow-md line-clamp-1 font-medium">{character.description}</p>
                                 </div>
                               </div>
     </div>
