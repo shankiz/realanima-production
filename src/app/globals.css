@@ -1097,20 +1097,12 @@ body.light .text-amber-400 {
   text-shadow: 0 1px 2px rgba(217, 119, 6, 0.2) !important;
 }
 
-/* Gold/Ultimate gradient text effect for light mode - only apply to specific gradient text elements */
-body.light .text-yellow-400.gradient-text,
-body.light .ultimate-badge .text-yellow-400,
-body.light .premium-badge .text-yellow-400 {
+/* Gold/Ultimate gradient text effect for light mode */
+body.light .text-yellow-400 {
   background: linear-gradient(135deg, #d97706, #f59e0b) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
-  font-weight: 600 !important;
-}
-
-/* Regular yellow text for light mode without gradient effects */
-body.light .text-yellow-400 {
-  color: #d97706 !important;
   font-weight: 600 !important;
 }
 
@@ -1692,23 +1684,6 @@ body.light button.cursor-not-allowed {
   font-family: 'Manolo Mono', monospace;
   color: white;
   cursor: pointer;
-}
-
-/* Protect Shocka Serif font from gradient text effects */
-body.light [style*="font-family: 'Shocka Serif'"],
-body.light .shocka-serif,
-body.light h1,
-body.light h2,
-body.light h3 {
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: initial !important;
-  background-clip: initial !important;
-}
-
-/* Ensure Shocka Serif text is visible in light mode */
-body.light [style*="font-family: 'Shocka Serif'"] {
-  color: #111827 !important;
 }
 
 * {
