@@ -89,7 +89,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
   margin: 0;
-}
+
 
 /* Minimal Sidebar Styling */
 .sidebar-left {
@@ -135,6 +135,8 @@
   }
 }
 
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(75, 85, 99, 0.4);
   border-radius: 2px;
@@ -154,7 +156,6 @@
 /* Clean, minimal chat bubbles */
 .message-bubble {
   max-width: 70%;
-}
 
 /* Custom scrollbar styling for textarea */
 .scrollbar-custom::-webkit-scrollbar {
@@ -188,6 +189,8 @@
 textarea:focus::placeholder {
   opacity: 0.3;
 }
+
+
 
 textarea {
   text-align: left;
@@ -414,6 +417,92 @@ textarea.break-words {
 
 /* Light theme styles */
 .light {
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(0.97 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(0.985 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.145 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.922 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.922 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.922 0 0);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0 0 0 / 15%);
+  --input: oklch(0 0 0 / 8%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.145 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.922 0 0);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0 0 0 / 15%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Light mode specific overrides for your chat interface */
+.light,
+body.light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Universal light mode selectors - works for both scoped and body application */
+.light .bg-black,
+.light .bg-black\/98,
+.light .bg-black\/90,
+.light .bg-black\/80,
+.light .bg-black\/70,
+.light .bg-black\/60,
+.light .bg-black\/50,
+.light .bg-black\/40,
+.light .bg-black\/30,
+.light .bg-black\/20,
+.light .bg-black\/10,
+.light .bg-gray-950,
+.light .bg-gray-950\/95,
+.light .bg-gray-950\/90,
+.light .bg-gray-950\/80,
+.light .bg-gray-950\/60,
+.light .bg-gray-950\/50,
+.light .bg-gray-900,
+.light .bg-gray-900\/98,
+.light .bg-gray-900\/95,
+.light .bg-gray-900\/90,
+.light .bg-gray-900\/50,
+.light .bg-gray-900\/40,
+.light .bg-gray-900\/30,
+.light .bg-gray-900\/20,
+.light .bg-gray-800,
+.light .bg-gray-800\/80,
+.light .bg-gray-800\/50,
+.light .bg-gray-800\/40,
+.light .bg-gray-800\/30,
+.light .bg-gray-800\/20,
+.light .bg-gray-800\/10,
+.light .bg-gray-700,
+.light .bg-gray-700\/50,
+.light .bg-gray-600 {
+  background-color: var(--light-bg) !important;
+}
+
+.light .text-white,
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300,
+.light .text-gray-400,
+.light .text-gray-500,
+.light .text-gray-600 {
+  color: var(--light-text) !important;
+}
+
+/* Light mode CSS variables for consistency */
+.light {
   --light-bg: #ffffff;
   --light-bg-secondary: #f8fafc;
   --light-bg-tertiary: #f1f5f9;
@@ -460,10 +549,14 @@ textarea.break-words {
 .light .bg-gray-800\/20 { background-color: rgba(226, 232, 240, 0.3) !important; }
 .light .bg-gray-800\/10 { background-color: rgba(226, 232, 240, 0.2) !important; }
 
-.light .bg-gray-700 { background-color: #cbd5e1 !important; }
-.light .bg-gray-700\/50 { background-color: rgba(241, 245, 249, 0.8) !important; }
-
-.light .bg-gray-600 { background-color: #94a3b8 !important; }
+/* Light mode text colors */
+.light .text-white { color: #0f172a !important; }
+.light .text-gray-100 { color: #1e293b !important; }
+.light .text-gray-200 { color: #334155 !important; }
+.light .text-gray-300 { color: #475569 !important; }
+.light .text-gray-400 { color: #64748b !important; }
+.light .text-gray-500 { color: #64748b !important; }
+.light .text-gray-600 { color: #475569 !important; }
 
 /* Fix gradient text in light mode */
 .light .bg-gradient-to-r.from-cyan-400.to-purple-400,
@@ -539,21 +632,13 @@ body.light .bg-black\/10 {
 }
 
 /* Character card backgrounds */
-.light [class*="bg-black/40"],
-body.light [class*="bg-black/40"],
-[class*="light"] [class*="bg-black/40"] {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border: 2px solid rgba(148, 163, 184, 0.5) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-  backdrop-filter: blur(12px) !important;
+body.light [class*="bg-black/40"] {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(203, 213, 225, 0.4) !important;
 }
 
-.light [class*="bg-black/60"]:hover,
-body.light [class*="bg-black/60"]:hover,
-[class*="light"] [class*="bg-black/60"]:hover {
-  background-color: rgba(248, 250, 252, 1) !important;
-  border: 2px solid rgba(148, 163, 184, 0.7) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+body.light [class*="bg-black/60"]:hover {
+  background-color: rgba(248, 250, 252, 0.95) !important;
 }
 
 /* Gray scale backgrounds */
@@ -813,7 +898,8 @@ body.light .shadow-2xl {
 }
 
 body.light .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04),```text
+0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
 }
 
 body.light .shadow-lg {
@@ -831,9 +917,8 @@ body.light .border-transparent {
 
 /* Make sure all character cards look good */
 body.light .cursor-pointer:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-  border: 2px solid rgba(148, 163, 184, 0.7) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Sidebar text colors for light mode */
@@ -1170,6 +1255,8 @@ body.light .premium-glow {
 
 body.light .ultimate-glow {
   box-shadow: 0 0 12px rgba(245, 158, 11, 0.25), 0 2px 8px rgba(245, 158, 11, 0.15) !important;
+}
+
 /* Billing management container for light mode */
 .light .bg-black\/95,
 body.light .bg-black\/95 {
@@ -1537,7 +1624,6 @@ body.light button[class*="border-gray-600"] {
   background-color: rgba(248, 250, 252, 0.95) !important;
   border-color: rgba(148, 163, 184, 0.6) !important;
   color: #374151 !important;
-  font-weight: 500 !important;
 }
 
 body.light button[class*="border-gray-600"]:hover {
@@ -1551,12 +1637,41 @@ body.light button[variant="outline"] {
   background-color: rgba(248, 250, 252, 0.95) !important;
   border-color: rgba(148, 163, 184, 0.6) !important;
   color: #374151 !important;
-  font-weight: 500 !important;
 }
 
 body.light button[variant="outline"]:hover {
   background-color: rgba(241, 245, 249, 1) !important;
   border-color: rgba(148, 163, 184, 0.8) !important;
+  color: #1f2937 !important;
+}
+
+/* Fix cancel button visibility in light mode */
+body.light .modal-cancel-btn,
+body.light button[class*="border-gray-600"] {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border-color: rgba(100, 116, 139, 0.8) !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+body.light .modal-cancel-btn:hover,
+body.light button[class*="border-gray-600"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border-color: rgba(100, 116, 139, 1) !important;
+  color: #1f2937 !important;
+}
+
+/* Ensure outline buttons in modals are visible */
+body.light button[variant="outline"] {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 0.8) !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+body.light button[variant="outline"]:hover {
+  background-color: rgba(241, 245, 249, 1) !important;
+  border: 2px solid rgba(100, 116, 139, 1) !important;
   color: #1f2937 !important;
 }
 
@@ -1595,9 +1710,8 @@ body.light [style*="background: rgba(255,255,255,0.02)"] {
 
 /* Character card hover effects for light mode */
 body.light .cursor-pointer:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-  border: 2px solid rgba(148, 163, 184, 0.7) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
 }
 
 /* Character card text shadows for better readability in light mode */
@@ -1635,65 +1749,6 @@ body.light .text-black\/70 {
 .light .text-black\/60,
 body.light .text-black\/60 {
   color: #64748b !important;
-}
-
-/* Additional anime series text fixes */
-.light .text-black\/50,
-body.light .text-black\/50 {
-  color: #64748b !important;
-}
-
-.light .text-black\/40,
-body.light .text-black\/40 {
-  color: #94a3b8 !important;
-}
-
-.light .text-black\/30,
-body.light .text-black\/30 {
-  color: #cbd5e1 !important;
-}
-
-/* Force black text to be visible in light mode - more specific selectors */
-.light [class*="text-black"],
-body.light [class*="text-black"] {
-  color: #111827 !important;
-}
-
-/* Anime series text in character cards - specific targeting */
-.light .text-black.text-xs,
-body.light .text-black.text-xs {
-  color: #374151 !important;
-  font-weight: 500 !important;
-}
-
-.light .text-black.text-sm,
-body.light .text-black.text-sm {
-  color: #374151 !important;
-  font-weight: 500 !important;
-}
-
-/* Character card specific anime series text */
-.light [class*="text-black"][class*="text-xs"],
-body.light [class*="text-black"][class*="text-xs"] {
-  color: #374151 !important;
-  font-weight: 500 !important;
-}
-
-.light [class*="text-black"][class*="text-sm"],
-body.light [class*="text-black"][class*="text-sm"] {
-  color: #374151 !important;
-  font-weight: 500 !important;
-}
-
-/* Ensure any text with black class variations is visible */
-.light span.text-black,
-.light p.text-black,
-.light div.text-black,
-body.light span.text-black,
-body.light p.text-black,
-body.light div.text-black {
-  color: #1f2937 !important;
-  font-weight: 500 !important;
 }
 
 /* Character name styling in light mode */
