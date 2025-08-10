@@ -96,41 +96,39 @@ export default function ChatPage() {
                           );
                         };
 
-                        // Character card with minimal design
-                        const CharacterCard = ({ character, onClick }: {
-                          character: { id: string; name: string; description: string; };
-                          onClick: () => void;
-                        }) => {
+// Character card with minimal design (memoized for smoother scrolling)
+type CharacterCardProps = {
+  character: { id: string; name: string; description: string };
+  onClick: () => void;
+};
+
+const CharacterCard = React.memo(function CharacterCard({ character, onClick }: CharacterCardProps) {
                           // Characters that should have the NEW tag
                           const newCharacters = ['gojo', 'levi', 'mikasa', 'lawliet', 'hisoka', 'reigen', 'mob', 'kaneki'];
                           const isNew = newCharacters.includes(character.id);
 
                           return (
-                            <div 
-                              className="border border-white/15 rounded-2xl overflow-hidden transition-all duration-500 hover:border-white/30 cursor-pointer shadow-2xl backdrop-blur-2xl hover:scale-[1.03] hover:shadow-4xl group relative"
-                              onClick={onClick}
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.02) 100%)',
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(255,255,255,0.05)'
-                              }}
+    <div 
+      className="border border-white/10 rounded-xl overflow-hidden transition-transform duration-150 hover:border-white/20 cursor-pointer bg-white/5 hover:scale-[1.01] group relative transform-gpu"
+      onClick={onClick}
+      style={{
+        background: 'rgba(255,255,255,0.02)',
+        // Improve scroll performance by skipping offscreen work
+        contentVisibility: 'auto',
+        containIntrinsicSize: '160px 160px'
+      } as any}
                             >
-                              {/* Primary glass reflection */}
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/8 via-white/3 to-transparent opacity-80 rounded-2xl pointer-events-none"></div>
-
-                              {/* Secondary glass layer for depth */}
-                              <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-white/2 to-white/5 rounded-2xl pointer-events-none"></div>
-
-                              <div className="relative h-40 overflow-hidden rounded-t-2xl">
+      <div className="relative h-40 overflow-hidden rounded-t-xl">
                                 <Image 
                                   src={`/characters/${character.id}.png`}
                                   alt={character.name}
                                   fill
-                                  className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                                  loading="eager"
-                                  priority
+          className="object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] will-change-transform"
+          loading="lazy"
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                                 />
-                                {/* Refined gradient overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        {/* Simple top-to-bottom gradient for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
 
                                 {/* NEW Tag - Top Right of Image */}
                                 {isNew && (
@@ -147,29 +145,19 @@ export default function ChatPage() {
                                 <div className="absolute top-0 bottom-0 right-0 w-0.5 bg-gradient-to-b from-white/15 via-transparent to-transparent"></div>
                               </div>
 
-                              <div className="relative p-3" style={{
-                                background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)'
-                              }}>
-                                {/* Inner glass reflection for text area */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-white/3 via-white/1 to-transparent rounded-b-2xl pointer-events-none"></div>
-
-                                <div className="relative z-10">
+      <div className="relative p-3 bg-black/20">
+        <div className="relative z-10">
                                   <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide">{character.name}</h3>
                                   <p className="text-gray-100/95 text-[10px] drop-shadow-md line-clamp-1">{character.description}</p>
                                 </div>
                               </div>
-
-                              {/* Enhanced hover glow */}
-                              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/8 via-transparent to-purple-400/8 rounded-2xl"></div>
-                                <div className="absolute inset-0 bg-gradient-to-tl from-blue-400/5 via-transparent to-pink-400/5 rounded-2xl"></div>
-                              </div>
-
-                              {/* Subtle inner border glow */}
-                              <div className="absolute inset-0.5 rounded-2xl border border-white/5 pointer-events-none group-hover:border-white/10 transition-colors duration-500"></div>
-                            </div>
-                          );
-                        };
+    </div>
+  );
+}, (prev: Readonly<CharacterCardProps>, next: Readonly<CharacterCardProps>) => (
+  prev.character.id === next.character.id &&
+  prev.character.name === next.character.name &&
+  prev.character.description === next.character.description
+));
 
                         // Minimalist discover view
                         const DiscoverView = ({ onSelectCharacter, loading }: {
