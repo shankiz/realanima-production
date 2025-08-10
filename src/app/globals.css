@@ -1486,18 +1486,32 @@ body.light [class*="bg-black/98"] {
 }
 
 /* Discover page gradient backgrounds for light mode */
+.light .bg-gradient-to-b,
 body.light .bg-gradient-to-b {
   background: linear-gradient(to bottom, #f8fafc, #e2e8f0) !important;
 }
 
+.light .bg-gradient-to-b.from-black.to-gray-950,
+body.light .bg-gradient-to-b.from-black.to-gray-950 {
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0) !important;
+}
+
+.light .from-black,
 body.light .from-black {
   --tw-gradient-from: #f8fafc !important;
   --tw-gradient-to: rgba(248, 250, 252, 0) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 
+.light .to-gray-950,
 body.light .to-gray-950 {
   --tw-gradient-to: #e2e8f0 !important;
+}
+
+/* Specific discover page container fix */
+.light .flex-1.overflow-y-auto.bg-gradient-to-b.from-black.to-gray-950,
+body.light .flex-1.overflow-y-auto.bg-gradient-to-b.from-black.to-gray-950 {
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0) !important;
 }
 
 /* Transparent borders */
