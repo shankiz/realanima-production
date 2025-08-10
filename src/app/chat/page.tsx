@@ -148,7 +148,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       <div className="relative p-3 bg-black/20">
         <div className="relative z-10">
                                   <h3 className="text-white font-semibold mb-1 text-xs drop-shadow-lg tracking-wide">{character.name}</h3>
-                                  <p className="text-gray-100/95 text-[10px] drop-shadow-md line-clamp-1">{character.description}</p>
+                                  <p className="text-gray-100/95 text-[10px] drop-shadow-md line-clamp-1 font-medium">{character.description}</p>
                                 </div>
                               </div>
     </div>

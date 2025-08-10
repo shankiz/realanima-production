@@ -1535,6 +1535,67 @@ body.light .modal-warning button[class*="border"]:hover {
   color: #1f2937 !important;
 }
 
+/* Character card fixes for light mode */
+body.light .text-gray-100\/95 {
+  color: #1f2937 !important;
+}
+
+body.light .text-gray-100 {
+  color: #1f2937 !important;
+}
+
+/* Character card backgrounds for light mode */
+body.light [style*="background: rgba(255,255,255,0.02)"] {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Character card hover effects for light mode */
+body.light .cursor-pointer:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+}
+
+/* Character card text shadows for better readability in light mode */
+body.light .drop-shadow-lg {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) !important;
+}
+
+body.light .drop-shadow-md {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)) !important;
+}
+
+/* Character card content backgrounds for light mode */
+body.light .bg-black\/20 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Character name styling in light mode */
+body.light .text-white.font-semibold {
+  color: #111827 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Character description styling in light mode */
+body.light .text-gray-100\/95 {
+  color: #374151 !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Character card border fixes for light mode */
+body.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light .hover\:border-white\/20:hover {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+body.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
 /* Enhanced backdrop blur for light mode modals */
 body.light .modal-default,
 body.light .modal-danger,
