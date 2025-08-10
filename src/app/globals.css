@@ -451,6 +451,21 @@ body.light {
   color: #0f172a !important;
 }
 
+/* Fix gradient text in light mode */
+body.light .bg-gradient-to-r.from-cyan-400.to-purple-400 {
+  background: linear-gradient(to right, #0891b2, #7c3aed) !important;
+}
+
+/* Alternative approach - make gradient text solid in light mode */
+body.light .bg-gradient-to-r.from-cyan-400.to-purple-400.bg-clip-text.text-transparent {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  color: #0891b2 !important;
+  text-transparent: none !important;
+}
+
 /* Core background colors for light mode */
 body.light .bg-black {
   background-color: #ffffff !important;
