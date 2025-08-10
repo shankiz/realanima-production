@@ -2747,8 +2747,8 @@ function Chat() {
                                               }`}
                                               style={{ 
                                                 height: '500px',
-                                                top: '-305px',
-                                                marginLeft: '40px',
+                                                top: '-304px',
+                                                marginLeft: '55px',
                                                 transformOrigin: 'left center'
                                               }}>
                                                 {/* Header */}
