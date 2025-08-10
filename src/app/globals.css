@@ -1751,6 +1751,65 @@ body.light .text-black\/60 {
   color: #64748b !important;
 }
 
+/* Additional anime series text fixes */
+.light .text-black\/50,
+body.light .text-black\/50 {
+  color: #64748b !important;
+}
+
+.light .text-black\/40,
+body.light .text-black\/40 {
+  color: #94a3b8 !important;
+}
+
+.light .text-black\/30,
+body.light .text-black\/30 {
+  color: #cbd5e1 !important;
+}
+
+/* Force black text to be visible in light mode - more specific selectors */
+.light [class*="text-black"],
+body.light [class*="text-black"] {
+  color: #111827 !important;
+}
+
+/* Anime series text in character cards - specific targeting */
+.light .text-black.text-xs,
+body.light .text-black.text-xs {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+.light .text-black.text-sm,
+body.light .text-black.text-sm {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* Character card specific anime series text */
+.light [class*="text-black"][class*="text-xs"],
+body.light [class*="text-black"][class*="text-xs"] {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+.light [class*="text-black"][class*="text-sm"],
+body.light [class*="text-black"][class*="text-sm"] {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* Ensure any text with black class variations is visible */
+.light span.text-black,
+.light p.text-black,
+.light div.text-black,
+body.light span.text-black,
+body.light p.text-black,
+body.light div.text-black {
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
 /* Character name styling in light mode */
 body.light .text-white.font-semibold {
   color: #111827 !important;
