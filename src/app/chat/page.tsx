@@ -291,6 +291,7 @@ function Chat() {
                           const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
                           const [voiceGenerationError, setVoiceGenerationError] = useState(false);
                           const [audioPlayingForMessage, setAudioPlayingForMessage] = useState<number | null>(null);
+                          const [abortController, setAbortController] = useState<AbortController | null>(null);
                           const chatEndRef = useRef<HTMLDivElement>(null);
                           const [messagesLeft, setMessagesLeft] = useState<number | null>(null);
                           const [credits, setCredits] = useState<number | null>(null);
@@ -1209,6 +1210,28 @@ function Chat() {
                             }
                           }, [isVoiceResponseEnabled, currentUserPlan]);
 
+                          // Function to cancel ongoing message generation
+                          const handleCancelMessage = () => {
+                            if (abortController) {
+                              abortController.abort();
+                              setAbortController(null);
+                              setIsLoading(false);
+                              setIsGeneratingVoice(false);
+                              
+                              // Add a cancelled message to show the user what happened
+                              const cancelledMessage: Message = { 
+                                role: 'assistant', 
+                                content: '✋ Response cancelled by user.' 
+                              };
+                              setMessages(prev => [...prev, cancelledMessage]);
+                              
+                              // Auto-focus the input field
+                              setTimeout(() => {
+                                document.getElementById('chat-input-field')?.focus();
+                              }, 100);
+                            }
+                          };
+
                           const handleSendMessage = async (e: React.FormEvent) => {
                             e.preventDefault();
                             const currentInput = inputRef.current?.value || input;
@@ -1249,9 +1272,15 @@ function Chat() {
 
                             setIsLoading(true);
 
+                            // Create abort controller for this request
+                            const controller = new AbortController();
+                            setAbortController(controller);
+
                             try {
                               if (!user) {
                                 console.error('User not authenticated');
+                                setIsLoading(false);
+                                setAbortController(null);
                                 return;
                               }
 
@@ -1267,7 +1296,8 @@ function Chat() {
                                 body: JSON.stringify({
                                   message: currentInput,
                                   sessionId: sessionId
-                                })
+                                }),
+                                signal: controller.signal
                               });
 
                               if (response.ok) {
@@ -1305,7 +1335,8 @@ function Chat() {
                                         character: character,
                                         text: aiResponseText,
                                         generateVoice: true // Frontend controls voice generation
-                                      })
+                                      }),
+                                      signal: controller.signal
                                     });
 
                                     if (ttsResponse.ok) {
@@ -1574,15 +1605,24 @@ function Chat() {
                                 }
                                 setMessages(prev => [...prev, errorMessage]);
                               }
-                            } catch (error) {
+                            } catch (error: any) {
                               console.error('Error sending message:', error);
-                              const errorMessage: Message = { 
-                                role: 'assistant', 
-                                content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐' 
-                              };
-                              setMessages(prev => [...prev, errorMessage]);
+                              
+                              // Don't show error message if request was cancelled
+                              if (error.name === 'AbortError' || controller.signal.aborted) {
+                                console.log('Request was cancelled by user');
+                              } else {
+                                const errorMessage: Message = { 
+                                  role: 'assistant', 
+                                  content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐' 
+                                };
+                                setMessages(prev => [...prev, errorMessage]);
+                              }
                             } finally {
                               setIsLoading(false);
+                              setIsGeneratingVoice(false);
+                              setAbortController(null);
+                              
                               // Auto-focus the input field after receiving a response
                               setTimeout(() => {
                                 document.getElementById('chat-input-field')?.focus();
@@ -4111,12 +4151,18 @@ function Chat() {
                                           <div className="flex-shrink-0 pr-2">
                                             <button
                                               type="button"
-                                              onClick={handleSendMessage}
-                                              className="rounded-full p-2 transition-colors flex items-center justify-center shadow-sm bg-cyan-600 hover:bg-cyan-700 text-white"
-                                              disabled={isLoading || isGeneratingVoice}
+                                              onClick={isLoading || isGeneratingVoice ? handleCancelMessage : handleSendMessage}
+                                              className={`rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white ${
+                                                isLoading || isGeneratingVoice 
+                                                  ? 'bg-red-600 hover:bg-red-700' 
+                                                  : 'bg-cyan-600 hover:bg-cyan-700'
+                                              }`}
+                                              title={isLoading || isGeneratingVoice ? 'Stop generation' : 'Send message'}
                                             >
                                               {isLoading || isGeneratingVoice ? (
-                                                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                                  <path d="M6 6h12v12H6z"/>
+                                                </svg>
                                               ) : (
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
