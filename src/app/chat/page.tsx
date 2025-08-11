@@ -1610,12 +1610,11 @@ function Chat() {
                                 setMessages(prev => [...prev, errorMessage]);
                               }
                             } catch (error: any) {
-                              console.error('Error sending message:', error);
-                              
                               // Don't show error message if request was cancelled
                               if (error.name === 'AbortError' || controller.signal.aborted) {
                                 console.log('Request was cancelled by user');
                               } else {
+                                console.error('Error sending message:', error);
                                 const errorMessage: Message = { 
                                   role: 'assistant', 
                                   content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐' 
