@@ -180,6 +180,12 @@ export async function POST(request: NextRequest) {
   console.log('🔊 [TTS-PARALLEL] Request received');
 
   try {
+    // Check if request was aborted before processing
+    if (request.signal?.aborted) {
+      console.log('🚫 [TTS] Request was aborted before processing');
+      return NextResponse.json({ error: 'Request cancelled' }, { status: 499 });
+    }
+
     // Check if Firebase Admin is initialized
     if (!adminAuth) {
       return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
@@ -199,35 +205,38 @@ export async function POST(request: NextRequest) {
     console.log(`🔊 [TTS-PARALLEL] Request received for character: ${character}, chunk: ${requestChunk || 1}`);
     console.log(`📝 [TTS-PARALLEL] Text length: ${text.length} characters`);
 
-    // Handle second chunk requests
+    // Generate a hash of the text for consistent cache keys
+    const textHash = Buffer.from(text).toString('base64').substring(0, 20);
+
+    // For chunk requests, check cache first
     if (requestChunk === 2) {
       console.log('🎯 [TTS-PARALLEL] Processing second chunk request...');
 
-      // Clean up old cache entries first
-      cleanupCache();
+      // Check if request was aborted
+      if (request.signal?.aborted) {
+        console.log('🚫 [TTS] Request was aborted during chunk 2 processing');
+        return NextResponse.json({ error: 'Request cancelled' }, { status: 499 });
+      }
 
-      // Check cache for second chunk - use consistent cache key format
-      const cacheKey = `${character}-${Buffer.from(text).toString('base64').substring(0, 20)}`;
-      const cached = chunkCache.get(cacheKey);
+      const cacheKey = `${character}-${textHash}-chunk2`;
+      const cachedChunk2 = chunkCache.get(cacheKey);
 
-      if (cached && cached.chunk2Audio) {
+      if (cachedChunk2) {
         console.log('✅ [TTS-PARALLEL] Second chunk found in cache - returning immediately');
         return NextResponse.json({
           success: true,
-          audio: cached.chunk2Audio,
+          audio: cachedChunk2.chunk2Audio,
           character: character,
           text: text,
           model: 's1',
-          strategy: 'parallel-cached',
-          isSecondChunk: true,
+          strategy: 'cache-hit',
+          isFirstChunk: false,
+          hasSecondChunk: false,
           chunkNumber: 2
         });
       } else {
         console.log('❌ [TTS-PARALLEL] Second chunk not found in cache');
-        return NextResponse.json({ 
-          error: 'Second chunk not ready yet',
-          success: false 
-        }, { status: 404 });
+        return NextResponse.json({ error: 'Second chunk not ready yet', success: false }, { status: 404 });
       }
     }
 
@@ -235,8 +244,8 @@ export async function POST(request: NextRequest) {
 
     if (!generateVoice) {
       console.log('🔇 [TTS-PARALLEL] Voice generation disabled by request');
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         skipVoice: true,
         message: 'Voice generation was disabled'
       });
@@ -249,26 +258,26 @@ export async function POST(request: NextRequest) {
 
     if (!shouldUse2Chunks) {
       console.log('📝 [TTS-PARALLEL] Text too short, using single chunk strategy');
-      
+
       // Create abort controller for single chunk processing
       const controller = new AbortController();
-      
+
       // Listen for request cancellation
       request.signal?.addEventListener('abort', () => {
         console.log('🚫 [TTS-PARALLEL] Single chunk request cancelled');
         controller.abort();
       });
-      
+
       const singleAudio = await generateTTSChunk(text, character, 0, controller.signal);
-      
+
       if (controller.signal.aborted) {
         console.log('🚫 [TTS-PARALLEL] Single chunk generation cancelled');
-        return NextResponse.json({ 
+        return NextResponse.json({
           error: 'Request cancelled',
-          success: false 
+          success: false
         }, { status: 499 });
       }
-      
+
       if (!singleAudio) {
         return NextResponse.json({ error: 'Voice generation failed' }, { status: 500 });
       }
@@ -288,9 +297,6 @@ export async function POST(request: NextRequest) {
     // Clean up old cache entries
     cleanupCache();
 
-    // Generate cache key for this request
-    const cacheKey = `${character}-${Buffer.from(text).toString('base64').substring(0, 20)}`;
-
     console.log('🚀 [TTS-PARALLEL] Using parallel chunk strategy for optimal user experience');
 
     // Split text into 2 meaningful chunks
@@ -300,14 +306,14 @@ export async function POST(request: NextRequest) {
 
     // Create abort controller to pass to chunk generation
     const controller = new AbortController();
-    
+
     // Listen for request cancellation and propagate to chunk generation
     request.signal?.addEventListener('abort', () => {
       console.log('🚫 [TTS-PARALLEL] Request cancelled, aborting chunk generation');
       controller.abort();
-      
+
       // Clear any pending cache entries for this request
-      chunkCache.delete(cacheKey);
+      chunkCache.delete(`${character}-${textHash}-chunk2`);
     });
 
     // Start BOTH chunks processing in parallel with cancellation support
@@ -326,9 +332,9 @@ export async function POST(request: NextRequest) {
     // Check if request was cancelled after chunk 1
     if (controller.signal.aborted) {
       console.log('🚫 [TTS-PARALLEL] Request cancelled after chunk 1 generation');
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Request cancelled',
-        success: false 
+        success: false
       }, { status: 499 });
     }
 
@@ -336,15 +342,15 @@ export async function POST(request: NextRequest) {
       console.error('❌ [TTS-PARALLEL] Failed to generate chunk 1, falling back to full text');
       // Fallback to original single-chunk processing with cancellation support
       const fallbackAudio = await generateTTSChunk(text, character, 0, controller.signal);
-      
+
       if (controller.signal.aborted) {
         console.log('🚫 [TTS-PARALLEL] Fallback generation cancelled');
-        return NextResponse.json({ 
+        return NextResponse.json({
           error: 'Request cancelled',
-          success: false 
+          success: false
         }, { status: 499 });
       }
-      
+
       if (!fallbackAudio) {
         return NextResponse.json({ error: 'Voice generation failed' }, { status: 500 });
       }
@@ -372,13 +378,13 @@ export async function POST(request: NextRequest) {
           console.log('🚫 [TTS-PARALLEL] Chunk 2 generation cancelled, not caching');
           return;
         }
-        
+
         if (chunk2Audio) {
           const totalTime = Date.now() - startTime;
           console.log(`🎯 [TTS-PARALLEL] Chunk 2 ready in background after ${totalTime}ms - caching for later request`);
 
           // Cache the second chunk for when frontend requests it
-          chunkCache.set(cacheKey, {
+          chunkCache.set(`${character}-${textHash}-chunk2`, {
             chunk2Audio: chunk2Audio,
             timestamp: Date.now()
           });
@@ -414,8 +420,8 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ [TTS-PARALLEL] Error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to generate voice' 
+    return NextResponse.json({
+      error: 'Failed to generate voice'
     }, { status: 500 });
   }
 }
