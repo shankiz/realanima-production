@@ -4143,7 +4143,7 @@ function Chat() {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                   e.preventDefault();
                                                   const currentValue = (e.target as HTMLTextAreaElement).value;
-                                                  if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice) {
+                                                  if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice && audioPlayingForMessage === null) {
                                                     handleSendMessage(e);
                                                   }
                                                 }
@@ -4162,8 +4162,19 @@ function Chat() {
                                             <button
                                               type="button"
                                               onClick={isLoading || isGeneratingVoice ? handleCancelMessage : handleSendMessage}
-                                              className="rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white bg-cyan-600 hover:bg-cyan-700"
-                                              title={isLoading || isGeneratingVoice ? 'Stop generation' : 'Send message'}
+                                              disabled={audioPlayingForMessage !== null && !isLoading && !isGeneratingVoice}
+                                              className={`rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white ${
+                                                audioPlayingForMessage !== null && !isLoading && !isGeneratingVoice
+                                                  ? 'bg-gray-600 cursor-not-allowed opacity-50'
+                                                  : 'bg-cyan-600 hover:bg-cyan-700'
+                                              }`}
+                                              title={
+                                                isLoading || isGeneratingVoice 
+                                                  ? 'Stop generation' 
+                                                  : audioPlayingForMessage !== null
+                                                  ? 'Wait for audio to finish'
+                                                  : 'Send message'
+                                              }
                                             >
                                               {isLoading || isGeneratingVoice ? (
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
