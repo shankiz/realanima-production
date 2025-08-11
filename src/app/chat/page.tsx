@@ -1347,6 +1347,12 @@ function Chat() {
                                       const ttsData = await ttsResponse.json();
                                       console.log('🎯 [CHAT-TTS-2CHUNK] TTS Response:', ttsData.strategy, ttsData.isFirstChunk, ttsData.hasSecondChunk);
 
+                                      // Check if request was cancelled before processing response
+                                      if (controller.signal.aborted) {
+                                        console.log('🚫 [CHAT-TTS-2CHUNK] Request cancelled, not processing TTS response');
+                                        return;
+                                      }
+
                                       // Check if we got a successful response
                                       if (ttsData.success && ttsData.audio) {
                                         audioData = ttsData.audio;
@@ -1370,7 +1376,8 @@ function Chat() {
                                                   text: aiResponseText,
                                                   generateVoice: true,
                                                   requestChunk: 2 // Request specifically chunk 2
-                                                })
+                                                }),
+                                                signal: controller.signal
                                               });
 
                                               if (chunk2Response.ok) {
