@@ -1213,7 +1213,11 @@ function Chat() {
                           // Function to cancel ongoing message generation
                           const handleCancelMessage = () => {
                             if (abortController) {
-                              abortController.abort();
+                              try {
+                                abortController.abort('Request cancelled by user');
+                              } catch (error) {
+                                console.log('AbortController already aborted:', error);
+                              }
                               setAbortController(null);
                               setIsLoading(false);
                               setIsGeneratingVoice(false);
@@ -4152,11 +4156,7 @@ function Chat() {
                                             <button
                                               type="button"
                                               onClick={isLoading || isGeneratingVoice ? handleCancelMessage : handleSendMessage}
-                                              className={`rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white ${
-                                                isLoading || isGeneratingVoice 
-                                                  ? 'bg-red-600 hover:bg-red-700' 
-                                                  : 'bg-cyan-600 hover:bg-cyan-700'
-                                              }`}
+                                              className="rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white bg-cyan-600 hover:bg-cyan-700"
                                               title={isLoading || isGeneratingVoice ? 'Stop generation' : 'Send message'}
                                             >
                                               {isLoading || isGeneratingVoice ? (
