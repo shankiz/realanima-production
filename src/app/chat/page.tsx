@@ -388,74 +388,6 @@ function Chat() {
                           const [showCallInterface, setShowCallInterface] = useState(false);
                           const [comingSoonModal, setShowComingSoonModal] = useState(false);
 
-                          // Coming Soon Modal Component
-                          const ComingSoonModal = () => (
-                            <div 
-                              className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
-                                comingSoonModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                              }`}
-                              onClick={() => setShowComingSoonModal(false)}
-                            >
-                              <div className="flex items-center justify-center min-h-screen p-4">
-                                <div 
-                                  className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
-                                    comingSoonModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-                                  }`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <div className="relative p-6">
-                                    <button
-                                      onClick={() => setShowComingSoonModal(false)}
-                                      className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800/30"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    </button>
-                                    
-                                    <div className="text-center">
-                                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                      </div>
-                                      <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                                        Voice Calls Coming Soon!
-                                      </h2>
-                                      <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                                        We're working on bringing you real-time voice conversations with your favorite characters. Stay tuned for this exciting feature!
-                                      </p>
-                                      
-                                      <div className="bg-gray-900/40 border border-gray-800/30 rounded-2xl p-4 mb-4">
-                                        <ul className="text-gray-300 space-y-2 text-left text-sm">
-                                          <li className="flex items-center">
-                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
-                                            Real-time voice conversations
-                                          </li>
-                                          <li className="flex items-center">
-                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
-                                            Natural speech recognition
-                                          </li>
-                                          <li className="flex items-center">
-                                            <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
-                                            Interruption and natural flow
-                                          </li>
-                                        </ul>
-                                      </div>
-
-                                      <button
-                                        onClick={() => setShowComingSoonModal(false)}
-                                        className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20"
-                                      >
-                                        Got It!
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-
 
                           useEffect(() => {
                             const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' || 'system'
@@ -3476,9 +3408,6 @@ function Chat() {
                               {/* First Response Voice Modal */}
                               <FirstResponseVoiceModal />
 
-                              {/* Coming Soon Modal */}
-                              <ComingSoonModal />
-
                               {/* Settings Modal Overlay */}
                               <SettingsModal />
 
@@ -4265,19 +4194,6 @@ function Chat() {
                                             />
                                           </div>
                                           <div className="flex-shrink-0 pr-2">
-                                            {/* Call Button */}
-                                            <button
-                                              type="button"
-                                              onClick={() => setShowComingSoonModal(true)}
-                                              className="rounded-full p-2 transition-colors flex items-center justify-center shadow-sm text-white bg-green-600 hover:bg-green-700 mr-2"
-                                              title="Start voice call (Coming Soon)"
-                                            >
-                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                              </svg>
-                                            </button>
-
-                                            {/* Send Button */}
                                             <button
                                               type="button"
                                               onClick={isLoading || isGeneratingVoice ? handleCancelMessage : handleSendMessage}
