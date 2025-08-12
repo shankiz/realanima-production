@@ -3388,15 +3388,6 @@ function Chat() {
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     <div className="relative p-6">
-                                      <button
-                                        onClick={() => setShowComingSoonModal(false)}
-                                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800/30"
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                      </button>
-
                                       <div className="text-center">
                                         <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
