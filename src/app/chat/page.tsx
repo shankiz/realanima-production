@@ -1448,6 +1448,12 @@ function Chat() {
                                     const aiMessageIndex = newMessages.length - 1;
                                     setAudioPlayingForMessage(aiMessageIndex);
 
+                                    // Clear audio playing state immediately when any error occurs
+                                    const clearAudioState = () => {
+                                      console.log('🧹 [CHAT-TTS-2CHUNK] Clearing audio playing state');
+                                      setAudioPlayingForMessage(null);
+                                    };
+
                                     // Handle first chunk playback
                                     firstAudio.onended = async () => {
                                       console.log('🎵 [CHAT-TTS-2CHUNK] First chunk finished playing');
@@ -1464,25 +1470,30 @@ function Chat() {
 
                                             secondAudio.onended = () => {
                                               console.log('🎵 [CHAT-TTS-2CHUNK] Second chunk finished - complete audio sequence done');
-                                              setAudioPlayingForMessage(null);
+                                              clearAudioState();
                                             };
 
-                                            secondAudio.onerror = () => {
-                                              console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error');
-                                              setAudioPlayingForMessage(null);
+                                            secondAudio.onerror = (error) => {
+                                              console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error:', error);
+                                              clearAudioState();
+                                            };
+
+                                            secondAudio.onabort = () => {
+                                              console.log('🛑 [CHAT-TTS-2CHUNK] Second chunk playback aborted');
+                                              clearAudioState();
                                             };
 
                                             secondAudio.play().catch(error => {
                                               console.error('❌ [CHAT-TTS-2CHUNK] Failed to play second chunk:', error);
-                                              setAudioPlayingForMessage(null);
+                                              clearAudioState();
                                             });
                                           } else {
                                             console.log('🎵 [CHAT-TTS-2CHUNK] No second chunk available - audio complete');
-                                            setAudioPlayingForMessage(null);
+                                            clearAudioState();
                                           }
                                         } catch (error) {
                                           console.error('❌ [CHAT-TTS-2CHUNK] Error waiting for second chunk:', error);
-                                          setAudioPlayingForMessage(null);
+                                          clearAudioState();
                                         }
                                       } else {
                                         // No secondChunkPromise means we need to request chunk 2 from the server with retry logic
@@ -1516,17 +1527,22 @@ function Chat() {
 
                                                 secondAudio.onended = () => {
                                                   console.log('🎵 [CHAT-TTS-2CHUNK] Second chunk finished - complete audio sequence done');
-                                                  setAudioPlayingForMessage(null);
+                                                  clearAudioState();
                                                 };
 
-                                                secondAudio.onerror = () => {
-                                                  console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error');
-                                                  setAudioPlayingForMessage(null);
+                                                secondAudio.onerror = (error) => {
+                                                  console.error('❌ [CHAT-TTS-2CHUNK] Second chunk playback error:', error);
+                                                  clearAudioState();
+                                                };
+
+                                                secondAudio.onabort = () => {
+                                                  console.log('🛑 [CHAT-TTS-2CHUNK] Second chunk playback aborted');
+                                                  clearAudioState();
                                                 };
 
                                                 secondAudio.play().catch(error => {
                                                   console.error('❌ [CHAT-TTS-2CHUNK] Failed to play second chunk:', error);
-                                                  setAudioPlayingForMessage(null);
+                                                  clearAudioState();
                                                 });
                                                 return; // Success, exit retry loop
                                               }
@@ -1539,7 +1555,7 @@ function Chat() {
                                               setTimeout(() => requestChunk2WithRetry(attempt + 1, maxAttempts), delay);
                                             } else {
                                               console.log('⚠️ [CHAT-TTS-2CHUNK] Max retry attempts reached, giving up on chunk 2');
-                                              setAudioPlayingForMessage(null);
+                                              clearAudioState();
                                             }
                                           } catch (error) {
                                             console.error(`❌ [CHAT-TTS-2CHUNK] Error on attempt ${attempt}:`, error);
@@ -1549,7 +1565,7 @@ function Chat() {
                                               setTimeout(() => requestChunk2WithRetry(attempt + 1, maxAttempts), delay);
                                             } else {
                                               console.log('❌ [CHAT-TTS-2CHUNK] Max retry attempts reached after errors, giving up');
-                                              setAudioPlayingForMessage(null);
+                                              clearAudioState();
                                             }
                                           }
                                         };
@@ -1559,15 +1575,34 @@ function Chat() {
                                       }
                                     };
 
-                                    firstAudio.onerror = () => {
-                                      console.error('❌ [CHAT-TTS-2CHUNK] First chunk playback error');
-                                      setAudioPlayingForMessage(null);
+                                    firstAudio.onerror = (error) => {
+                                      console.error('❌ [CHAT-TTS-2CHUNK] First chunk playback error:', error);
+                                      clearAudioState();
+                                    };
+
+                                    firstAudio.onabort = () => {
+                                      console.log('🛑 [CHAT-TTS-2CHUNK] First chunk playback aborted');
+                                      clearAudioState();
                                     };
 
                                     firstAudio.play().catch(error => {
                                       console.error('❌ [CHAT-TTS-2CHUNK] Failed to play first chunk:', error);
-                                      setAudioPlayingForMessage(null);
+                                      clearAudioState();
                                     });
+
+                                    // Fallback timeout to ensure the icon disappears even if events don't fire properly
+                                    const maxAudioDuration = 30000; // 30 seconds max
+                                    const fallbackTimeout = setTimeout(() => {
+                                      console.log('⏰ [CHAT-TTS-2CHUNK] Fallback timeout reached, clearing audio state');
+                                      clearAudioState();
+                                    }, maxAudioDuration);
+
+                                    // Clear the fallback timeout when audio ends properly
+                                    const originalClearAudioState = clearAudioState;
+                                    clearAudioState = () => {
+                                      clearTimeout(fallbackTimeout);
+                                      originalClearAudioState();
+                                    };
                                   }
 
                                   return newMessages;
