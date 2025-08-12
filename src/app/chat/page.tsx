@@ -1449,7 +1449,7 @@ function Chat() {
                                     setAudioPlayingForMessage(aiMessageIndex);
 
                                     // Clear audio playing state immediately when any error occurs
-                                    const clearAudioState = () => {
+                                    let clearAudioState = () => {
                                       console.log('🧹 [CHAT-TTS-2CHUNK] Clearing audio playing state');
                                       setAudioPlayingForMessage(null);
                                     };
