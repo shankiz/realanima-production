@@ -4232,12 +4232,7 @@ function Chat() {
                                         <div className={`relative ${input.length > 50 ? 'rounded-xl' : 'rounded-full'} bg-black border border-gray-800/50 overflow-hidden w-full flex items-center transition-all duration-200`}>
                                           {/* Call Button */}
                                           <button
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                              console.log('Call button clicked - showing modal');
-                                              setShowComingSoonModal(true);
-                                            }}
+                                            onClick={() => setShowComingSoonModal(true)}
                                             className="flex-shrink-0 p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800/50 mr-2"
                                             title="Voice Call (Coming Soon)"
                                           >
@@ -4325,10 +4320,7 @@ function Chat() {
                                          <div className="relative">
                                           <button
                                             type="button"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                              console.log('Second call button clicked - showing modal');
+                                            onClick={() => {
                                               setShowComingSoonModal(true);
                                             }}
                                             className={`rounded-full ml-2 transition-colors shadow-md flex items-center justify-center relative ${
