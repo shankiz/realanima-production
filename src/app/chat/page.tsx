@@ -230,9 +230,10 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     </div>
                                 </div>
 
-                                {/* Popular Characters */}
-                                <div className="mb-8">
-                                  <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                {/* Popular Characters - Only show when not searching */}
+                                {!searchQuery && (
+                                  <div className="mb-8">
+                                    <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
                                   <div className="relative">
                                     {(() => {
                                       const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -422,7 +423,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                       );
                                     })()}
                                   </div>
-                                </div>
+                                  </div>
+                                )}
 
                                 {/* All Characters */}
                                 <div>
