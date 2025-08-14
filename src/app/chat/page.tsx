@@ -209,6 +209,15 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                           return (
                             <div className="flex-1 overflow-y-auto bg-gradient-to-b from-black to-gray-950">
+                              <style jsx>{`
+                                .scrollbar-hide {
+                                  -ms-overflow-style: none;
+                                  scrollbar-width: none;
+                                }
+                                .scrollbar-hide::-webkit-scrollbar {
+                                  display: none;
+                                }
+                              `}</style>
                               <div className="p-6">
                                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
                                     <div className="mb-4 lg:mb-0">
@@ -224,14 +233,66 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 {/* Popular Characters */}
                                 <div className="mb-8">
                                   <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                    {filteredCharacters.slice(0, 5).map((char) => (
-                                      <CharacterCard 
-                                        key={char.id} 
-                                        character={char} 
-                                        onClick={() => onSelectCharacter(char.id)}
-                                      />
-                                    ))}
+                                  <div className="relative">
+                                    {/* Left Arrow */}
+                                    <button
+                                      onClick={() => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          container.scrollBy({ left: -240, behavior: 'smooth' });
+                                        }
+                                      }}
+                                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 backdrop-blur-sm border border-gray-700/50"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                      </svg>
+                                    </button>
+
+                                    {/* Scrollable Container */}
+                                    <div 
+                                      id="popular-characters-scroll"
+                                      className="flex space-x-3 overflow-x-auto scrollbar-hide px-8"
+                                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                    >
+                                      {/* Most Popular Characters - Hand-picked for popularity */}
+                                      {[
+                                        { id: 'gojo', name: 'Gojo Satoru', description: 'Jujutsu Kaisen', tier: 'free' },
+                                        { id: 'levi', name: 'Levi Ackerman', description: 'Attack on Titan', tier: 'ultimate' },
+                                        { id: 'itachi', name: 'Itachi Uchiha', description: 'Naruto', tier: 'ultimate' },
+                                        { id: 'light', name: 'Light Yagami', description: 'Death Note', tier: 'premium' },
+                                        { id: 'eren', name: 'Eren Yeager', description: 'Attack on Titan', tier: 'premium' },
+                                        { id: 'tanjiro', name: 'Tanjiro Kamado', description: 'Demon Slayer', tier: 'premium' },
+                                        { id: 'deku', name: 'Izuku Midoriya (Deku)', description: 'My Hero Academia', tier: 'ultimate' },
+                                        { id: 'killua', name: 'Killua Zoldyck', description: 'Hunter x Hunter', tier: 'ultimate' },
+                                        { id: 'mikasa', name: 'Mikasa Ackerman', description: 'Attack on Titan', tier: 'free' },
+                                        { id: 'nezuko', name: 'Nezuko Kamado', description: 'Demon Slayer', tier: 'ultimate' },
+                                        { id: 'todoroki', name: 'Shoto Todoroki', description: 'My Hero Academia', tier: 'ultimate' },
+                                        { id: 'lawliet', name: 'L (Lawliet)', description: 'Death Note', tier: 'premium' },
+                                      ].map((char) => (
+                                        <div key={char.id} className="flex-shrink-0 w-48">
+                                          <CharacterCard 
+                                            character={char} 
+                                            onClick={() => onSelectCharacter(char.id)}
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Right Arrow */}
+                                    <button
+                                      onClick={() => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          container.scrollBy({ left: 240, behavior: 'smooth' });
+                                        }
+                                      }}
+                                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-black/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 backdrop-blur-sm border border-gray-700/50"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                      </svg>
+                                    </button>
                                   </div>
                                 </div>
 
