@@ -201,6 +201,12 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             { id: 'mob', name: 'Shigeo Kageyama (Mob)', description: 'Mob Psycho 100', tier: 'ultimate' },
                           ]);
                           const [searchQuery, setSearchQuery] = useState('');
+                          
+                          // Always declare all state hooks at the top level
+                          const [showLeftArrow, setShowLeftArrow] = useState(false);
+                          const [showRightArrow, setShowRightArrow] = useState(true);
+                          const [isDragging, setIsDragging] = useState(false);
+                          const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
                           const filteredCharacters = characters.filter(char => 
                             char.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -236,10 +242,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
                                   <div className="relative">
                                     {(() => {
-                                      const [showLeftArrow, setShowLeftArrow] = useState(false);
-                                      const [showRightArrow, setShowRightArrow] = useState(true);
-                                      const [isDragging, setIsDragging] = useState(false);
-                                      const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
                                       const handleScroll = (container: HTMLElement) => {
                                         const scrollLeft = container.scrollLeft;
