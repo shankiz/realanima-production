@@ -463,7 +463,17 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                         // Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
-                          const router = useRouter();
+
+  // Early return for loading state - BEFORE any other hooks
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
+      </div>
+    );
+  }
+
+  const router = useRouter();
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
@@ -2188,14 +2198,7 @@ function Chat() {
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
-                          // Early return for loading state
-                          if (loading) {
-                            return (
-                              <div className="flex justify-center items-center h-screen bg-black">
-                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
-                              </div>
-                            );
-                          }
+                          
 
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
