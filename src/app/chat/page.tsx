@@ -201,119 +201,11 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             { id: 'mob', name: 'Shigeo Kageyama (Mob)', description: 'Mob Psycho 100', tier: 'ultimate' },
                           ]);
                           const [searchQuery, setSearchQuery] = useState('');
-                          
-                          // Always declare all state hooks at the top level
-                          const [showLeftArrow, setShowLeftArrow] = useState(false);
-                          const [showRightArrow, setShowRightArrow] = useState(true);
-                          const [isDragging, setIsDragging] = useState(false);
-                          const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
                           const filteredCharacters = characters.filter(char => 
                             char.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             char.description.toLowerCase().includes(searchQuery.toLowerCase())
                           );
-
-                          // Handle scroll functionality for popular characters section
-                          const handleScroll = (container: HTMLElement) => {
-                            const scrollLeft = container.scrollLeft;
-                            const maxScrollLeft = container.scrollWidth - container.clientWidth;
-                            
-                            setShowLeftArrow(scrollLeft > 10);
-                            setShowRightArrow(scrollLeft < maxScrollLeft - 10);
-                          };
-
-                          const scrollContainer = (direction: 'left' | 'right') => {
-                            const container = document.getElementById('popular-characters-scroll');
-                            if (container) {
-                              const scrollAmount = direction === 'left' ? -320 : 320;
-                              container.scrollBy({ 
-                                left: scrollAmount, 
-                                behavior: 'smooth' 
-                              });
-                              
-                              // Update arrow visibility after scroll animation
-                              setTimeout(() => handleScroll(container), 350);
-                            }
-                          };
-
-                          // Mouse drag handlers
-                          const handleMouseDown = (e: React.MouseEvent) => {
-                            const container = document.getElementById('popular-characters-scroll');
-                            if (container) {
-                              setIsDragging(true);
-                              setDragStart({
-                                x: e.pageX - container.offsetLeft,
-                                scrollLeft: container.scrollLeft
-                              });
-                              container.style.cursor = 'grabbing';
-                              container.style.userSelect = 'none';
-                            }
-                          };
-
-                          const handleMouseMove = (e: React.MouseEvent) => {
-                            if (!isDragging) return;
-                            e.preventDefault();
-                            
-                            const container = document.getElementById('popular-characters-scroll');
-                            if (container) {
-                              const x = e.pageX - container.offsetLeft;
-                              const walk = (x - dragStart.x) * 2; // Multiply by 2 for faster scrolling
-                              container.scrollLeft = dragStart.scrollLeft - walk;
-                              handleScroll(container);
-                            }
-                          };
-
-                          const handleMouseUp = () => {
-                            const container = document.getElementById('popular-characters-scroll');
-                            if (container) {
-                              setIsDragging(false);
-                              container.style.cursor = 'grab';
-                              container.style.userSelect = 'auto';
-                            }
-                          };
-
-                          const handleMouseLeave = () => {
-                            const container = document.getElementById('popular-characters-scroll');
-                            if (container) {
-                              setIsDragging(false);
-                              container.style.cursor = 'grab';
-                              container.style.userSelect = 'auto';
-                            }
-                          };
-
-                          // Setup scroll listeners
-                          useEffect(() => {
-                            if (!searchQuery) { // Only setup when popular characters section is visible
-                              const container = document.getElementById('popular-characters-scroll');
-                              if (container) {
-                                // Initial check
-                                handleScroll(container);
-                                
-                                // Add scroll listener
-                                const onScroll = () => handleScroll(container);
-                                container.addEventListener('scroll', onScroll);
-                                
-                                // Add resize listener to handle window resize
-                                const onResize = () => handleScroll(container);
-                                window.addEventListener('resize', onResize);
-                                
-                                // Global mouse up handler to ensure drag ends even if mouse leaves container
-                                const globalMouseUp = () => {
-                                  setIsDragging(false);
-                                  container.style.cursor = 'grab';
-                                  container.style.userSelect = 'auto';
-                                };
-                                
-                                document.addEventListener('mouseup', globalMouseUp);
-                                
-                                return () => {
-                                  container.removeEventListener('scroll', onScroll);
-                                  window.removeEventListener('resize', onResize);
-                                  document.removeEventListener('mouseup', globalMouseUp);
-                                };
-                              }
-                            }
-                          }, [isDragging, searchQuery]);
 
                           return (
                             <div className="flex-1 overflow-y-auto bg-gradient-to-b from-black to-gray-950">
@@ -338,11 +230,115 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     </div>
                                 </div>
 
-                                {/* Popular Characters - Only show when not searching */}
-                                {!searchQuery && (
-                                  <div className="mb-8">
-                                    <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                {/* Popular Characters */}
+                                <div className="mb-8">
+                                  <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
                                   <div className="relative">
+                                    {(() => {
+                                      const [showLeftArrow, setShowLeftArrow] = useState(false);
+                                      const [showRightArrow, setShowRightArrow] = useState(true);
+                                      const [isDragging, setIsDragging] = useState(false);
+                                      const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
+
+                                      const handleScroll = (container: HTMLElement) => {
+                                        const scrollLeft = container.scrollLeft;
+                                        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+                                        
+                                        setShowLeftArrow(scrollLeft > 10);
+                                        setShowRightArrow(scrollLeft < maxScrollLeft - 10);
+                                      };
+
+                                      const scrollContainer = (direction: 'left' | 'right') => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          const scrollAmount = direction === 'left' ? -320 : 320;
+                                          container.scrollBy({ 
+                                            left: scrollAmount, 
+                                            behavior: 'smooth' 
+                                          });
+                                          
+                                          // Update arrow visibility after scroll animation
+                                          setTimeout(() => handleScroll(container), 350);
+                                        }
+                                      };
+
+                                      // Mouse drag handlers
+                                      const handleMouseDown = (e: React.MouseEvent) => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(true);
+                                          setDragStart({
+                                            x: e.pageX - container.offsetLeft,
+                                            scrollLeft: container.scrollLeft
+                                          });
+                                          container.style.cursor = 'grabbing';
+                                          container.style.userSelect = 'none';
+                                        }
+                                      };
+
+                                      const handleMouseMove = (e: React.MouseEvent) => {
+                                        if (!isDragging) return;
+                                        e.preventDefault();
+                                        
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          const x = e.pageX - container.offsetLeft;
+                                          const walk = (x - dragStart.x) * 2; // Multiply by 2 for faster scrolling
+                                          container.scrollLeft = dragStart.scrollLeft - walk;
+                                          handleScroll(container);
+                                        }
+                                      };
+
+                                      const handleMouseUp = () => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(false);
+                                          container.style.cursor = 'grab';
+                                          container.style.userSelect = 'auto';
+                                        }
+                                      };
+
+                                      const handleMouseLeave = () => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(false);
+                                          container.style.cursor = 'grab';
+                                          container.style.userSelect = 'auto';
+                                        }
+                                      };
+
+                                      useEffect(() => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          // Initial check
+                                          handleScroll(container);
+                                          
+                                          // Add scroll listener
+                                          const onScroll = () => handleScroll(container);
+                                          container.addEventListener('scroll', onScroll);
+                                          
+                                          // Add resize listener to handle window resize
+                                          const onResize = () => handleScroll(container);
+                                          window.addEventListener('resize', onResize);
+                                          
+                                          // Global mouse up handler to ensure drag ends even if mouse leaves container
+                                          const globalMouseUp = () => {
+                                            setIsDragging(false);
+                                            container.style.cursor = 'grab';
+                                            container.style.userSelect = 'auto';
+                                          };
+                                          
+                                          document.addEventListener('mouseup', globalMouseUp);
+                                          
+                                          return () => {
+                                            container.removeEventListener('scroll', onScroll);
+                                            window.removeEventListener('resize', onResize);
+                                            document.removeEventListener('mouseup', globalMouseUp);
+                                          };
+                                        }
+                                      }, [isDragging]);
+
+                                      return (
                                         <>
                                           {/* Left Arrow - Only show when there's content to scroll left */}
                                           <button
@@ -422,9 +418,11 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                             </svg>
                                           </button>
+                                        </>
+                                      );
+                                    })()}
                                   </div>
-                                  </div>
-                                )}
+                                </div>
 
                                 {/* All Characters */}
                                 <div>
