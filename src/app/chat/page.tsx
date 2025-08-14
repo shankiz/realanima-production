@@ -306,7 +306,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                           {/* Scrollable Container with enhanced styling */}
                                           <div 
                                             id="popular-characters-scroll"
-                                            className="flex space-x-4 overflow-x-auto scrollbar-hide px-12 py-2"
+                                            className="flex space-x-4 overflow-x-auto scrollbar-hide pl-0 pr-12 py-2"
                                             style={{ 
                                               scrollbarWidth: 'none', 
                                               msOverflowStyle: 'none',
