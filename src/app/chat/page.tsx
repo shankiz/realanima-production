@@ -230,10 +230,9 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     </div>
                                 </div>
 
-                                {/* Popular Characters - Only show when not searching */}
-                                {!searchQuery && (
-                                  <div className="mb-8">
-                                    <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                {/* Popular Characters */}
+                                <div className="mb-8">
+                                  <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
                                   <div className="relative">
                                     {(() => {
                                       const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -424,7 +423,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     })()}
                                   </div>
                                 </div>
-                                )}
 
                                 {/* All Characters */}
                                 <div>
@@ -463,129 +461,121 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                         // Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const character = searchParams?.get('character') || null;
-  const [view, setView] = useState('discover'); // Default view is discover
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Define message type
-  interface Message {
-    role: 'user' | 'assistant';
-    content: string;
-  }
+                          const router = useRouter();
+                          const searchParams = useSearchParams();
+                          const character = searchParams?.get('character') || null;
+                          const [view, setView] = useState('discover'); // Default view is discover
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
-  const [voiceGenerationError, setVoiceGenerationError] = useState(false);
-  const [audioPlayingForMessage, setAudioPlayingForMessage] = useState<number | null>(null);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  const [messagesLeft, setMessagesLeft] = useState<number | null>(null);
-  const [credits, setCredits] = useState<number | null>(null);
-  const [sessionId, setSessionId] = useState('');
-  
-  // Define proper types for conversations
-  interface RecentConversation {
-    id: string;
-    name: string;
-    image: string;
-    lastInteraction: string;
-  }
+                          const [input, setInput] = useState('');
+                          const inputRef = useRef<HTMLTextAreaElement>(null);
+                          const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+                          // Define message type
+                          interface Message {
+                            role: 'user' | 'assistant';
+                            content: string;
+                          }
 
-  const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
-  
-  // Chat history states
-  interface ChatHistoryItem {
-    id: string;
-    character: string;
-    timestamp: any;
-    lastMessage?: string;
-    response?: string;
-  }
-  
-  const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [loadingConversation, setLoadingConversation] = useState<string | null>(null);
-  const [historyCache, setHistoryCache] = useState(new Map());
-  const [placeholderText, setPlaceholderText] = useState('');
-  const [showChatSidebar, setShowChatSidebar] = useState(false);
-  const [showHistorySidebar, setShowHistorySidebar] = useState(false);
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [selectedSettingsTab, setSelectedSettingsTab] = useState('account');
-  const [showAccountManagement, setShowAccountManagement] = useState(false);
-  const [showBillingDropdown, setShowBillingDropdown] = useState(false);
-  
-  // Define billing data interface
-  interface BillingData {
-    currentPlan: string;
-    credits: number;
-    subscription: {
-      status: string;
-      planId: string;
-      nextBillingDate: string | { seconds: number } | Date | any;
-      lastChargedAt?: string | { seconds: number; _seconds?: number } | Date | any;
-      cancelledAt?: string | { seconds: number } | Date | any;
-      cancelReason?: string;
-      subscriptionId?: string;
-    } | null;
-  }
+                          const [messages, setMessages] = useState<Message[]>([]);
+                          const [isLoading, setIsLoading] = useState(false);
+                          const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
+                          const [voiceGenerationError, setVoiceGenerationError] = useState(false);
+                          const [audioPlayingForMessage, setAudioPlayingForMessage] = useState<number | null>(null);
+                          const [abortController, setAbortController] = useState<AbortController | null>(null);
+                          const chatEndRef = useRef<HTMLDivElement>(null);
+                          const [messagesLeft, setMessagesLeft] = useState<number | null>(null);
+                          const [credits, setCredits] = useState<number | null>(null);
+                          const [sessionId, setSessionId] = useState('');
+                          // Define proper types for conversations
+                          interface RecentConversation {
+                            id: string;
+                            name: string;
+                            image: string;
+                            lastInteraction: string;
+                          }
 
-  const [billingData, setBillingData] = useState<BillingData | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showAlertModal, setShowAlertModal] = useState(false);
-  const [showCreditModal, setShowCreditModal] = useState(false);
-  const [showFirstResponseVoiceModal, setShowFirstResponseVoiceModal] = useState(false);
-  const [isDeleteHistoryLoading, setIsDeleteHistoryLoading] = useState(false);
-  
-  const [modalConfig, setModalConfig] = useState({
-    title: '',
-    message: '',
-    onConfirm: () => {},
-    type: 'default' as 'default' | 'danger' | 'warning',
-    confirmText: 'Confirm',
-    cancelText: 'Cancel'
-  });
-  
-  const [alertConfig, setAlertConfig] = useState({
-    title: '',
-    message: '',
-    type: 'info' as 'success' | 'error' | 'info',
-    buttonText: 'OK'
-  });
+                          const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
+                          // Chat history states
+                          interface ChatHistoryItem {
+                            id: string;
+                            character: string;
+                            timestamp: any;
+                            lastMessage?: string;
+                            response?: string;
+                          }
+                          const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
+                          const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+                          const [loadingConversation, setLoadingConversation] = useState<string | null>(null);
+                          const [historyCache, setHistoryCache] = useState(new Map());
 
-  const [isCallActive, setIsCallActive] = useState(false);
-  const [callStatus, setCallStatus] = useState<'idle' | 'connecting' | 'connected' | 'listening' | 'processing' | 'ended'>('idle');
-  const [liveTranscriptDisplay, setLiveTranscriptDisplay] = useState('');
-  const [showCallInterface, setShowCallInterface] = useState(false);
-  const [comingSoonModal, setShowComingSoonModal] = useState(false);
-  const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
-  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
-  const [planLoaded, setPlanLoaded] = useState(false);
-  const [isVoiceResponseEnabled, setIsVoiceResponseEnabled] = useState(false);
-
-  // Early return for loading state - AFTER ALL hooks are called
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
-      </div>
-    );
-  }
-
-  // Debug character changes and clear history
-  useEffect(() => {
+                          // Debug character changes and clear history
+                          useEffect(() => {
                             console.log('🎭 [DEBUG] Character changed to:', character);
                             // Clear chat history immediately when character changes to prevent showing wrong conversations
                             setChatHistory([]);
                           }, [character]);
 
-                          
+                          const [placeholderText, setPlaceholderText] = useState('');
+
+
+
+                          // Chat sidebar states
+                          const [showChatSidebar, setShowChatSidebar] = useState(false);
+                          const [showHistorySidebar, setShowHistorySidebar] = useState(false);
+                          const [showUserDropdown, setShowUserDropdown] = useState(false);
+                          const [showSettingsModal, setShowSettingsModal] = useState(false);
+                          const [selectedSettingsTab, setSelectedSettingsTab] = useState('account');
+                          const [showAccountManagement, setShowAccountManagement] = useState(false);
+                          const [showBillingDropdown, setShowBillingDropdown] = useState(false);
+
+                          // Define billing data interface
+                          interface BillingData {
+                            currentPlan: string;
+                            credits: number;
+                            subscription: {
+                              status: string;
+                              planId: string;
+                              nextBillingDate: string | { seconds: number } | Date | any;
+                              lastChargedAt?: string | { seconds: number; _seconds?: number } | Date | any;
+                              cancelledAt?: string | { seconds: number } | Date | any;
+                              cancelReason?: string;
+                              subscriptionId?: string;
+                            } | null;
+                          }
+
+                          const [billingData, setBillingData] = useState<BillingData | null>(null);
+                          // Theme management
+                          const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system')
+
+                          // Auto-scroll state management
+                          const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+
+                          // Custom modal states
+                          const [showConfirmModal, setShowConfirmModal] = useState(false);
+                          const [showAlertModal, setShowAlertModal] = useState(false);
+                          const [showCreditModal, setShowCreditModal] = useState(false);
+                          const [showFirstResponseVoiceModal, setShowFirstResponseVoiceModal] = useState(false);
+                          const [isDeleteHistoryLoading, setIsDeleteHistoryLoading] = useState(false);
+                          const [modalConfig, setModalConfig] = useState({
+                            title: '',
+                            message: '',
+                            onConfirm: () => {},
+                            type: 'default' as 'default' | 'danger' | 'warning',
+                            confirmText: 'Confirm',
+                            cancelText: 'Cancel'
+                          });
+                          const [alertConfig, setAlertConfig] = useState({
+                            title: '',
+                            message: '',
+                            type: 'info' as 'success' | 'error' | 'info',
+                            buttonText: 'OK'
+                          });
+
+                          // State for Call Features
+                          const [isCallActive, setIsCallActive] = useState(false);
+                          const [callStatus, setCallStatus] = useState<'idle' | 'connecting' | 'connected' | 'listening' | 'processing' | 'ended'>('idle');
+                          const [liveTranscriptDisplay, setLiveTranscriptDisplay] = useState('');
+                          const [showCallInterface, setShowCallInterface] = useState(false);
+                          const [comingSoonModal, setShowComingSoonModal] = useState(false);
 
 
                           useEffect(() => {
@@ -706,7 +696,10 @@ function Chat() {
                             }
                           }, [loading, user, router]);
 
-                          
+                          // User plan state and voice restrictions
+                          const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
+                          const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+                          const [planLoaded, setPlanLoaded] = useState(false);
 
                           // Fetch billing data
                           const fetchBillingData = async (forceRefresh = false) => {
@@ -1379,7 +1372,8 @@ function Chat() {
                             return () => clearInterval(typewriterInterval);
                           }, [user, character]);
 
-                          
+                          // Add state to track voice response toggle
+                          const [isVoiceResponseEnabled, setIsVoiceResponseEnabled] = useState(false);
 
                           // Initialize voice response state when plan changes, but allow user control
                           useEffect(() => {
@@ -2192,7 +2186,14 @@ function Chat() {
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
-                          
+                          // Early return for loading state
+                          if (loading) {
+                            return (
+                              <div className="flex justify-center items-center h-screen bg-black">
+                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-400"></div>
+                              </div>
+                            );
+                          }
 
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
