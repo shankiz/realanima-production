@@ -463,8 +463,12 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                         // Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const character = searchParams?.get('character') || null;
+  const [view, setView] = useState('discover'); // Default view is discover
 
-  // Early return for loading state - BEFORE any other hooks
+  // Early return for loading state - AFTER all hooks are called
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-black">
@@ -472,11 +476,6 @@ function Chat() {
       </div>
     );
   }
-
-  const router = useRouter();
-                          const searchParams = useSearchParams();
-                          const character = searchParams?.get('character') || null;
-                          const [view, setView] = useState('discover'); // Default view is discover
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
