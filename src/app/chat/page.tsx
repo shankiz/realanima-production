@@ -237,6 +237,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     {(() => {
                                       const [showLeftArrow, setShowLeftArrow] = useState(false);
                                       const [showRightArrow, setShowRightArrow] = useState(true);
+                                      const [isDragging, setIsDragging] = useState(false);
+                                      const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
                                       const handleScroll = (container: HTMLElement) => {
                                         const scrollLeft = container.scrollLeft;
@@ -260,6 +262,51 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         }
                                       };
 
+                                      // Mouse drag handlers
+                                      const handleMouseDown = (e: React.MouseEvent) => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(true);
+                                          setDragStart({
+                                            x: e.pageX - container.offsetLeft,
+                                            scrollLeft: container.scrollLeft
+                                          });
+                                          container.style.cursor = 'grabbing';
+                                          container.style.userSelect = 'none';
+                                        }
+                                      };
+
+                                      const handleMouseMove = (e: React.MouseEvent) => {
+                                        if (!isDragging) return;
+                                        e.preventDefault();
+                                        
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          const x = e.pageX - container.offsetLeft;
+                                          const walk = (x - dragStart.x) * 2; // Multiply by 2 for faster scrolling
+                                          container.scrollLeft = dragStart.scrollLeft - walk;
+                                          handleScroll(container);
+                                        }
+                                      };
+
+                                      const handleMouseUp = () => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(false);
+                                          container.style.cursor = 'grab';
+                                          container.style.userSelect = 'auto';
+                                        }
+                                      };
+
+                                      const handleMouseLeave = () => {
+                                        const container = document.getElementById('popular-characters-scroll');
+                                        if (container) {
+                                          setIsDragging(false);
+                                          container.style.cursor = 'grab';
+                                          container.style.userSelect = 'auto';
+                                        }
+                                      };
+
                                       useEffect(() => {
                                         const container = document.getElementById('popular-characters-scroll');
                                         if (container) {
@@ -274,12 +321,22 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                           const onResize = () => handleScroll(container);
                                           window.addEventListener('resize', onResize);
                                           
+                                          // Global mouse up handler to ensure drag ends even if mouse leaves container
+                                          const globalMouseUp = () => {
+                                            setIsDragging(false);
+                                            container.style.cursor = 'grab';
+                                            container.style.userSelect = 'auto';
+                                          };
+                                          
+                                          document.addEventListener('mouseup', globalMouseUp);
+                                          
                                           return () => {
                                             container.removeEventListener('scroll', onScroll);
                                             window.removeEventListener('resize', onResize);
+                                            document.removeEventListener('mouseup', globalMouseUp);
                                           };
                                         }
-                                      }, []);
+                                      }, [isDragging]);
 
                                       return (
                                         <>
@@ -303,15 +360,20 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                             </svg>
                                           </button>
 
-                                          {/* Scrollable Container with enhanced styling */}
+                                          {/* Scrollable Container with enhanced styling and drag functionality */}
                                           <div 
                                             id="popular-characters-scroll"
                                             className="flex space-x-4 overflow-x-auto scrollbar-hide pl-0 pr-12 py-2"
                                             style={{ 
                                               scrollbarWidth: 'none', 
                                               msOverflowStyle: 'none',
-                                              scrollBehavior: 'smooth'
+                                              scrollBehavior: isDragging ? 'auto' : 'smooth',
+                                              cursor: 'grab'
                                             }}
+                                            onMouseDown={handleMouseDown}
+                                            onMouseMove={handleMouseMove}
+                                            onMouseUp={handleMouseUp}
+                                            onMouseLeave={handleMouseLeave}
                                           >
                                             {/* Most Popular Characters - Hand-picked for popularity */}
                                             {[
