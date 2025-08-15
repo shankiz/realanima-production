@@ -429,10 +429,9 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     </div>
                                 </div>
 
-                                {/* Popular Characters with Search Input */}
+                                {/* Search Input - Always visible */}
                                 <div className="mb-8">
-                                  <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-bold text-white">Popular Characters</h2>
+                                  <div className="flex justify-end items-center mb-6">
                                     <div className="relative w-80">
                                       <input
                                         type="text"
@@ -461,10 +460,13 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   
                                   {/* Popular Characters Section - Only show when not searching */}
                                   {!searchQuery.trim() && (
-                                    <PopularCharactersSection 
-                                      searchQuery={searchQuery} 
-                                      onSelectCharacter={onSelectCharacter} 
-                                    />
+                                    <div>
+                                      <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                      <PopularCharactersSection 
+                                        searchQuery={searchQuery} 
+                                        onSelectCharacter={onSelectCharacter} 
+                                      />
+                                    </div>
                                   )}
                                 </div>
 
