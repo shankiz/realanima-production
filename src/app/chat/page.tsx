@@ -285,7 +285,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   <input
                                     type="text"
                                     placeholder="Search characters..."
-                                    className="w-full bg-black/60 text-white text-sm rounded-lg pl-12 pr-4 py-3 border-2 border-gray-700/50 focus:outline-none focus:border-cyan-500/80 shadow-lg"
+                                    className="w-full bg-black/60 text-white text-sm rounded-lg pl-12 pr-10 py-3 border-2 border-gray-700/50 focus:outline-none focus:border-cyan-500/80 shadow-lg"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                   />
@@ -294,6 +294,16 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                   </div>
+                                  {searchQuery && (
+                                    <button
+                                      onClick={() => setSearchQuery('')}
+                                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                      </svg>
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                               {/* Only show popular characters carousel when not searching */}
@@ -553,6 +563,7 @@ function Chat() {
                           const [selectedSettingsTab, setSelectedSettingsTab] = useState('account');
                           const [showAccountManagement, setShowAccountManagement] = useState(false);
                           const [showBillingDropdown, setShowBillingDropdown] = useState(false);
+                          const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
 
                           // Define billing data interface
                           interface BillingData {
@@ -3712,8 +3723,20 @@ function Chat() {
                                       <input 
                                         type="text" 
                                         placeholder="Search" 
-                                        className="w-full bg-gray-950/50 text-white text-sm rounded-md pl-10 pr-3 py-2.5 border border-gray-800/30 focus:outline-none focus:border-cyan-500/50"
+                                        value={sidebarSearchQuery}
+                                        onChange={(e) => setSidebarSearchQuery(e.target.value)}
+                                        className="w-full bg-gray-950/50 text-white text-sm rounded-md pl-10 pr-9 py-2.5 border border-gray-800/30 focus:outline-none focus:border-cyan-500/50"
                                       />
+                                      {sidebarSearchQuery && (
+                                        <button
+                                          onClick={() => setSidebarSearchQuery('')}
+                                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                          </svg>
+                                        </button>
+                                      )}
                                     </div>
                                   </div>
 
