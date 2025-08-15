@@ -24,7 +24,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Initialize chatbase if not already initialized
-      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+      if (!window.chatbase) {
         window.chatbase = (...args: any[]) => {
           if (!window.chatbase.q) {
             window.chatbase.q = [];
@@ -43,10 +43,26 @@ export default function ChatPage() {
       }
 
       const loadChatbase = () => {
+        // Remove existing script if present
+        const existingScript = document.getElementById("spPfvHX2tRU-ic83q8sTI");
+        if (existingScript) {
+          existingScript.remove();
+        }
+
         const script = document.createElement("script");
         script.src = "https://www.chatbase.co/embed.min.js";
         script.id = "spPfvHX2tRU-ic83q8sTI";
         script.setAttribute("domain", "www.chatbase.co");
+        
+        // Initially hide the widget
+        script.onload = () => {
+          setTimeout(() => {
+            if (window.chatbase) {
+              window.chatbase('hide');
+            }
+          }, 100);
+        };
+        
         document.body.appendChild(script);
       };
 
@@ -581,15 +597,33 @@ function Chat() {
 
                           // Show/hide Chatbase widget based on current view
                           useEffect(() => {
-                            if (typeof window !== 'undefined' && window.chatbase) {
-                              if (view === 'discover') {
-                                // Show the widget on discover page
-                                window.chatbase('show');
-                              } else {
-                                // Hide the widget when chatting with characters
-                                window.chatbase('hide');
+                            const controlChatbaseVisibility = () => {
+                              if (typeof window !== 'undefined' && window.chatbase) {
+                                if (view === 'discover') {
+                                  console.log('🔍 Showing Chatbase widget on discover page');
+                                  window.chatbase('show');
+                                } else {
+                                  console.log('🔇 Hiding Chatbase widget on character page');
+                                  window.chatbase('hide');
+                                  
+                                  // Additional method to forcefully hide the widget
+                                  setTimeout(() => {
+                                    const chatbaseWidget = document.querySelector('#chatbase-iframe, iframe[src*="chatbase"]');
+                                    if (chatbaseWidget) {
+                                      (chatbaseWidget as HTMLElement).style.display = 'none';
+                                    }
+                                  }, 100);
+                                }
                               }
-                            }
+                            };
+
+                            // Initial control
+                            controlChatbaseVisibility();
+
+                            // Retry after a short delay to ensure widget is loaded
+                            const retryTimeout = setTimeout(controlChatbaseVisibility, 500);
+
+                            return () => clearTimeout(retryTimeout);
                           }, [view]);
 
                           const [input, setInput] = useState('');
