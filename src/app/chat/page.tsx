@@ -267,11 +267,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             }
                           }, [isDragging]);
 
-                          // Don't render if searching
-                          if (searchQuery.trim()) {
-                            return null;
-                          }
-
                           return (
                             <div className="mb-8">
                               <div className="flex justify-between items-center mb-4">
@@ -291,6 +286,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
                                 </div>
                               </div>
+                              {/* Only show popular characters carousel when not searching */}
+                              {!searchQuery.trim() && (
                               <div className="relative">
                                 {/* Left Arrow - Only show when there's content to scroll left */}
                                 <button
@@ -371,6 +368,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </svg>
                                 </button>
                               </div>
+                              )}
                             </div>
                           );
                         };
