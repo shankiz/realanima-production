@@ -230,204 +230,213 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     </div>
                                 </div>
 
-                                {/* Popular Characters */}
-                                <div className="mb-8">
-                                  <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
-                                  <div className="relative">
-                                    {(() => {
-                                      const [showLeftArrow, setShowLeftArrow] = useState(false);
-                                      const [showRightArrow, setShowRightArrow] = useState(true);
-                                      const [isDragging, setIsDragging] = useState(false);
-                                      const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
+                                {/* Popular Characters - Only show when not searching */}
+                                {!searchQuery.trim() && (
+                                  <div className="mb-8">
+                                    <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                    <div className="relative">
+                                      {(() => {
+                                        const [showLeftArrow, setShowLeftArrow] = useState(false);
+                                        const [showRightArrow, setShowRightArrow] = useState(true);
+                                        const [isDragging, setIsDragging] = useState(false);
+                                        const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
-                                      const handleScroll = (container: HTMLElement) => {
-                                        const scrollLeft = container.scrollLeft;
-                                        const maxScrollLeft = container.scrollWidth - container.clientWidth;
-                                        
-                                        setShowLeftArrow(scrollLeft > 10);
-                                        setShowRightArrow(scrollLeft < maxScrollLeft - 10);
-                                      };
-
-                                      const scrollContainer = (direction: 'left' | 'right') => {
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          const scrollAmount = direction === 'left' ? -320 : 320;
-                                          container.scrollBy({ 
-                                            left: scrollAmount, 
-                                            behavior: 'smooth' 
-                                          });
+                                        const handleScroll = (container: HTMLElement) => {
+                                          const scrollLeft = container.scrollLeft;
+                                          const maxScrollLeft = container.scrollWidth - container.clientWidth;
                                           
-                                          // Update arrow visibility after scroll animation
-                                          setTimeout(() => handleScroll(container), 350);
-                                        }
-                                      };
+                                          setShowLeftArrow(scrollLeft > 10);
+                                          setShowRightArrow(scrollLeft < maxScrollLeft - 10);
+                                        };
 
-                                      // Mouse drag handlers
-                                      const handleMouseDown = (e: React.MouseEvent) => {
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          setIsDragging(true);
-                                          setDragStart({
-                                            x: e.pageX - container.offsetLeft,
-                                            scrollLeft: container.scrollLeft
-                                          });
-                                          container.style.cursor = 'grabbing';
-                                          container.style.userSelect = 'none';
-                                        }
-                                      };
+                                        const scrollContainer = (direction: 'left' | 'right') => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
+                                            const scrollAmount = direction === 'left' ? -320 : 320;
+                                            container.scrollBy({ 
+                                              left: scrollAmount, 
+                                              behavior: 'smooth' 
+                                            });
+                                            
+                                            // Update arrow visibility after scroll animation
+                                            setTimeout(() => handleScroll(container), 350);
+                                          }
+                                        };
 
-                                      const handleMouseMove = (e: React.MouseEvent) => {
-                                        if (!isDragging) return;
-                                        e.preventDefault();
-                                        
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          const x = e.pageX - container.offsetLeft;
-                                          const walk = (x - dragStart.x) * 2; // Multiply by 2 for faster scrolling
-                                          container.scrollLeft = dragStart.scrollLeft - walk;
-                                          handleScroll(container);
-                                        }
-                                      };
+                                        // Mouse drag handlers
+                                        const handleMouseDown = (e: React.MouseEvent) => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
+                                            setIsDragging(true);
+                                            setDragStart({
+                                              x: e.pageX - container.offsetLeft,
+                                              scrollLeft: container.scrollLeft
+                                            });
+                                            container.style.cursor = 'grabbing';
+                                            container.style.userSelect = 'none';
+                                          }
+                                        };
 
-                                      const handleMouseUp = () => {
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          setIsDragging(false);
-                                          container.style.cursor = 'grab';
-                                          container.style.userSelect = 'auto';
-                                        }
-                                      };
-
-                                      const handleMouseLeave = () => {
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          setIsDragging(false);
-                                          container.style.cursor = 'grab';
-                                          container.style.userSelect = 'auto';
-                                        }
-                                      };
-
-                                      useEffect(() => {
-                                        const container = document.getElementById('popular-characters-scroll');
-                                        if (container) {
-                                          // Initial check
-                                          handleScroll(container);
+                                        const handleMouseMove = (e: React.MouseEvent) => {
+                                          if (!isDragging) return;
+                                          e.preventDefault();
                                           
-                                          // Add scroll listener
-                                          const onScroll = () => handleScroll(container);
-                                          container.addEventListener('scroll', onScroll);
-                                          
-                                          // Add resize listener to handle window resize
-                                          const onResize = () => handleScroll(container);
-                                          window.addEventListener('resize', onResize);
-                                          
-                                          // Global mouse up handler to ensure drag ends even if mouse leaves container
-                                          const globalMouseUp = () => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
+                                            const x = e.pageX - container.offsetLeft;
+                                            const walk = (x - dragStart.x) * 2; // Multiply by 2 for faster scrolling
+                                            container.scrollLeft = dragStart.scrollLeft - walk;
+                                            handleScroll(container);
+                                          }
+                                        };
+
+                                        const handleMouseUp = () => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
                                             setIsDragging(false);
                                             container.style.cursor = 'grab';
                                             container.style.userSelect = 'auto';
-                                          };
-                                          
-                                          document.addEventListener('mouseup', globalMouseUp);
-                                          
-                                          return () => {
-                                            container.removeEventListener('scroll', onScroll);
-                                            window.removeEventListener('resize', onResize);
-                                            document.removeEventListener('mouseup', globalMouseUp);
-                                          };
-                                        }
-                                      }, [isDragging]);
+                                          }
+                                        };
 
-                                      return (
-                                        <>
-                                          {/* Left Arrow - Only show when there's content to scroll left */}
-                                          <button
-                                            onClick={() => scrollContainer('left')}
-                                            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
-                                              showLeftArrow 
-                                                ? 'opacity-100 translate-x-0 pointer-events-auto' 
-                                                : 'opacity-0 -translate-x-4 pointer-events-none'
-                                            }`}
-                                            style={{ 
-                                              transform: showLeftArrow 
-                                                ? 'translateY(-50%) translateX(0)' 
-                                                : 'translateY(-50%) translateX(-16px)',
-                                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                                            }}
-                                          >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                          </button>
+                                        const handleMouseLeave = () => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
+                                            setIsDragging(false);
+                                            container.style.cursor = 'grab';
+                                            container.style.userSelect = 'auto';
+                                          }
+                                        };
 
-                                          {/* Scrollable Container with enhanced styling and drag functionality */}
-                                          <div 
-                                            id="popular-characters-scroll"
-                                            className="flex space-x-4 overflow-x-auto scrollbar-hide pl-0 pr-12 py-2"
-                                            style={{ 
-                                              scrollbarWidth: 'none', 
-                                              msOverflowStyle: 'none',
-                                              scrollBehavior: isDragging ? 'auto' : 'smooth',
-                                              cursor: 'grab'
-                                            }}
-                                            onMouseDown={handleMouseDown}
-                                            onMouseMove={handleMouseMove}
-                                            onMouseUp={handleMouseUp}
-                                            onMouseLeave={handleMouseLeave}
-                                          >
-                                            {/* Most Popular Characters - Hand-picked for popularity */}
-                                            {[
-                                              { id: 'gojo', name: 'Gojo Satoru', description: 'Jujutsu Kaisen', tier: 'free' },
-                                              { id: 'levi', name: 'Levi Ackerman', description: 'Attack on Titan', tier: 'ultimate' },
-                                              { id: 'itachi', name: 'Itachi Uchiha', description: 'Naruto', tier: 'ultimate' },
-                                              { id: 'light', name: 'Light Yagami', description: 'Death Note', tier: 'premium' },
-                                              { id: 'eren', name: 'Eren Yeager', description: 'Attack on Titan', tier: 'premium' },
-                                              { id: 'tanjiro', name: 'Tanjiro Kamado', description: 'Demon Slayer', tier: 'premium' },
-                                              { id: 'deku', name: 'Izuku Midoriya (Deku)', description: 'My Hero Academia', tier: 'ultimate' },
-                                              { id: 'killua', name: 'Killua Zoldyck', description: 'Hunter x Hunter', tier: 'ultimate' },
-                                              { id: 'mikasa', name: 'Mikasa Ackerman', description: 'Attack on Titan', tier: 'free' },
-                                              { id: 'nezuko', name: 'Nezuko Kamado', description: 'Demon Slayer', tier: 'ultimate' },
-                                              { id: 'todoroki', name: 'Shoto Todoroki', description: 'My Hero Academia', tier: 'ultimate' },
-                                              { id: 'lawliet', name: 'L (Lawliet)', description: 'Death Note', tier: 'premium' },
-                                            ].map((char) => (
-                                              <div key={char.id} className="flex-shrink-0 w-52 transform transition-transform duration-200 hover:scale-[1.02]">
-                                                <CharacterCard 
-                                                  character={char} 
-                                                  onClick={() => onSelectCharacter(char.id)}
-                                                />
-                                              </div>
-                                            ))}
-                                          </div>
+                                        useEffect(() => {
+                                          const container = document.getElementById('popular-characters-scroll');
+                                          if (container) {
+                                            // Initial check
+                                            handleScroll(container);
+                                            
+                                            // Add scroll listener
+                                            const onScroll = () => handleScroll(container);
+                                            container.addEventListener('scroll', onScroll);
+                                            
+                                            // Add resize listener to handle window resize
+                                            const onResize = () => handleScroll(container);
+                                            window.addEventListener('resize', onResize);
+                                            
+                                            // Global mouse up handler to ensure drag ends even if mouse leaves container
+                                            const globalMouseUp = () => {
+                                              setIsDragging(false);
+                                              container.style.cursor = 'grab';
+                                              container.style.userSelect = 'auto';
+                                            };
+                                            
+                                            document.addEventListener('mouseup', globalMouseUp);
+                                            
+                                            return () => {
+                                              container.removeEventListener('scroll', onScroll);
+                                              window.removeEventListener('resize', onResize);
+                                              document.removeEventListener('mouseup', globalMouseUp);
+                                            };
+                                          }
+                                        }, [isDragging]);
 
-                                          {/* Right Arrow - Only show when there's content to scroll right */}
-                                          <button
-                                            onClick={() => scrollContainer('right')}
-                                            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
-                                              showRightArrow 
-                                                ? 'opacity-100 translate-x-0 pointer-events-auto' 
-                                                : 'opacity-0 translate-x-4 pointer-events-none'
-                                            }`}
-                                            style={{ 
-                                              transform: showRightArrow 
-                                                ? 'translateY(-50%) translateX(0)' 
-                                                : 'translateY(-50%) translateX(16px)',
-                                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                                            }}
-                                          >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                                            </svg>
-                                          </button>
-                                        </>
-                                      );
-                                    })()}
+                                        return (
+                                          <>
+                                            {/* Left Arrow - Only show when there's content to scroll left */}
+                                            <button
+                                              onClick={() => scrollContainer('left')}
+                                              className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
+                                                showLeftArrow 
+                                                  ? 'opacity-100 translate-x-0 pointer-events-auto' 
+                                                  : 'opacity-0 -translate-x-4 pointer-events-none'
+                                              }`}
+                                              style={{ 
+                                                transform: showLeftArrow 
+                                                  ? 'translateY(-50%) translateX(0)' 
+                                                  : 'translateY(-50%) translateX(-16px)',
+                                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                              }}
+                                            >
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                                              </svg>
+                                            </button>
+
+                                            {/* Scrollable Container with enhanced styling and drag functionality */}
+                                            <div 
+                                              id="popular-characters-scroll"
+                                              className="flex space-x-4 overflow-x-auto scrollbar-hide pl-0 pr-12 py-2"
+                                              style={{ 
+                                                scrollbarWidth: 'none', 
+                                                msOverflowStyle: 'none',
+                                                scrollBehavior: isDragging ? 'auto' : 'smooth',
+                                                cursor: 'grab'
+                                              }}
+                                              onMouseDown={handleMouseDown}
+                                              onMouseMove={handleMouseMove}
+                                              onMouseUp={handleMouseUp}
+                                              onMouseLeave={handleMouseLeave}
+                                            >
+                                              {/* Most Popular Characters - Hand-picked for popularity */}
+                                              {[
+                                                { id: 'gojo', name: 'Gojo Satoru', description: 'Jujutsu Kaisen', tier: 'free' },
+                                                { id: 'levi', name: 'Levi Ackerman', description: 'Attack on Titan', tier: 'ultimate' },
+                                                { id: 'itachi', name: 'Itachi Uchiha', description: 'Naruto', tier: 'ultimate' },
+                                                { id: 'light', name: 'Light Yagami', description: 'Death Note', tier: 'premium' },
+                                                { id: 'eren', name: 'Eren Yeager', description: 'Attack on Titan', tier: 'premium' },
+                                                { id: 'tanjiro', name: 'Tanjiro Kamado', description: 'Demon Slayer', tier: 'premium' },
+                                                { id: 'deku', name: 'Izuku Midoriya (Deku)', description: 'My Hero Academia', tier: 'ultimate' },
+                                                { id: 'killua', name: 'Killua Zoldyck', description: 'Hunter x Hunter', tier: 'ultimate' },
+                                                { id: 'mikasa', name: 'Mikasa Ackerman', description: 'Attack on Titan', tier: 'free' },
+                                                { id: 'nezuko', name: 'Nezuko Kamado', description: 'Demon Slayer', tier: 'ultimate' },
+                                                { id: 'todoroki', name: 'Shoto Todoroki', description: 'My Hero Academia', tier: 'ultimate' },
+                                                { id: 'lawliet', name: 'L (Lawliet)', description: 'Death Note', tier: 'premium' },
+                                              ].map((char) => (
+                                                <div key={char.id} className="flex-shrink-0 w-52 transform transition-transform duration-200 hover:scale-[1.02]">
+                                                  <CharacterCard 
+                                                    character={char} 
+                                                    onClick={() => onSelectCharacter(char.id)}
+                                                  />
+                                                </div>
+                                              ))}
+                                            </div>
+
+                                            {/* Right Arrow - Only show when there's content to scroll right */}
+                                            <button
+                                              onClick={() => scrollContainer('right')}
+                                              className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
+                                                showRightArrow 
+                                                  ? 'opacity-100 translate-x-0 pointer-events-auto' 
+                                                  : 'opacity-0 translate-x-4 pointer-events-none'
+                                              }`}
+                                              style={{ 
+                                                transform: showRightArrow 
+                                                  ? 'translateY(-50%) translateX(0)' 
+                                                  : 'translateY(-50%) translateX(16px)',
+                                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                              }}
+                                            >
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                                              </svg>
+                                            </button>
+                                          </>
+                                        );
+                                      })()}
+                                    </div>
                                   </div>
-                                </div>
+                                )}
 
                                 {/* All Characters */}
                                 <div>
                                   <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-bold text-white">All Characters</h2>
+                                    <h2 className="text-xl font-bold text-white">
+                                      {searchQuery.trim() ? `Search Results` : 'All Characters'}
+                                      {searchQuery.trim() && (
+                                        <span className="text-sm font-normal text-gray-400 ml-2">
+                                          ({filteredCharacters.length} found)
+                                        </span>
+                                      )}
+                                    </h2>
                                     <div className="relative w-80">
                                       <input
                                         type="text"
