@@ -491,7 +491,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
 
                                   {/* Character Suggestion Message */}
-                                  <div className="mt-8 text-center">
+                                  <div className="mt-16 text-center">
                                     <div className="text-gray-400 text-sm mb-2 leading-relaxed">
                                       <p className="mb-3">
                                         Can't find who you're looking for?
