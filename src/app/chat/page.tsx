@@ -273,7 +273,23 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                           return (
                             <div className="mb-8">
-                              <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                              <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-white">Popular Characters</h2>
+                                <div className="relative w-80">
+                                  <input
+                                    type="text"
+                                    placeholder="Search characters..."
+                                    className="w-full bg-black/60 text-white text-sm rounded-lg pl-12 pr-4 py-3 border-2 border-gray-700/50 focus:outline-none focus:border-cyan-500/80 shadow-lg"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                  />
+                                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
                               <div className="relative">
                                 {/* Left Arrow - Only show when there's content to scroll left */}
                                 <button
@@ -447,20 +463,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         </span>
                                       )}
                                     </h2>
-                                    <div className="relative w-80">
-                                      <input
-                                        type="text"
-                                        placeholder="Search characters..."
-                                        className="w-full bg-black/60 text-white text-sm rounded-lg pl-12 pr-4 py-3 border-2 border-gray-700/50 focus:outline-none focus:border-cyan-500/80 shadow-lg"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                      />
-                                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                        </svg>
-                                      </div>
-                                    </div>
                                   </div>
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {filteredCharacters.map((char) => (
