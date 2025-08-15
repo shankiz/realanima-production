@@ -493,7 +493,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   {/* Character Suggestion Message */}
                                   <div className="mt-8 text-center">
                                     <p className="text-gray-400 text-sm mb-2">
-                                      Can't find who you're looking for? <button
+                                      Can't find who you're looking for? Request a new character <button
                                         onClick={() => {
                                           // Open Chatbase chatbot
                                           if (typeof window !== 'undefined' && window.chatbase) {
@@ -502,7 +502,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         }}
                                         className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors duration-200 px-2 py-0.5 rounded-md hover:bg-cyan-400/10"
                                       >
-                                        Request here
+                                        here
                                       </button>
                                     </p>
                                   </div>
