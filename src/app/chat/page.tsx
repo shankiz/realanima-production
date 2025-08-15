@@ -456,25 +456,18 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                 {/* All Characters */}
                                 <div>
-                                  <div className="flex items-center mb-4">
-                                    {searchQuery.trim() ? (
-                                      // When searching: Search Results aligned with search input position
-                                      <div className="flex justify-between items-center w-full">
-                                        <h2 className="text-xl font-bold text-white">
-                                          Search Results
-                                          <span className="text-sm font-normal text-gray-400 ml-2">
-                                            ({filteredCharacters.length} found)
-                                          </span>
-                                        </h2>
-                                      </div>
-                                    ) : (
-                                      // When not searching: All Characters with spacer for search input
-                                      <div className="flex justify-between items-center w-full">
-                                        <h2 className="text-xl font-bold text-white">All Characters</h2>
-                                        <div className="w-80"></div>
-                                      </div>
-                                    )}
-                                  </div>
+                                  <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-bold text-white">
+                                      {searchQuery.trim() ? `Search Results` : 'All Characters'}
+                                      {searchQuery.trim() && (
+                                        <span className="text-sm font-normal text-gray-400 ml-2">
+                                          ({filteredCharacters.length} found)
+                                        </span>
+                                      )}
+                                    </h2>
+                                    {/* Spacer to maintain layout alignment */}
+                                    <div className="w-80"></div>
+                                  </div></old_str>
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {filteredCharacters.map((char) => (
                                       <CharacterCard 
