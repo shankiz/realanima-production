@@ -20,9 +20,9 @@ declare global {
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
-  // Initialize Chatbase only on discover page
+  // Initialize Chatbase only on chat page
   useEffect(() => {
-    if (typeof window !== 'undefined' && view === 'discover') {
+    if (typeof window !== 'undefined') {
       // Initialize chatbase if not already initialized
       if (!window.chatbase || window.chatbase("getState") !== "initialized") {
         window.chatbase = (...args: any[]) => {
@@ -43,37 +43,25 @@ export default function ChatPage() {
       }
 
       const loadChatbase = () => {
-        // Check if script already exists
-        const existingScript = document.getElementById("spPfvHX2tRU-ic83q8sTI");
-        if (!existingScript) {
-          const script = document.createElement("script");
-          script.src = "https://www.chatbase.co/embed.min.js";
-          script.id = "spPfvHX2tRU-ic83q8sTI";
-          script.setAttribute("domain", "www.chatbase.co");
-          document.body.appendChild(script);
-        }
+        const script = document.createElement("script");
+        script.src = "https://www.chatbase.co/embed.min.js";
+        script.id = "spPfvHX2tRU-ic83q8sTI";
+        script.setAttribute("domain", "www.chatbase.co");
+        document.body.appendChild(script);
       };
 
       if (document.readyState === "complete") {
         loadChatbase();
       } else {
         window.addEventListener("load", loadChatbase);
-        // Cleanup function to remove event listener
-        return () => {
-          window.removeEventListener("load", loadChatbase);
-        };
       }
-    } else if (view !== 'discover') {
-      // Hide chatbase when not on discover page
-      if (typeof window !== 'undefined' && window.chatbase) {
-        try {
-          window.chatbase('close');
-        } catch (error) {
-          // Silently handle any errors
-        }
-      }
+
+      // Cleanup function to remove event listener
+      return () => {
+        window.removeEventListener("load", loadChatbase);
+      };
     }
-  }, [view]);
+  }, []);
 
   return (
     <Suspense fallback={<div />}> 
