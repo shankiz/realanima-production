@@ -492,19 +492,28 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                   {/* Character Suggestion Message */}
                                   <div className="mt-8 text-center">
-                                    <p className="text-gray-400 text-sm mb-2">
-                                      Can't find who you're looking for? Request a new character <button
-                                        onClick={() => {
-                                          // Open Chatbase chatbot
-                                          if (typeof window !== 'undefined' && window.chatbase) {
-                                            window.chatbase('open');
-                                          }
-                                        }}
-                                        className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors duration-200 px-2 py-0.5 rounded-md hover:bg-cyan-400/10"
-                                      >
-                                        here
-                                      </button>
-                                    </p>
+                                    <div className="text-gray-400 text-sm mb-2 leading-relaxed">
+                                      <p className="mb-3">
+                                        Can't find who you're looking for?
+                                      </p>
+                                      <p>
+                                        Request a new character{' '}
+                                        <button
+                                          onClick={() => {
+                                            // Open Chatbase chatbot
+                                            if (typeof window !== 'undefined' && window.chatbase) {
+                                              window.chatbase('open');
+                                            }
+                                          }}
+                                          className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors duration-200 px-2 py-0.5 rounded-md hover:bg-cyan-400/10 inline-flex items-center"
+                                        >
+                                          here
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                          </svg>
+                                        </button>
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
