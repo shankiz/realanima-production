@@ -457,18 +457,18 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                       )}
                                     </div>
                                   </div>
-                                  
-                                  {/* Popular Characters Section - Only show when not searching */}
-                                  {!searchQuery.trim() && (
-                                    <div>
-                                      <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
-                                      <PopularCharactersSection 
-                                        searchQuery={searchQuery} 
-                                        onSelectCharacter={onSelectCharacter} 
-                                      />
-                                    </div>
-                                  )}
                                 </div>
+                                
+                                {/* Popular Characters Section - Only show when not searching */}
+                                {!searchQuery.trim() && (
+                                  <div className="mb-8">
+                                    <h2 className="text-xl font-bold text-white mb-4">Popular Characters</h2>
+                                    <PopularCharactersSection 
+                                      searchQuery={searchQuery} 
+                                      onSelectCharacter={onSelectCharacter} 
+                                    />
+                                  </div>
+                                )}
 
                                 {/* All Characters */}
                                 <div>
