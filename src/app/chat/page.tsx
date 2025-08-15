@@ -11,45 +11,54 @@ import { useSearchParams } from 'next/navigation';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
 
-// Tawk.to script - only loads on chat page
+// Chatbase script - only loads on chat page
 declare global {
   interface Window {
-    Tawk_API: any;
-    Tawk_LoadStart: any;
+    chatbase: any;
   }
 }
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
-  // Initialize Tawk.to only on chat page
+  // Initialize Chatbase only on chat page
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Initialize Tawk.to
-      (window as any).Tawk_API = (window as any).Tawk_API || {};
-      (window as any).Tawk_LoadStart = new Date();
+      // Initialize chatbase if not already initialized
+      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+        window.chatbase = (...args: any[]) => {
+          if (!window.chatbase.q) {
+            window.chatbase.q = [];
+          }
+          window.chatbase.q.push(args);
+        };
 
-      const loadTawkTo = () => {
+        window.chatbase = new Proxy(window.chatbase, {
+          get(target, prop) {
+            if (prop === "q") {
+              return target.q;
+            }
+            return (...args: any[]) => target(prop, ...args);
+          }
+        });
+      }
+
+      const loadChatbase = () => {
         const script = document.createElement("script");
-        script.async = true;
-        script.src = 'https://embed.tawk.to/689f077dfcd547192dde5fd1/1j2mjahtn';
-        script.charset = 'UTF-8';
-        script.setAttribute('crossorigin', '*');
-        
-        const firstScript = document.getElementsByTagName("script")[0];
-        if (firstScript && firstScript.parentNode) {
-          firstScript.parentNode.insertBefore(script, firstScript);
-        }
+        script.src = "https://www.chatbase.co/embed.min.js";
+        script.id = "spPfvHX2tRU-ic83q8sTI";
+        script.setAttribute("domain", "www.chatbase.co");
+        document.body.appendChild(script);
       };
 
       if (document.readyState === "complete") {
-        loadTawkTo();
+        loadChatbase();
       } else {
-        window.addEventListener("load", loadTawkTo);
+        window.addEventListener("load", loadChatbase);
       }
 
       // Cleanup function to remove event listener
       return () => {
-        window.removeEventListener("load", loadTawkTo);
+        window.removeEventListener("load", loadChatbase);
       };
     }
   }, []);
