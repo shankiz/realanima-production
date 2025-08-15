@@ -20,9 +20,9 @@ declare global {
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
-  // Initialize Chatbase only on chat page
+  // Initialize Chatbase only on discover page
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && view === 'discover') {
       // Initialize chatbase if not already initialized
       if (!window.chatbase || window.chatbase("getState") !== "initialized") {
         window.chatbase = (...args: any[]) => {
@@ -61,7 +61,16 @@ export default function ChatPage() {
         window.removeEventListener("load", loadChatbase);
       };
     }
-  }, []);
+    
+    // Hide chatbase when not on discover page
+    if (view !== 'discover' && typeof window !== 'undefined' && window.chatbase) {
+      try {
+        window.chatbase('hide');
+      } catch (error) {
+        // Silently handle if chatbase hide method doesn't exist
+      }
+    }
+  }, [view]);
 
   return (
     <Suspense fallback={<div />}> 
