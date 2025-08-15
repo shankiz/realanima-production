@@ -20,6 +20,49 @@ declare global {
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
+  // Initialize Chatbase only on chat page
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Initialize chatbase if not already initialized
+      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+        window.chatbase = (...args: any[]) => {
+          if (!window.chatbase.q) {
+            window.chatbase.q = [];
+          }
+          window.chatbase.q.push(args);
+        };
+
+        window.chatbase = new Proxy(window.chatbase, {
+          get(target, prop) {
+            if (prop === "q") {
+              return target.q;
+            }
+            return (...args: any[]) => target(prop, ...args);
+          }
+        });
+      }
+
+      const loadChatbase = () => {
+        const script = document.createElement("script");
+        script.src = "https://www.chatbase.co/embed.min.js";
+        script.id = "spPfvHX2tRU-ic83q8sTI";
+        script.setAttribute("domain", "www.chatbase.co");
+        document.body.appendChild(script);
+      };
+
+      if (document.readyState === "complete") {
+        loadChatbase();
+      } else {
+        window.addEventListener("load", loadChatbase);
+      }
+
+      // Cleanup function to remove event listener
+      return () => {
+        window.removeEventListener("load", loadChatbase);
+      };
+    }
+  }, []);
+
   return (
     <Suspense fallback={<div />}> 
       <Chat />
@@ -180,7 +223,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           const handleScroll = (container: HTMLElement) => {
                             const scrollLeft = container.scrollLeft;
                             const maxScrollLeft = container.scrollWidth - container.clientWidth;
-                            
+
                             setShowLeftArrow(scrollLeft > 10);
                             setShowRightArrow(scrollLeft < maxScrollLeft - 10);
                           };
@@ -193,7 +236,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 left: scrollAmount, 
                                 behavior: 'smooth' 
                               });
-                              
+
                               // Update arrow visibility after scroll animation
                               setTimeout(() => handleScroll(container), 350);
                             }
@@ -216,7 +259,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           const handleMouseMove = (e: React.MouseEvent) => {
                             if (!isDragging) return;
                             e.preventDefault();
-                            
+
                             const container = document.getElementById('popular-characters-scroll');
                             if (container) {
                               const x = e.pageX - container.offsetLeft;
@@ -249,24 +292,24 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             if (container) {
                               // Initial check
                               handleScroll(container);
-                              
+
                               // Add scroll listener
                               const onScroll = () => handleScroll(container);
                               container.addEventListener('scroll', onScroll);
-                              
+
                               // Add resize listener to handle window resize
                               const onResize = () => handleScroll(container);
                               window.addEventListener('resize', onResize);
-                              
+
                               // Global mouse up handler to ensure drag ends even if mouse leaves container
                               const globalMouseUp = () => {
                                 setIsDragging(false);
                                 container.style.cursor = 'grab';
                                 container.style.userSelect = 'auto';
                               };
-                              
+
                               document.addEventListener('mouseup', globalMouseUp);
-                              
+
                               return () => {
                                 container.removeEventListener('scroll', onScroll);
                                 window.removeEventListener('resize', onResize);
@@ -535,74 +578,6 @@ function Chat() {
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
-
-  // Initialize Chatbase only on discover page
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (view === 'discover') {
-        // Initialize chatbase if not already initialized
-        if (!window.chatbase) {
-          window.chatbase = (...args: any[]) => {
-            if (!window.chatbase.q) {
-              window.chatbase.q = [];
-            }
-            window.chatbase.q.push(args);
-          };
-          
-          window.chatbase = new Proxy(window.chatbase, {
-            get(target, prop) {
-              if (prop === "q") {
-                return target.q;
-              }
-              return (...args: any[]) => target(prop, ...args);
-            }
-          });
-        }
-
-        const loadChatbase = () => {
-          // Remove any existing script first
-          const existingScript = document.getElementById("spPfvHX2tRU-ic83q8sTI");
-          if (existingScript) {
-            existingScript.remove();
-          }
-          
-          const script = document.createElement("script");
-          script.src = "https://www.chatbase.co/embed.min.js";
-          script.id = "spPfvHX2tRU-ic83q8sTI";
-          script.setAttribute("domain", "www.chatbase.co");
-          document.body.appendChild(script);
-        };
-
-        if (document.readyState === "complete") {
-          loadChatbase();
-        } else {
-          window.addEventListener("load", loadChatbase);
-        }
-
-        // Cleanup function to remove event listener
-        return () => {
-          window.removeEventListener("load", loadChatbase);
-        };
-      } else {
-        // Hide/remove chatbase when not on discover page
-        const chatbaseScript = document.getElementById("spPfvHX2tRU-ic83q8sTI");
-        if (chatbaseScript) {
-          chatbaseScript.remove();
-        }
-        
-        // Also try to hide any existing chatbase widget
-        const chatbaseWidget = document.querySelector('#chatbase-bubble-button, [id*="chatbase"], [class*="chatbase"]');
-        if (chatbaseWidget) {
-          (chatbaseWidget as HTMLElement).style.display = 'none';
-        }
-        
-        // Reset the chatbase function
-        if (window.chatbase) {
-          window.chatbase = undefined;
-        }
-      }
-    }
-  }, [view]);
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
