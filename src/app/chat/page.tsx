@@ -465,22 +465,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         </span>
                                       )}
                                     </h2>
-                                    {/* Spacer to maintain layout alignment */}
-                                    <div className="w-80"></div>
                                   </div>
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                    {filteredCharacters.map((char) => (
-                                      <CharacterCard 
-                                        key={char.id} 
-                                        character={char} 
-                                        onClick={() => onSelectCharacter(char.id)}
-                                      />
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );</old_str>
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {filteredCharacters.map((char) => (
                                       <CharacterCard 
