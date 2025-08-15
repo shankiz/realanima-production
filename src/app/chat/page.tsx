@@ -159,8 +159,9 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 ));
 
                         // Popular Characters Section Component
-                        const PopularCharactersSection = ({ searchQuery, onSelectCharacter }: {
+                        const PopularCharactersSection = ({ searchQuery, setSearchQuery, onSelectCharacter }: {
                           searchQuery: string;
+                          setSearchQuery: (query: string) => void;
                           onSelectCharacter: (characterId: string) => void;
                         }) => {
                           const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -449,6 +450,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 {/* Popular Characters - Only show when not searching */}
                                 <PopularCharactersSection 
                                   searchQuery={searchQuery} 
+                                  setSearchQuery={setSearchQuery}
                                   onSelectCharacter={onSelectCharacter} 
                                 />
 
