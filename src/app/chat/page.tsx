@@ -492,7 +492,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                   {/* Character Suggestion Message */}
                                   <div className="mt-8 text-center">
-                                    <p className="text-gray-300 text-sm mb-3">
+                                    <p className="text-gray-400 text-sm mb-2">
                                       Can't find your favorite character?
                                     </p>
                                     <button
@@ -502,7 +502,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                           window.chatbase('open');
                                         }
                                       }}
-                                      className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors underline decoration-dotted underline-offset-4 hover:decoration-solid"
+                                      className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-all duration-200 hover:scale-105 px-3 py-1 rounded-md hover:bg-cyan-400/10"
                                     >
                                       Let us know who you'd like to chat with!
                                     </button>
