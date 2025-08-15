@@ -492,22 +492,20 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                   {/* Character Suggestion Message */}
                                   <div className="mt-8 text-center">
-                                    <div className="bg-gray-900/40 border border-gray-800/30 rounded-2xl p-6 max-w-md mx-auto">
-                                      <p className="text-gray-300 text-sm mb-3">
-                                        Didn't find who you're looking for?
-                                      </p>
-                                      <button
-                                        onClick={() => {
-                                          // Open Chatbase chatbot
-                                          if (typeof window !== 'undefined' && window.chatbase) {
-                                            window.chatbase('open');
-                                          }
-                                        }}
-                                        className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                                      >
-                                        Submit a character suggestion
-                                      </button>
-                                    </div>
+                                    <p className="text-gray-300 text-sm mb-3">
+                                      Can't find your favorite character?
+                                    </p>
+                                    <button
+                                      onClick={() => {
+                                        // Open Chatbase chatbot
+                                        if (typeof window !== 'undefined' && window.chatbase) {
+                                          window.chatbase('open');
+                                        }
+                                      }}
+                                      className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors underline decoration-dotted underline-offset-4 hover:decoration-solid"
+                                    >
+                                      Let us know who you'd like to chat with!
+                                    </button>
                                   </div>
                                 </div>
                               </div>
