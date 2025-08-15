@@ -456,8 +456,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                 {/* All Characters */}
                                 <div>
-                                  <div className={`flex justify-between items-center mb-4 ${searchQuery.trim() ? 'justify-end' : ''}`}>
-                                    <h2 className={`text-xl font-bold text-white ${searchQuery.trim() ? 'ml-auto' : ''}`}>
+                                  <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-bold text-white">
                                       {searchQuery.trim() ? `Search Results` : 'All Characters'}
                                       {searchQuery.trim() && (
                                         <span className="text-sm font-normal text-gray-400 ml-2">
@@ -465,6 +465,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         </span>
                                       )}
                                     </h2>
+                                    {/* Invisible spacer to maintain layout when not searching */}
+                                    {!searchQuery.trim() && <div className="w-80"></div>}
                                   </div>
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {filteredCharacters.map((char) => (
