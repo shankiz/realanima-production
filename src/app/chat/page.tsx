@@ -270,8 +270,10 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           return (
                             <div className="mb-8">
                               <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-xl font-bold text-white">Popular Characters</h2>
-                                <div className="relative w-80">
+                                {!searchQuery.trim() && (
+                                  <h2 className="text-xl font-bold text-white">Popular Characters</h2>
+                                )}
+                                <div className={`relative w-80 ${searchQuery.trim() ? 'ml-auto' : ''}`}>
                                   <input
                                     type="text"
                                     placeholder="Search characters..."
