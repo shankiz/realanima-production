@@ -456,8 +456,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
 
                                 {/* All Characters */}
                                 <div>
-                                  <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-bold text-white">
+                                  <div className={`flex justify-between items-center mb-4 ${searchQuery.trim() ? 'justify-end' : ''}`}>
+                                    <h2 className={`text-xl font-bold text-white ${searchQuery.trim() ? 'ml-auto' : ''}`}>
                                       {searchQuery.trim() ? `Search Results` : 'All Characters'}
                                       {searchQuery.trim() && (
                                         <span className="text-sm font-normal text-gray-400 ml-2">
