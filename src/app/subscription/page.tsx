@@ -117,7 +117,7 @@ export default function Subscription() {
       price: 6.88,
       credits: '500',
       description: 'Premium unlimited access',
-      features: ['500 messages per day', 'Access to all characters', 'Text & voice responses', 'Priority voice processing', 'Early access to new characters', 'Custom character requests'],
+      features: ['500 messages per day', 'Access to all characters', 'Text & voice responses', 'Conversation memory'],
       popular: false,
       current: currentUserPlan === 'ultimate',
       gradient: 'from-amber-400 via-orange-500 to-red-500'
