@@ -1,6 +1,11 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+
+// Set page title
+useEffect(() => {
+  document.title = "Sign In - RealAnima";
+}, []);
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';

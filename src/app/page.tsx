@@ -1,7 +1,12 @@
 
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+// Set page title
+useEffect(() => {
+  document.title = "RealAnima";
+}, []);
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';

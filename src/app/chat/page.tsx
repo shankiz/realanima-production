@@ -1,6 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+
+// Set page title
+useEffect(() => {
+  document.title = "Chat - RealAnima";
+}, []);
 import { useSearchParams } from 'next/navigation';
                         import { useRouter } from 'next/navigation';
                         import Image from 'next/image';

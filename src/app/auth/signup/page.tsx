@@ -1,5 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Set page title
+useEffect(() => {
+  document.title = "Create Account - RealAnima";
+}, []);
 import { signUpWithEmail, resendEmailVerification } from '@/lib/firebase/auth';
 import { signInWithGoogle } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
