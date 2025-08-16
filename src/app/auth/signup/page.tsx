@@ -1,10 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-
-// Custom metadata for sign up page
-export const metadata = {
-  title: "Create Account - RealAnima",
-};
 import { signUpWithEmail, resendEmailVerification } from '@/lib/firebase/auth';
 import { signInWithGoogle } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';

@@ -2,11 +2,6 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
-// Custom metadata for landing page
-export const metadata = {
-  title: "RealAnima",
-};
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
