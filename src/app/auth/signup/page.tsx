@@ -96,6 +96,17 @@ export default function SignUp() {
           />
           <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
           </div>
+          {/* Logo overlay */}
+          <Link href="/" className="absolute top-6 left-6 z-30 flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            <Image
+              src="/logo.png"
+              alt="RealAnima Logo"
+              width={32}
+              height={32}
+              className="drop-shadow-lg"
+            />
+            <span className="text-white font-medium text-lg drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima</span>
+          </Link>
         </div>
 
         {/* Right side - Success message */}
@@ -161,6 +172,17 @@ export default function SignUp() {
         />
         <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
         </div>
+        {/* Logo overlay */}
+        <Link href="/" className="absolute top-6 left-6 z-30 flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.png"
+            alt="RealAnima Logo"
+            width={32}
+            height={32}
+            className="drop-shadow-lg"
+          />
+          <span className="text-white font-medium text-lg drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima</span>
+        </Link>
       </div>
 
       {/* Right side - Form */}

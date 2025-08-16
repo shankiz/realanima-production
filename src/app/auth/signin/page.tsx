@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -128,16 +127,25 @@ function SignInForm() {
     <div className="min-h-screen bg-black flex">
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-pink-900/20 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20 z-10"></div>
         <Image
           src="/auth-image.png"
-          alt="Sign In"
+          alt="Sign Up"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
-        </div>
+        {/* Logo overlay */}
+        <Link href="/" className="absolute top-6 left-6 z-30 flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.png"
+            alt="RealAnima Logo"
+            width={32}
+            height={32}
+            className="drop-shadow-lg"
+          />
+          <span className="text-white font-medium text-lg drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima</span>
+        </Link>
       </div>
 
       {/* Right side - Form */}
