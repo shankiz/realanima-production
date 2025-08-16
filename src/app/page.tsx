@@ -37,16 +37,14 @@ export default function Home() {
             </nav>
 
             <div className="flex space-x-3">
-              {loading ? (
-                <div className="w-20 h-9 bg-gray-800 animate-pulse rounded"></div>
-              ) : user ? (
+              {!loading && user ? (
                 <Button 
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
                   onClick={() => router.push('/chat')}
                 >
                   Dashboard
                 </Button>
-              ) : (
+              ) : !loading && (
                 <>
                   <Button 
                     variant="ghost" 
@@ -92,17 +90,7 @@ export default function Home() {
                 Unleash your imagination. Step into their world, chat, hear their voices, and create your own anime story.
               </p>
               <div className="flex space-x-4 mt-8">
-                {loading ? (
-                  <div className="w-48 h-12 bg-gray-800 animate-pulse rounded-lg"></div>
-                ) : user ? (
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 glow-effect text-base py-6 px-8"
-                    onClick={() => router.push('/chat')}
-                  >
-                    Go to Dashboard
-                  </Button>
-                ) : (
+                {!loading && (
                   <Button 
                     size="lg" 
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 glow-effect text-base py-6 px-8"
@@ -246,13 +234,7 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-4 text-center relative z-10 max-w-4xl">
-          {loading ? (
-            <div className="space-y-6">
-              <div className="w-96 h-12 bg-gray-800 animate-pulse rounded mx-auto"></div>
-              <div className="w-full max-w-3xl h-6 bg-gray-800 animate-pulse rounded mx-auto"></div>
-              <div className="w-48 h-12 bg-gray-800 animate-pulse rounded mx-auto"></div>
-            </div>
-          ) : user ? (
+          {!loading && user ? (
             <>
               <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Shocka Serif, serif' }}>
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-400">Welcome Back!</span>
@@ -268,7 +250,7 @@ export default function Home() {
                 Continue Chatting
               </Button>
             </>
-          ) : (
+          ) : !loading && (
             <>
               <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Shocka Serif, serif' }}>
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Ready to Start Talking?</span>
