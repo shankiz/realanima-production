@@ -195,19 +195,21 @@ export default function Subscription() {
             You need to be signed in to view subscription plans and unlock amazing characters.
           </p>
 
-          {/* Sign In Button */}
-          <Button
-            onClick={() => window.location.href = '/auth/signin'}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 px-8 py-3 text-base rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 mb-4 shadow-lg shadow-purple-500/25"
-          >
-            <span>Sign In Now</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Button>
+          {/* Sign In Button - Centered */}
+          <div className="flex justify-center mb-6">
+            <Button
+              onClick={() => window.location.href = '/auth/signin'}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 px-8 py-3 text-base rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/25"
+            >
+              <span>Sign In Now</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Button>
+          </div>
 
-          {/* Create account link - closer to button */}
-          <p className="text-gray-400 text-sm">
+          {/* Create account link - centered below button */}
+          <p className="text-gray-400 text-sm text-center">
             New here?{' '}
             <button 
               onClick={() => window.location.href = '/auth/signup'}
