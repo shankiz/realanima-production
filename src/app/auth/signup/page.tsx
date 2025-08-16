@@ -168,13 +168,15 @@ export default function SignUp() {
         <div className="w-full max-w-sm space-y-4">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              <Image
-                src="/logo.png"
-                alt="RealAnima Logo"
-                width={72}
-                height={72}
-                className="drop-shadow-lg"
-              />
+              <Link href="/">
+                <Image
+                  src="/logo.png"
+                  alt="RealAnima Logo"
+                  width={72}
+                  height={72}
+                  className="drop-shadow-lg cursor-pointer hover:scale-105 transition-transform duration-200"
+                />
+              </Link>
             </div>
             <h1 className="text-2xl text-white mb-8" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>Create a RealAnima Account</h1>
           </div>
