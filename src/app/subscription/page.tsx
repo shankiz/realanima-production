@@ -169,15 +169,22 @@ export default function Subscription() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white flex items-center justify-center">
-        <div className="text-center p-8 bg-gray-900/50 backdrop-blur-xl rounded-2xl border border-gray-700/50 shadow-2xl">
-          <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white flex items-center justify-center">
+        <div className="text-center p-8 bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/30 shadow-lg max-w-md mx-4">
+          <div className="w-12 h-12 mx-auto mb-6 bg-gray-700/50 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Please Sign In</h1>
-          <p className="text-gray-400 text-lg">You need to be signed in to view subscription plans.</p>
+          <h1 className="text-2xl font-medium mb-3 text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>Please Sign In</h1>
+          <p className="text-gray-400 text-sm mb-8 leading-relaxed">You need to be signed in to view subscription plans.</p>
+          <Button
+            onClick={() => window.location.href = '/auth/signin'}
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30 px-6 py-2 text-sm font-medium rounded-lg transition-all duration-200 backdrop-blur-sm"
+            style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+          >
+            Sign In
+          </Button>
         </div>
       </div>
     );
