@@ -166,6 +166,348 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-32 relative bg-black" style={{ zIndex: 20 }}>
+        <div className="container mx-auto px-4 relative z-50">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-20" style={{ fontFamily: 'Shocka Serif, serif' }}>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Simple Pricing for Everyone</span>
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <Card className="relative border transition-all duration-300 hover:scale-[1.02] flex flex-col h-full rounded-2xl overflow-hidden bg-gray-900/30 border-gray-700/30 shadow-lg">
+              <CardHeader className="text-center pb-6 pt-8 relative z-10">
+                <CardTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Shocka Serif, serif' }}>Free</CardTitle>
+                <CardDescription className="text-gray-400 text-sm">Get started with basic access</CardDescription>
+                <div className="mt-8">
+                  <span className="text-4xl font-bold text-white" style={{ fontFamily: 'Shocka Serif, serif' }}>
+                    $0
+                  </span>
+                  <span className="text-gray-500 text-base">/month</span>
+                </div>
+              </CardHeader>
+
+              <CardContent className="px-6 flex-grow relative z-10">
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">30 messages per day</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Access to all characters</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Text responses only</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Basic conversations</span>
+                  </li>
+                </ul>
+              </CardContent>
+
+              <CardFooter className="px-6 pb-6 mt-auto relative z-10">
+                <Button
+                  onClick={() => router.push('/auth/signup')}
+                  className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 text-sm rounded-lg transition-all duration-200"
+                  style={{ fontFamily: 'Shocka Serif, serif' }}
+                >
+                  Get Started Free
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="relative border transition-all duration-300 hover:scale-[1.02] flex flex-col h-full rounded-2xl overflow-hidden bg-gray-900/50 border-purple-500/50 shadow-lg shadow-purple-500/10">
+              <div className="absolute top-4 right-4 z-20">
+                <div className="bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-medium px-3 py-1 rounded-full">
+                  POPULAR
+                </div>
+              </div>
+
+              <CardHeader className="text-center pb-6 pt-8 relative z-10">
+                <CardTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Shocka Serif, serif' }}>Premium</CardTitle>
+                <CardDescription className="text-gray-400 text-sm">Enhanced experience with voice</CardDescription>
+                <div className="mt-8">
+                  <span className="text-4xl font-bold text-white" style={{ fontFamily: 'Shocka Serif, serif' }}>
+                    $3.88
+                  </span>
+                  <span className="text-gray-500 text-base">/month</span>
+                </div>
+              </CardHeader>
+
+              <CardContent className="px-6 flex-grow relative z-10">
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">200 messages per day</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Access to all characters</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Text & voice responses</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Conversation memory</span>
+                  </li>
+                </ul>
+              </CardContent>
+
+              <CardFooter className="px-6 pb-6 mt-auto relative z-10">
+                <Button
+                  onClick={() => router.push('/subscription')}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 text-sm rounded-lg transition-all duration-200"
+                  style={{ fontFamily: 'Shocka Serif, serif' }}
+                >
+                  Subscribe Now
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Ultimate Plan */}
+            <Card className="relative border transition-all duration-300 hover:scale-[1.02] flex flex-col h-full rounded-2xl overflow-hidden bg-gray-900/30 border-gray-700/30 shadow-lg">
+              <CardHeader className="text-center pb-6 pt-8 relative z-10">
+                <CardTitle className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Shocka Serif, serif' }}>Ultimate</CardTitle>
+                <CardDescription className="text-gray-400 text-sm">Premium unlimited access</CardDescription>
+                <div className="mt-8">
+                  <span className="text-4xl font-bold text-white" style={{ fontFamily: 'Shocka Serif, serif' }}>
+                    $6.88
+                  </span>
+                  <span className="text-gray-500 text-base">/month</span>
+                </div>
+              </CardHeader>
+
+              <CardContent className="px-6 flex-grow relative z-10">
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">500 messages per day</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Access to all characters</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Text & voice responses</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Priority voice processing</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Early access to new characters</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-2.5 w-2.5 text-white" 
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                      >
+                        <path 
+                          fillRule="evenodd" 
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                          clipRule="evenodd" 
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-gray-300 text-sm">Custom character requests</span>
+                  </li>
+                </ul>
+              </CardContent>
+
+              <CardFooter className="px-6 pb-6 mt-auto relative z-10">
+                <Button
+                  onClick={() => router.push('/subscription')}
+                  className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 text-sm rounded-lg transition-all duration-200"
+                  style={{ fontFamily: 'Shocka Serif, serif' }}
+                >
+                  Subscribe Now
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section id="faq" className="py-36 relative bg-black">
         <div className="container mx-auto px-4 relative z-10">
