@@ -90,22 +90,15 @@ export default function Home() {
                 Unleash your imagination. Step into their world, chat, hear their voices, and create your own anime story.
               </p>
               <div className="flex space-x-4 mt-8">
-                {!loading && (
-                  <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 glow-effect text-base py-6 px-8"
-                    onClick={() => router.push('/auth/signup')}
-                  >
-                    Get Started for Free
-                  </Button>
-                )}
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 glow-effect text-base py-6 px-8"
+                  onClick={() => router.push('/auth/signup')}
+                >
+                  Get Started for Free
+                </Button>
               </div>
-              {!loading && !user && (
-                <p className="text-sm text-gray-400 mt-3">30 messages daily • No credit card required • Instant access</p>
-              )}
-              {!loading && user && (
-                <p className="text-sm text-gray-400 mt-3">Welcome back! Continue your anime conversations</p>
-              )}
+              <p className="text-sm text-gray-400 mt-3">30 messages daily • No credit card required • Instant access</p>
             </div>
 
             <div className="w-full md:w-1/2 relative h-[800px] md:h-[900px] mx-auto animate-float mt-[-60px] mb-[-180px]" style={{ zIndex: 0 }}>
