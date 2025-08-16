@@ -135,28 +135,18 @@ function SignInForm() {
           className="object-cover"
           priority
         />
-        {/* Logo overlay */}
-        <Link href="/" className="absolute top-6 left-6 z-30 hover:opacity-80 transition-opacity">
-          <Image
-            src="/logo.png"
-            alt="RealAnima Logo"
-            width={48}
-            height={48}
-            className="drop-shadow-lg"
-          />
-        </Link>
-      </div>
+        </div>
 
       {/* Right side - Form */}
       <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-sm space-y-4">
           <div className="text-center">
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4">
               <Image
                 src="/logo.png"
                 alt="RealAnima Logo"
-                width={64}
-                height={64}
+                width={72}
+                height={72}
                 className="drop-shadow-lg"
               />
             </div>
