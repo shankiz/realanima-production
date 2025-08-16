@@ -18,133 +18,298 @@ declare global {
   }
 }
 
-// Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
-export default function ChatPage() {
-  // Initialize Chatbase only on chat page
+// Custom Chat Support Bubble Component
+const ChatSupportBubble = ({ showOnDiscoverOnly, isDiscoverPage }: { showOnDiscoverOnly: boolean; isDiscoverPage: boolean }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ sender: string; text: string }[]>([]);
+  const [isChatbaseLoading, setIsChatbaseLoading] = useState(true);
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
+
+  // Load Chatbase script and initialize
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Initialize chatbase if not already initialized
-      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
-        window.chatbase = (...args: any[]) => {
-          if (!window.chatbase.q) {
-            window.chatbase.q = [];
-          }
-          window.chatbase.q.push(args);
-        };
-
-        window.chatbase = new Proxy(window.chatbase, {
-          get(target, prop) {
-            if (prop === "q") {
-              return target.q;
-            }
-            return (...args: any[]) => target(prop, ...args);
-          }
-        });
-      }
-
-      const loadChatbase = () => {
-        const script = document.createElement("script");
-        script.src = "https://www.chatbase.co/embed.min.js";
-        script.id = "spPfvHX2tRU-ic83q8sTI";
-        script.setAttribute("domain", "www.chatbase.co");
-        document.body.appendChild(script);
-      };
-
-      if (document.readyState === "complete") {
-        loadChatbase();
-      } else {
-        window.addEventListener("load", loadChatbase);
-      }
-
-      // Cleanup function to remove event listener
-      return () => {
-        window.removeEventListener("load", loadChatbase);
-      };
+    // Only load if the component is visible or if it's not restricted to discover page
+    if (showOnDiscoverOnly && !isDiscoverPage) {
+      setIsOpen(false); // Ensure bubble is closed if not on discover page
+      return;
     }
-  }, []);
+
+    const loadScript = () => {
+      const script = document.createElement('script');
+      script.src = 'https://www.chatbase.co/embed.min.js';
+      script.id = 'spPfvHX2tRU-ic83q8sTI';
+      script.setAttribute('domain', 'www.chatbase.co');
+      script.onload = () => {
+        if (typeof window !== 'undefined' && window.chatbase) {
+          window.chatbase('init', {
+            chatbotId: 'spPfvHX2tRU-ic83q8sTI',
+            domain: 'www.chatbase.co',
+          });
+          setIsChatbaseLoading(false);
+          console.log('Chatbase script loaded and initialized.');
+        } else {
+          console.error('Chatbase is not available after script load.');
+          setIsChatbaseLoading(false);
+        }
+      };
+      script.onerror = () => {
+        console.error('Failed to load Chatbase script.');
+        setIsChatbaseLoading(false);
+      };
+      document.body.appendChild(script);
+    };
+
+    // Check if Chatbase is already initialized to avoid multiple loads
+    if (typeof window !== 'undefined' && !window.chatbase) {
+      loadScript();
+    } else {
+      setIsChatbaseLoading(false); // Assume it's already loaded if window.chatbase exists
+    }
+
+    // Cleanup function to remove script if necessary (though typically not needed for global scripts)
+    return () => {
+      const existingScript = document.getElementById('spPfvHX2tRU-ic83q8sTI');
+      if (existingScript) {
+        // Optional: remove script if the component unmounts and it's not meant to persist globally
+        // existingScript.remove();
+      }
+    };
+  }, [showOnDiscoverOnly, isDiscoverPage]); // Re-run if visibility conditions change
+
+  // Handle opening/closing the bubble
+  const toggleBubble = () => {
+    if (isChatbaseLoading) return; // Don't toggle if script is still loading
+    setIsOpen(!isOpen);
+  };
+
+  // Handle sending a message
+  const handleSendMessage = () => {
+    if (message.trim() && typeof window !== 'undefined' && window.chatbase) {
+      window.chatbase('sendMessage', message);
+      setChatHistory(prev => [...prev, { sender: 'user', text: message }]);
+      setMessage('');
+      // Auto-scroll to bottom
+      if (chatHistoryRef.current) {
+        chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+      }
+    }
+  };
+
+  // Effect to handle Chatbase messages (for displaying in custom UI if desired)
+  // This part is complex as Chatbase embed might not expose direct message events easily.
+  // For now, we'll rely on the default Chatbase iframe behavior.
+
+  // Auto-scroll chat history when messages are added
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
+  // Only render the bubble if it's allowed to show
+  if (showOnDiscoverOnly && !isDiscoverPage) {
+    return null;
+  }
 
   return (
-    <Suspense fallback={<div />}> 
+    <div className={`fixed bottom-6 right-6 z-50 ${isOpen ? 'w-80 h-[500px]' : 'w-16 h-16'} transition-all duration-300 shadow-xl rounded-3xl cursor-pointer overflow-hidden`}>
+      {/* Bubble Toggle Button */}
+      <button
+        onClick={toggleBubble}
+        className={`absolute bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+          isOpen
+            ? 'bg-red-500 rotate-90' // Close icon
+            : 'bg-gradient-to-br from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700' // Open icon
+        }`}
+        style={{ zIndex: 2 }}
+      >
+        {isOpen ? (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          // Chatbase Icon or Custom Icon
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        )}
+      </button>
+
+      {/* Chat Interface */}
+      {isOpen && (
+        <div className="absolute inset-0 bg-gray-900/95 border border-gray-700/50 rounded-3xl p-4 flex flex-col shadow-xl backdrop-blur-lg" style={{ zIndex: 1 }}>
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-gray-700/30">
+            <div className="flex items-center">
+              <Image
+                src="/characters/gojo.png" // Placeholder character image
+                alt="Support Bot"
+                width={32}
+                height={32}
+                className="rounded-full mr-2"
+              />
+              <div>
+                <h4 className="text-white font-medium text-sm">Support Bot</h4>
+                <p className="text-gray-400 text-xs">Ask anything about characters!</p>
+              </div>
+            </div>
+            <button onClick={toggleBubble} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800/30">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Chat History Display */}
+          <div ref={chatHistoryRef} className="flex-1 overflow-y-auto py-3 chat-history-scroll">
+            {chatHistory.map((msg, index) => (
+              <div key={index} className={`flex mb-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-start ${msg.sender === 'user' ? 'max-w-[70%]' : ''}`}>
+                  {msg.sender === 'assistant' && (
+                    <div className="relative w-6 h-6 mr-2">
+                      <Image
+                        src="/characters/gojo.png" // Placeholder bot image
+                        alt="Bot Avatar"
+                        fill
+                        className="rounded-full"
+                      />
+                    </div>
+                  )}
+                  <div className={`rounded-lg px-2.5 py-2 ${msg.sender === 'user' ? 'bg-cyan-500/20 text-white' : 'bg-gray-300/10 text-gray-200'}`}>
+                    <p className="text-sm">{msg.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {isChatbaseLoading && (
+              <div className="flex justify-start">
+                <div className="flex items-center text-gray-500 text-sm italic">
+                  Support Bot is typing...
+                  <span className="ml-2">
+                    <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Message Input */}
+          <div className="flex items-center pt-3 border-t border-gray-700/30">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Ask something..."
+              className="flex-1 bg-transparent text-white text-sm focus:outline-none mr-2 placeholder-gray-400"
+            />
+            <button
+              onClick={handleSendMessage}
+              className={`p-2 rounded-full transition-colors ${message.trim() ? 'bg-cyan-600 hover:bg-cyan-700' : 'bg-gray-700 cursor-not-allowed'}`}
+              disabled={!message.trim() || isChatbaseLoading}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Modify the ChatPage component to conditionally render the DiscoverView and remove Chatbase initialization
+export default function ChatPage() {
+  // Initialize Chatbase only on chat page - REMOVED AS PER REQUIREMENT
+
+  return (
+    <Suspense fallback={<div />}>
       <Chat />
     </Suspense>
   );
 }
 
-                        // Recent conversation item component with delete option
-                        const RecentConversationItem = ({ conversation, onClick, onDelete, currentCharacter }: {
-                          conversation: any;
-                          onClick: (id: string) => void;
-                          onDelete: (id: string) => void;
-                          currentCharacter: string | null;
-                        }) => {
-                          const [showMenu, setShowMenu] = useState(false);
-                          const menuRef = useRef<HTMLDivElement>(null);
 
-                          // Close menu when clicking outside
-                          useEffect(() => {
-                            const handleClickOutside = (event: MouseEvent) => {
-                              if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                                setShowMenu(false);
-                              }
-                            };
+// Recent conversation item component with delete option
+const RecentConversationItem = ({ conversation, onClick, onDelete, currentCharacter }: {
+  conversation: any;
+  onClick: (id: string) => void;
+  onDelete: (id: string) => void;
+  currentCharacter: string | null;
+}) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-                            if (showMenu) {
-                              document.addEventListener('mousedown', handleClickOutside);
-                            }
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
 
-                            return () => {
-                              document.removeEventListener('mousedown', handleClickOutside);
-                            };
-                          }, [showMenu]);
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
 
-                          return (
-                            <div className="relative group" ref={menuRef}>
-                              <div 
-                                onClick={() => onClick(conversation.id)}
-                                className={`cursor-pointer p-1.5 rounded-md transition-colors ${currentCharacter === conversation.id ? 'bg-cyan-900/30 border border-cyan-800/30' : 'hover:bg-gray-950/60'} flex items-center justify-between`}
-                              >
-                                <div className="flex items-center flex-1 min-w-0">
-                                  <Image 
-                                    src={conversation.image} 
-                                    alt={conversation.name} 
-                                    width={24} 
-                                    height={24}
-                                    className="rounded-full flex-shrink-0"
-                                  />
-                                  <span className="ml-2 text-xs truncate">{conversation.name}</span>
-                                </div>
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowMenu(!showMenu);
-                                  }}
-                                  className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-800/50 transition-all ml-1 flex-shrink-0"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                                  </svg>
-                                </button>
-                              </div>
+  return (
+    <div className="relative group" ref={menuRef}>
+      <div
+        onClick={() => onClick(conversation.id)}
+        className={`cursor-pointer p-1.5 rounded-md transition-colors ${currentCharacter === conversation.id ? 'bg-cyan-900/30 border border-cyan-800/30' : 'hover:bg-gray-950/60'} flex items-center justify-between`}
+      >
+        <div className="flex items-center flex-1 min-w-0">
+          <Image
+            src={conversation.image}
+            alt={conversation.name}
+            width={24}
+            height={24}
+            className="rounded-full flex-shrink-0"
+          />
+          <span className="ml-2 text-xs truncate">{conversation.name}</span>
+        </div>
 
-                              {/* Delete menu */}
-                              {showMenu && (
-                                <div className="absolute right-0 top-full mt-1 bg-gray-900/95 border border-gray-800/50 rounded-lg shadow-xl z-50 min-w-[100px]">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onDelete(conversation.id);
-                                      setShowMenu(false);
-                                    }}
-                                    className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
-                                  >
-                                    Remove from recents
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        };
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowMenu(!showMenu);
+          }}
+          className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-800/50 transition-all ml-1 flex-shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Delete menu */}
+      {showMenu && (
+        <div className="absolute right-0 top-full mt-1 bg-gray-900/95 border border-gray-800/50 rounded-lg shadow-xl z-50 min-w-[100px]">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(conversation.id);
+              setShowMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:bg-gray-800/50 rounded-lg transition-colors"
+          >
+            Remove from recents
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Character card with minimal design (memoized for smoother scrolling)
 type CharacterCardProps = {
@@ -158,7 +323,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           const isNew = newCharacters.includes(character.id);
 
                           return (
-    <div 
+    <div
       className="border border-white/10 rounded-xl overflow-hidden transition-transform duration-150 hover:border-white/20 cursor-pointer bg-white/5 hover:scale-[1.01] group relative transform-gpu"
       onClick={onClick}
       style={{
@@ -168,7 +333,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       } as any}
                             >
       <div className="relative h-40 overflow-hidden rounded-t-xl">
-                                <Image 
+                                <Image
                                   src={`/characters/${character.id}.png`}
                                   alt={character.name}
                                   fill
@@ -232,9 +397,9 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             const container = document.getElementById('popular-characters-scroll');
                             if (container) {
                               const scrollAmount = direction === 'left' ? -320 : 320;
-                              container.scrollBy({ 
-                                left: scrollAmount, 
-                                behavior: 'smooth' 
+                              container.scrollBy({
+                                left: scrollAmount,
+                                behavior: 'smooth'
                               });
 
                               // Update arrow visibility after scroll animation
@@ -363,13 +528,13 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 <button
                                   onClick={() => scrollContainer('left')}
                                   className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
-                                    showLeftArrow 
-                                      ? 'opacity-100 translate-x-0 pointer-events-auto' 
+                                    showLeftArrow
+                                      ? 'opacity-100 translate-x-0 pointer-events-auto'
                                       : 'opacity-0 -translate-x-4 pointer-events-none'
                                   }`}
-                                  style={{ 
-                                    transform: showLeftArrow 
-                                      ? 'translateY(-50%) translateX(0)' 
+                                  style={{
+                                    transform: showLeftArrow
+                                      ? 'translateY(-50%) translateX(0)'
                                       : 'translateY(-50%) translateX(-16px)',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                                   }}
@@ -380,11 +545,11 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 </button>
 
                                 {/* Scrollable Container with enhanced styling and drag functionality */}
-                                <div 
+                                <div
                                   id="popular-characters-scroll"
                                   className="flex space-x-4 overflow-x-auto scrollbar-hide pl-0 pr-12 py-2"
-                                  style={{ 
-                                    scrollbarWidth: 'none', 
+                                  style={{
+                                    scrollbarWidth: 'none',
                                     msOverflowStyle: 'none',
                                     scrollBehavior: isDragging ? 'auto' : 'smooth',
                                     cursor: 'grab'
@@ -410,8 +575,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                     { id: 'lawliet', name: 'L (Lawliet)', description: 'Death Note', tier: 'premium' },
                                   ].map((char) => (
                                     <div key={char.id} className="flex-shrink-0 w-52 transform transition-transform duration-200 hover:scale-[1.02]">
-                                      <CharacterCard 
-                                        character={char} 
+                                      <CharacterCard
+                                        character={char}
                                         onClick={() => onSelectCharacter(char.id)}
                                       />
                                     </div>
@@ -422,13 +587,13 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 <button
                                   onClick={() => scrollContainer('right')}
                                   className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/90 hover:bg-black text-white p-3 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-sm border border-gray-700/50 ${
-                                    showRightArrow 
-                                      ? 'opacity-100 translate-x-0 pointer-events-auto' 
+                                    showRightArrow
+                                      ? 'opacity-100 translate-x-0 pointer-events-auto'
                                       : 'opacity-0 translate-x-4 pointer-events-none'
                                   }`}
-                                  style={{ 
-                                    transform: showRightArrow 
-                                      ? 'translateY(-50%) translateX(0)' 
+                                  style={{
+                                    transform: showRightArrow
+                                      ? 'translateY(-50%) translateX(0)'
                                       : 'translateY(-50%) translateX(16px)',
                                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                                   }}
@@ -487,7 +652,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           ]);
                           const [searchQuery, setSearchQuery] = useState('');
 
-                          const filteredCharacters = characters.filter(char => 
+                          const filteredCharacters = characters.filter(char =>
                             char.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             char.description.toLowerCase().includes(searchQuery.toLowerCase())
                           );
@@ -516,10 +681,10 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                 </div>
 
                                 {/* Popular Characters - Only show when not searching */}
-                                <PopularCharactersSection 
-                                  searchQuery={searchQuery} 
+                                <PopularCharactersSection
+                                  searchQuery={searchQuery}
                                   setSearchQuery={setSearchQuery}
-                                  onSelectCharacter={onSelectCharacter} 
+                                  onSelectCharacter={onSelectCharacter}
                                   filteredCharacters={filteredCharacters}
                                 />
 
@@ -532,9 +697,9 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   )}
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {filteredCharacters.map((char) => (
-                                      <CharacterCard 
-                                        key={char.id} 
-                                        character={char} 
+                                      <CharacterCard
+                                        key={char.id}
+                                        character={char}
                                         onClick={() => onSelectCharacter(char.id)}
                                       />
                                     ))}
@@ -547,21 +712,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         Can't find who you're looking for?
                                       </p>
                                       <p>
-                                        Request a new character{' '}
-                                        <button
-                                          onClick={() => {
-                                            // Open Chatbase chatbot
-                                            if (typeof window !== 'undefined' && window.chatbase) {
-                                              window.chatbase('open');
-                                            }
-                                          }}
-                                          className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors duration-200 px-2 py-0.5 rounded-md hover:bg-cyan-400/10 inline-flex items-center"
-                                        >
-                                          here
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                          </svg>
-                                        </button>
+                                        Looking for a specific character? Use the support chat bubble in the bottom right to request new characters!
                                       </p>
                                     </div>
                                   </div>
@@ -578,6 +729,7 @@ function Chat() {
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
+                          const currentView = character ? 'chat' : 'discover'; // Determine current view based on character param
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -841,7 +993,7 @@ function Chat() {
                             }
                           };
 
-                          // Fetch user data 
+                          // Fetch user data
                           useEffect(() => {
                             const fetchUserData = async () => {
                               if (!user) return;
@@ -1113,13 +1265,13 @@ function Chat() {
                                           });
 
                                           // Add the initial greeting message if not present
-                                          const hasGreeting = structuredMessages.some((msg: Message) => 
-                                              msg.role === 'assistant' && 
+                                          const hasGreeting = structuredMessages.some((msg: Message) =>
+                                              msg.role === 'assistant' &&
                                               msg.content === getInitialMessage(character)
                                           );
 
-                                          const messagesToSet = hasGreeting 
-                                              ? structuredMessages 
+                                          const messagesToSet = hasGreeting
+                                              ? structuredMessages
                                               : [{ role: 'assistant', content: getInitialMessage(character) }, ...structuredMessages];
 
                                           console.log('💬 Setting structured messages:', messagesToSet.length, 'messages');
@@ -1345,7 +1497,7 @@ function Chat() {
                               try {
                                 // Validate that we're only saving messages for the current character
                                 const expectedInitial = getInitialMessage(character);
-                                const hasValidInitial = messages.some(msg => 
+                                const hasValidInitial = messages.some(msg =>
                                   msg.role === 'assistant' && msg.content === expectedInitial
                                 );
 
@@ -1526,9 +1678,9 @@ function Chat() {
                               setIsGeneratingVoice(false);
 
                               // Add a cancelled message to show the user what happened
-                              const cancelledMessage: Message = { 
-                                role: 'assistant', 
-                                content: '✋ Response cancelled by user.' 
+                              const cancelledMessage: Message = {
+                                role: 'assistant',
+                                content: '✋ Response cancelled by user.'
                               };
                               setMessages(prev => [...prev, cancelledMessage]);
 
@@ -1761,7 +1913,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -1895,26 +2047,26 @@ function Chat() {
 
                                   // Handle specific error status codes
                                   if (response.status === 429) {
-                                    errorMessage = { 
-                                      role: 'assistant', 
-                                      content: errorData.error || "I'm experiencing high demand right now. Please try again in a few moments! 🙏" 
+                                    errorMessage = {
+                                      role: 'assistant',
+                                      content: errorData.error || "I'm experiencing high demand right now. Please try again in a few moments! 🙏"
                                     };
                                   } else if (response.status === 503) {
-                                    errorMessage = { 
-                                      role: 'assistant', 
-                                      content: errorData.error || "I'm temporarily unavailable due to high usage. Please try again later! ⏰" 
+                                    errorMessage = {
+                                      role: 'assistant',
+                                      content: errorData.error || "I'm temporarily unavailable due to high usage. Please try again later! ⏰"
                                     };
                                   } else {
-                                    errorMessage = { 
-                                      role: 'assistant', 
-                                      content: errorData.error || 'Sorry, I couldn\'t generate a response right now. Please try again! 🔄' 
+                                    errorMessage = {
+                                      role: 'assistant',
+                                      content: errorData.error || 'Sorry, I couldn\'t generate a response right now. Please try again! 🔄'
                                     };
                                   }
                                 } catch (parseError) {
                                   // Fallback if we can't parse the error response
-                                  errorMessage = { 
-                                    role: 'assistant', 
-                                    content: 'Sorry, I encountered an error processing your request. Please try again! 💬' 
+                                  errorMessage = {
+                                    role: 'assistant',
+                                    content: 'Sorry, I encountered an error processing your request. Please try again! 💬'
                                   };
                                 }
                                 setMessages(prev => [...prev, errorMessage]);
@@ -1925,9 +2077,9 @@ function Chat() {
                                 console.log('Request was cancelled by user');
                               } else {
                                 console.error('Error sending message:', error);
-                                const errorMessage: Message = { 
-                                  role: 'assistant', 
-                                  content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐' 
+                                const errorMessage: Message = {
+                                  role: 'assistant',
+                                  content: 'Sorry, I couldn\'t connect to generate a response. Please check your connection and try again! 🌐'
                                 };
                                 setMessages(prev => [...prev, errorMessage]);
                               }
@@ -2311,14 +2463,14 @@ function Chat() {
 
                           // Upgrade Prompt Modal Component
                           const UpgradePromptModal = () => (
-                            <div 
+                            <div
                               className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
                                 showUpgradePrompt ? 'opacity-100' : 'opacity-0 pointer-events-none'
                               }`}
                               onClick={() => setShowUpgradePrompt(false)}
                             >
                               <div className="flex items-center justify-center min-h-screen p-4">
-                                <div 
+                                <div
                                   className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
                                     showUpgradePrompt ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
@@ -2399,14 +2551,14 @@ function Chat() {
 
                           // First Response Voice Modal Component
                           const FirstResponseVoiceModal = () => (
-                            <div 
+                            <div
                               className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
                                 showFirstResponseVoiceModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
                               }`}
                               onClick={() => setShowFirstResponseVoiceModal(false)}
                             >
                               <div className="flex items-center justify-center min-h-screen p-4">
-                                <div 
+                                <div
                                   className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
                                     showFirstResponseVoiceModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
@@ -2494,14 +2646,14 @@ function Chat() {
 
                           // Quick Purchase Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
-                            <div 
+                            <div
                               className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
                                 showCreditModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
                               }`}
                               onClick={() => setShowCreditModal(false)}
                             >
                               <div className="flex items-center justify-center min-h-screen p-4">
-                                <div 
+                                <div
                                   className={`bg-gray-900/95 via-gray-800/95 to-gray-900/95 border border-gray-700/50 rounded-2xl shadow-2xl w-full max-w-5xl transition-all duration-300 ease-out backdrop-blur-md ${
                                     showCreditModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
@@ -2528,7 +2680,7 @@ function Chat() {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                                       {/* Free Plan */}
-                                      <div 
+                                      <div
                                         onClick={() => router.push('/subscription')}
                                         className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 cursor-pointer hover:bg-gray-800/60 transition-all duration-300 hover:scale-105 flex flex-col h-full"
                                       >
@@ -2575,7 +2727,7 @@ function Chat() {
                                       </div>
 
                                       {/* Premium Plan - Most Popular */}
-                                      <div 
+                                      <div
                                         onClick={() => router.push('/subscription')}
                                         className="bg-gray-800/40 border-2 border-purple-500/50 rounded-2xl p-6 cursor-pointer hover:bg-gray-800/60 transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-500/20 flex flex-col h-full relative"
                                       >
@@ -2636,7 +2788,7 @@ function Chat() {
                                       </div>
 
                                       {/* Ultimate Plan */}
-                                      <div 
+                                      <div
                                         onClick={() => router.push('/subscription')}
                                         className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 cursor-pointer hover:bg-gray-800/60 transition-all duration-300 hover:scale-105 flex flex-col h-full"
                                       >
@@ -2715,14 +2867,14 @@ function Chat() {
 
                           // Settings Modal Component
                           const SettingsModal = () => (
-                            <div 
+                            <div
                               className={`fixed inset-0 z-50 bg-black/70 transition-all duration-300 ease-out ${
                                 showSettingsModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
                               }`}
                               onClick={() => setShowSettingsModal(false)}
                             >
                               <div className="flex items-center justify-center min-h-screen p-8">
-                                <div 
+                                <div
                                   className={`bg-black/90 border border-gray-700/30 rounded-3xl shadow-2xl w-full max-w-2xl h-[500px] transition-all duration-300 ease-out relative ${
                                     showSettingsModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                   }`}
@@ -2776,11 +2928,11 @@ function Chat() {
                                           <div className="flex items-center space-x-4">
                                             <div className="relative">
                                               {user?.photoURL ? (
-                                                <Image 
-                                                  src={user.photoURL} 
-                                                  alt="Profile" 
-                                                  width={64} 
-                                                  height={64} 
+                                                <Image
+                                                  src={user.photoURL}
+                                                  alt="Profile"
+                                                  width={64}
+                                                  height={64}
                                                   className="rounded-full object-cover"
                                                 />
                                               ) : (
@@ -2815,13 +2967,13 @@ function Chat() {
                                             {showAccountManagement && (
                                               <>
                                                 {/* Click outside overlay with higher z-index */}
-                                                <div 
+                                                <div
                                                   className="fixed inset-0 z-[60] bg-black/20"
                                                   onClick={() => setShowAccountManagement(false)}
                                                 />
                                                 <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900/98 border border-gray-700/50 rounded-lg shadow-2xl z-[70] backdrop-blur-md">
                                                   <div className="py-2">
-                                                    <button 
+                                                    <button
                                                       onClick={async () => {
                                                         setShowAccountManagement(false);
                                                         setShowSettingsModal(false);
@@ -2879,7 +3031,7 @@ function Chat() {
                                                     >
                                                       Change Password
                                                     </button>
-                                                    <button 
+                                                    <button
                                                       onClick={async () => {
                                                         setShowAccountManagement(false);
                                                         setShowSettingsModal(false);
@@ -2889,7 +3041,7 @@ function Chat() {
                                                           `Privacy Settings Options:
 
                         1. Data Collection: Your conversations are stored to improve the service
-                        2. Analytics: We collect usage data to enhance user experience  
+                        2. Analytics: We collect usage data to enhance user experience
                         3. Third-party Services: We use Firebase and Gemini AI for functionality
 
                         Would you like to delete all your conversation history?`,
@@ -2911,7 +3063,7 @@ function Chat() {
                                                                 // Clear local data
                                                                 const keys = Object.keys(localStorage);
                                                                 keys.forEach(key => {
-                                                                  if (key.startsWith(`chat_session_${user.uid}_`) || 
+                                                                  if (key.startsWith(`chat_session_${user.uid}_`) ||
                                                                       key.startsWith(`recentConversations_${user.uid}`)) {
                                                                     localStorage.removeItem(key);
                                                                   }
@@ -2977,7 +3129,7 @@ function Chat() {
                                                       Privacy Settings
                                                     </button>
                                                     <div className="border-t border-gray-700/50 my-1"></div>
-                                                    <button 
+                                                    <button
                                                       onClick={async () => {
                                                         setShowAccountManagement(false);
                                                         setShowSettingsModal(false);
@@ -3060,8 +3212,8 @@ function Chat() {
                                               <div className="flex items-center space-x-3 mb-2">
                                                 <div className="text-white text-sm font-medium">Current Plan</div>
                                                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                  currentUserPlan === 'premium' 
-                                                    ? 'bg-purple-900/30 text-purple-400' 
+                                                  currentUserPlan === 'premium'
+                                                    ? 'bg-purple-900/30 text-purple-400'
                                                     : currentUserPlan === 'ultimate'
                                                     ? 'bg-amber-900/30 text-amber-400'
                                                     : 'bg-gray-900/30 text-gray-400'
@@ -3088,7 +3240,7 @@ function Chat() {
 
                                               {/* Billing Panel Backdrop */}
                                               {showBillingDropdown && (
-                                                <div 
+                                                <div
                                                   className="fixed inset-0 z-40"
                                                   onClick={() => setShowBillingDropdown(false)}
                                                 />
@@ -3098,7 +3250,7 @@ function Chat() {
                                               <div className={`absolute left-full w-80 bg-black/95 border border-gray-700/40 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out ${
                                                 showBillingDropdown ? 'translate-x-0 opacity-100 z-50' : 'translate-x-full opacity-0 pointer-events-none z-10'
                                               }`}
-                                              style={{ 
+                                              style={{
                                                 height: '500px',
                                                 top: '-304px',
                                                 marginLeft: '55px',
@@ -3122,7 +3274,7 @@ function Chat() {
                                                 {/* Content */}
                                                 <div className={`px-5 py-4 h-full flex flex-col transition-all duration-300 ease-in-out ${
                                                   showBillingDropdown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                                                }`} style={{ 
+                                                }`} style={{
                                                   height: 'calc(100% - 72px)',
                                                   transitionDelay: showBillingDropdown ? '100ms' : '0ms'
                                                 }}>
@@ -3132,8 +3284,8 @@ function Chat() {
                                                     <div className="flex items-center justify-between mb-3">
                                                       <h4 className="font-medium text-white text-sm">Current Plan</h4>
                                                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                                        currentUserPlan === 'premium' 
-                                                          ? 'bg-purple-900/30 text-purple-400' 
+                                                        currentUserPlan === 'premium'
+                                                          ? 'bg-purple-900/30 text-purple-400'
                                                           : currentUserPlan === 'ultimate'
                                                           ? 'bg-amber-900/30 text-amber-400'
                                                           : 'bg-gray-900/30 text-gray-400'
@@ -3147,14 +3299,14 @@ function Chat() {
                                                       {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && billingData?.subscription && (
                                                         <>
                                                           <p>Status: <span className={`${
-                                                            billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled' 
-                                                              ? 'text-yellow-400' 
-                                                              : billingData.subscription.status === 'active' 
-                                                              ? 'text-green-400' 
+                                                            billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
+                                                              ? 'text-yellow-400'
+                                                              : billingData.subscription.status === 'active'
+                                                              ? 'text-green-400'
                                                               : 'text-red-400'
                                                           }`}>
                                                             {billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled'
-                                                              ? 'Cancelled (Active until end date)' 
+                                                              ? 'Cancelled (Active until end date)'
                                                               : billingData.subscription.status?.charAt(0).toUpperCase() + billingData.subscription.status?.slice(1)}
                                                           </span></p>
 
@@ -3175,8 +3327,8 @@ function Chat() {
                                                               if (isNaN(date.getTime())) return null;
                                                               return (
                                                                 <p>
-                                                                  {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
-                                                                    ? 'Access until:' 
+                                                                  {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt
+                                                                    ? 'Access until:'
                                                                     : 'Next billing:'} {date.toLocaleDateString('en-US', {
                                                                     year: 'numeric',
                                                                     month: 'long',
@@ -3314,7 +3466,7 @@ function Chat() {
                                                     )}
 
                                                     {/* Show reactivate button for cancelled subscriptions */}
-                                                    {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
+                                                    {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') &&
                                                      billingData?.subscription && (billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled') && (
                                                       <button
                                                         onClick={() => {
@@ -3330,9 +3482,9 @@ function Chat() {
 
                                                     <div className="space-y-2">
                                                       {/* Only show payment management for active subscriptions */}
-                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
-                                                       billingData?.subscription && 
-                                                       billingData.subscription.status === 'active' && 
+                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') &&
+                                                       billingData?.subscription &&
+                                                       billingData.subscription.status === 'active' &&
                                                        !billingData.subscription.cancelledAt && (
                                                         <button
                                                           onClick={() => {
@@ -3346,7 +3498,7 @@ function Chat() {
                                                       )}
 
                                                       {/* Plan Change Options - only show for premium/ultimate users unless cancelled */}
-                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
+                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') &&
                                                        !(billingData?.subscription?.cancelledAt || billingData?.subscription?.status === 'cancelled') && (
                                                         <button
                                                           onClick={() => {
@@ -3374,9 +3526,9 @@ function Chat() {
                                                       )}
 
                                                       {/* Cancel Subscription - Only show for active, non-cancelled subscriptions */}
-                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
-                                                       billingData?.subscription && 
-                                                       billingData.subscription.status === 'active' && 
+                                                      {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') &&
+                                                       billingData?.subscription &&
+                                                       billingData.subscription.status === 'active' &&
                                                        !billingData.subscription.cancelledAt && (
                                                         <button
                                                           onClick={async () => {
@@ -3402,7 +3554,7 @@ function Chat() {
                                                                 console.log('📊 Cancel response:', result);
 
                                                                 if (response.ok && result.success) {
-                                                                  const accessDate = result.accessUntil !== 'immediately' 
+                                                                  const accessDate = result.accessUntil !== 'immediately'
                                                                     ? new Date(result.accessUntil).toLocaleDateString()
                                                                     : 'immediately';
 
@@ -3506,8 +3658,8 @@ function Chat() {
                                             <button
                                               onClick={() => setTheme('system')}
                                               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                theme === 'system' 
-                                                  ? 'bg-cyan-600 text-white' 
+                                                theme === 'system'
+                                                  ? 'bg-cyan-600 text-white'
                                                   : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white'
                                               }`}
                                             >
@@ -3519,8 +3671,8 @@ function Chat() {
                                             <button
                                               onClick={() => setTheme('light')}
                                               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                theme === 'light' 
-                                                  ? 'bg-cyan-600 text-white' 
+                                                theme === 'light'
+                                                  ? 'bg-cyan-600 text-white'
                                                   : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white'
                                               }`}
                                             >
@@ -3532,8 +3684,8 @@ function Chat() {
                                             <button
                                               onClick={() => setTheme('dark')}
                                               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                theme === 'dark' 
-                                                  ? 'bg-cyan-600 text-white' 
+                                                theme === 'dark'
+                                                  ? 'bg-cyan-600 text-white'
                                                   : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50 hover:text-white'
                                               }`}
                                             >
@@ -3554,18 +3706,18 @@ function Chat() {
                                             </div>
                                           </div>
                                           <div className="relative">
-                                            <input 
-                                              type="checkbox" 
-                                              checked={autoScrollEnabled} 
+                                            <input
+                                              type="checkbox"
+                                              checked={autoScrollEnabled}
                                               onChange={(e) => setAutoScrollEnabled(e.target.checked)}
-                                              className="sr-only" 
-                                              id="auto-scroll" 
+                                              className="sr-only"
+                                              id="auto-scroll"
                                             />
-                                            <label 
-                                              htmlFor="auto-scroll" 
+                                            <label
+                                              htmlFor="auto-scroll"
                                               className={`block w-10 h-6 rounded-full cursor-pointer relative transition-colors duration-200 ${
-                                                autoScrollEnabled 
-                                                  ? 'bg-cyan-600 hover:bg-cyan-700' 
+                                                autoScrollEnabled
+                                                  ? 'bg-cyan-600 hover:bg-cyan-700'
                                                   : 'bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600'
                                               }`}
                                             >
@@ -3587,18 +3739,18 @@ function Chat() {
                                               )}
                                             </div>
                                             <div className="text-gray-600 dark:text-gray-400 text-xs">
-                                              {currentUserPlan === 'free' 
-                                                ? 'Get voice responses with Premium plan' 
-                                                : isVoiceResponseEnabled 
+                                              {currentUserPlan === 'free'
+                                                ? 'Get voice responses with Premium plan'
+                                                : isVoiceResponseEnabled
                                                 ? 'Character voice responses enabled'
                                                 : 'Character voice responses disabled'
                                               }
                                             </div>
                                           </div>
                                           <div className="relative">
-                                            <input 
-                                              type="checkbox" 
-                                              checked={isVoiceResponseEnabled} 
+                                            <input
+                                              type="checkbox"
+                                              checked={isVoiceResponseEnabled}
                                               onChange={(e) => {
                                                 if (currentUserPlan === 'free') {
                                                   setShowSettingsModal(false);
@@ -3607,17 +3759,17 @@ function Chat() {
                                                   setIsVoiceResponseEnabled(e.target.checked);
                                                 }
                                               }}
-                                              className="sr-only" 
-                                              id="voice-response" 
+                                              className="sr-only"
+                                              id="voice-response"
                                               disabled={currentUserPlan === 'free'}
                                             />
-                                            <label 
-                                              htmlFor="voice-response" 
+                                            <label
+                                              htmlFor="voice-response"
                                               className={`block w-10 h-6 rounded-full cursor-pointer relative transition-colors duration-200 ${
-                                                currentUserPlan === 'free' 
-                                                  ? 'bg-gray-600 cursor-not-allowed' 
-                                                  : isVoiceResponseEnabled 
-                                                  ? 'bg-cyan-600' 
+                                                currentUserPlan === 'free'
+                                                  ? 'bg-gray-600 cursor-not-allowed'
+                                                  : isVoiceResponseEnabled
+                                                  ? 'bg-cyan-600'
                                                   : 'bg-gray-700'
                                               }`}
                                               onClick={() => {
@@ -3677,14 +3829,14 @@ function Chat() {
                               <FirstResponseVoiceModal />
 
                               {/* Coming Soon Modal */}
-                              <div 
+                              <div
                                 className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
                                   comingSoonModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
                                 }`}
                                 onClick={() => setShowComingSoonModal(false)}
                               >
                                 <div className="flex items-center justify-center min-h-screen p-4">
-                                  <div 
+                                  <div
                                     className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
                                       comingSoonModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
                                     }`}
@@ -3735,8 +3887,8 @@ function Chat() {
                               {/* Left Sidebar - Minimalist */}
                               <div className="w-72 border-r border-gray-900/50 flex flex-col bg-black">
                                 <div className="p-4 border-b border-gray-900/50">
-                                  <h1 
-                                    className="text-lg font-bold text-white cursor-pointer hover:opacity-80 transition-opacity tracking-wide" 
+                                  <h1
+                                    className="text-lg font-bold text-white cursor-pointer hover:opacity-80 transition-opacity tracking-wide"
                                     style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
                                     onClick={() => router.push('/')}
                                   >
@@ -3754,11 +3906,11 @@ function Chat() {
                                       </span>
                                     </p>
                                     <div className="relative group">
-                                      <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        className="h-5 w-5 text-gray-500 cursor-pointer" 
-                                        fill="none" 
-                                        viewBox="0 0 24 24" 
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 text-gray-500 cursor-pointer"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
                                         stroke="currentColor"
                                       >
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -3773,16 +3925,16 @@ function Chat() {
                                 <div className="p-3 flex-1 flex flex-col min-h-0">
                                   {/* Menu Items */}
                                   <div className="space-y-1 mb-4 flex-shrink-0">
-                                    <div 
-                                      className={`flex items-center p-3 rounded-md transition-colors cursor-pointer ${view === 'discover' ? 'bg-cyan-950/30 text-cyan-400' : 'text-white hover:bg-gray-950/60'}`}
+                                    <div
+                                      className={`flex items-center p-3 rounded-md transition-colors cursor-pointer ${currentView === 'discover' ? 'bg-cyan-950/30 text-cyan-400' : 'text-white hover:bg-gray-950/60'}`}
                                       onClick={() => navigateTo('discover')}
                                     >
-                                      <Image 
+                                      <Image
                                         src={theme === 'light' ? "/icons/discover-light.png" : "/icons/discover-dark.png"}
-                                        alt="Discover" 
-                                        width={32} 
-                                        height={32} 
-                                        className="mr-2.5" 
+                                        alt="Discover"
+                                        width={32}
+                                        height={32}
+                                        className="mr-2.5"
                                       />
                                       <span className="text-base font-medium">Discover</span>
                                     </div>
@@ -3796,9 +3948,9 @@ function Chat() {
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
                                       </div>
-                                      <input 
-                                        type="text" 
-                                        placeholder="Search" 
+                                      <input
+                                        type="text"
+                                        placeholder="Search"
                                         value={sidebarSearchQuery}
                                         onChange={(e) => setSidebarSearchQuery(e.target.value)}
                                         className="w-full bg-gray-950/50 text-white text-sm rounded-md pl-10 pr-9 py-2.5 border border-gray-800/30 focus:outline-none focus:border-cyan-500/50"
@@ -3924,7 +4076,7 @@ function Chat() {
                                     </div>
 
                                     {/* Upgrade Plan Button */}
-                                    <button 
+                                    <button
                                       onClick={() => router.push('/subscription')}
                                       className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-md py-2.5 font-semibold text-sm hover:from-purple-700 hover:to-cyan-700 transition-colors mb-3 shadow-lg"
                                     >
@@ -3933,17 +4085,17 @@ function Chat() {
 
                                     {/* User Account - Dropdown Toggle */}
                                     <div className="relative">
-                                      <button 
+                                      <button
                                         onClick={() => setShowUserDropdown(!showUserDropdown)}
                                         className="flex items-center justify-between p-1.5 rounded-md cursor-pointer hover:bg-gray-950/60 transition-colors w-full"
                                       >
                                         <div className="flex items-center">
                                           {user?.photoURL ? (
-                                            <Image 
-                                              src={user.photoURL} 
-                                              alt="User" 
-                                              width={24} 
-                                              height={24} 
+                                            <Image
+                                              src={user.photoURL}
+                                              alt="User"
+                                              width={24}
+                                              height={24}
                                               className="rounded-full"
                                             />
                                           ) : (
@@ -3965,7 +4117,7 @@ function Chat() {
                                         <>
                                           <div className="absolute bottom-full left-0 mb-1.5 w-full bg-gray-900/95 rounded-md shadow-xl overflow-hidden z-50 border border-gray-700/50 backdrop-blur-sm">
                                             <div className="py-1">
-                                              <button 
+                                              <button
                                                 onClick={() => {
                                                   setShowSettingsModal(true);
                                                   setShowUserDropdown(false);
@@ -3978,7 +4130,7 @@ function Chat() {
                                                 </svg>
                                                 Settings
                                               </button>
-                                              <button 
+                                              <button
                                                 onClick={handleSignOut}
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
@@ -3990,7 +4142,7 @@ function Chat() {
                                             </div>
                                           </div>
                                           {/* Click outside overlay */}
-                                          <div 
+                                          <div
                                             className="fixed inset-0 z-40"
                                             onClick={() => setShowUserDropdown(false)}
                                           />
@@ -4016,14 +4168,14 @@ function Chat() {
                               )}
 
                               {/* Main Content Area */}
-                              {view === 'discover' ? (
+                              {currentView === 'discover' ? (
                                 <DiscoverView onSelectCharacter={handleSelectCharacter} loading={loading} />
                               ) : (
                                 // Main Chat Area - Minimalist
                                 <div className="flex-1 flex flex-col relative">
                                   {/* Character Header - border made invisible */}
                                   <div className="p-2 mt-3 flex justify-between items-center bg-black relative">
-                                    <button 
+                                    <button
                                       className="flex items-center text-gray-300 hover:text-white text-xs bg-gray-950/50 px-2 py-1 rounded-md transition-colors"
                                       onClick={() => navigateTo('discover')}
                                     >
@@ -4036,7 +4188,7 @@ function Chat() {
                                     {/* Centered Character Info */}
                                     <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
                                       <div className="relative w-10 h-10">
-                                          <Image 
+                                          <Image
                                             src={getCharacterImage(character || 'gojo')}
                                             alt={getCharacterName(character || 'gojo')}
                                             fill
@@ -4057,9 +4209,9 @@ function Chat() {
                                           Voice Response
                                         </span>
                                         <div className="relative">
-                                          <input 
-                                            type="checkbox" 
-                                            checked={isVoiceResponseEnabled} 
+                                          <input
+                                            type="checkbox"
+                                            checked={isVoiceResponseEnabled}
                                             onChange={(e) => {
                                               e.preventDefault();
                                               e.stopPropagation();
@@ -4069,15 +4221,15 @@ function Chat() {
                                                 setIsVoiceResponseEnabled(e.target.checked);
                                               }
                                             }}
-                                            className="sr-only" 
+                                            className="sr-only"
                                             id="voice-response-header"
                                           />
-                                          <div 
+                                          <div
                                             className={`block w-8 h-5 rounded-full cursor-pointer relative transition-colors duration-200 ${
-                                              currentUserPlan === 'free' 
-                                                ? 'bg-gray-600' 
-                                                : isVoiceResponseEnabled 
-                                                ? 'bg-cyan-600' 
+                                              currentUserPlan === 'free'
+                                                ? 'bg-gray-600'
+                                                : isVoiceResponseEnabled
+                                                ? 'bg-cyan-600'
                                                 : 'bg-gray-700'
                                             }`}
                                             title={currentUserPlan === 'free' ? 'Voice responses require Premium plan' : isVoiceResponseEnabled ? 'Voice responses enabled' : 'Voice responses disabled'}
@@ -4103,7 +4255,7 @@ function Chat() {
                                         </div>
                                       </div>
 
-                                      <button 
+                                      <button
                                         className="flex items-center text-gray-300 hover:text-white text-xs bg-gray-950/50 px-2 py-1 rounded-md transition-colors"
                                         onClick={() => setShowChatSidebar(!showChatSidebar)}
                                       >
@@ -4125,7 +4277,7 @@ function Chat() {
                                       <div className="p-3 border-b border-gray-700/20">
                                         <div className="flex items-center space-x-3">
                                           <div className="relative w-12 h-12">
-                                            <Image 
+                                            <Image
                                               src={getCharacterImage(character || 'gojo')}
                                               alt={getCharacterName(character || 'gojo')}
                                               fill
@@ -4143,7 +4295,7 @@ function Chat() {
                                       <div className="flex-1 p-3">
                                         <div className="space-y-2">
                                           {/* New Chat */}
-                                          <button 
+                                          <button
                                             onClick={() => {
                                               if (!user) return;
 
@@ -4193,7 +4345,7 @@ function Chat() {
                                           </button>
 
                                           {/* History */}
-                                          <button 
+                                          <button
                                             onClick={() => {
                                               setShowChatSidebar(false);
                                               setShowHistorySidebar(true);
@@ -4221,7 +4373,7 @@ function Chat() {
                                       <div className="p-4 mt-2 border-b border-gray-700/40 bg-gray-900/20">
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center">
-                                            <button 
+                                            <button
                                               onClick={() => {
                                                 setShowHistorySidebar(false);
                                                 setShowChatSidebar(true);
@@ -4300,16 +4452,16 @@ function Chat() {
                                                                       {conversation.lastMessage && (
                                                                           <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
                                                                               <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
-                                                                                  <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
-                                                                                      ? conversation.lastMessage.substring(0, 80) + '...' 
+                                                                                  <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80
+                                                                                      ? conversation.lastMessage.substring(0, 80) + '...'
                                                                                       : conversation.lastMessage}
                                                                               </div>
                                                                           </div>
                                                                       )}
                                                                         {conversation.response && (
                                                                             <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
-                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
-                                                                                    ? conversation.response.substring(0, 80) + '...' 
+                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80
+                                                                                    ? conversation.response.substring(0, 80) + '...'
                                                                                     : conversation.response}
                                                                             </div>
                                                                         )}
@@ -4339,10 +4491,10 @@ function Chat() {
 
                                   {/* Overlay */}
                                   {(showChatSidebar || showHistorySidebar) && (
-                                    <div 
+                                    <div
                                       className={`absolute inset-0 z-30 ${
-                                        document.body.classList.contains('light') 
-                                          ? 'bg-white/30' 
+                                        document.body.classList.contains('light')
+                                          ? 'bg-white/30'
                                           : 'bg-black/50'
                                       }`}
                                       onClick={() => {
@@ -4360,8 +4512,8 @@ function Chat() {
                                   </div>
 
                                   {/* Chat Messages */}
-                                  <div 
-                                    className="flex-1 overflow-y-auto p-4 space-y-4 bg-black auto-hide-scrollbar" 
+                                  <div
+                                    className="flex-1 overflow-y-auto p-4 space-y-4 bg-black auto-hide-scrollbar"
                                     onScroll={(e) => {
                                       const target = e.currentTarget;
                                       if (!target.classList.contains('scrolling')) {
@@ -4387,7 +4539,7 @@ function Chat() {
                                           <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%]' : ''}`}>
                                             {msg.role === 'assistant' && (
                                               <div className="relative w-8 h-8 mr-2">
-                                                <Image 
+                                                <Image
                                                   src={getCharacterImage(character || 'gojo')}
                                                   alt={getCharacterName(character || 'gojo')}
                                                   fill
@@ -4396,8 +4548,8 @@ function Chat() {
                                               </div>
                                             )}
                                             <div className={`rounded-lg px-2.5 py-2 ${
-                                              msg.role === 'user' 
-                                                ? 'bg-cyan-500/20 text-white min-w-[40px]' 
+                                              msg.role === 'user'
+                                                ? 'bg-cyan-500/20 text-white min-w-[40px]'
                                                 : 'bg-gray-300/10 max-w-[70%]'
                                             }`}>
                                               <div className={`${msg.role === 'user' ? 'text-white text-sm' : 'text-gray-200 text-sm'}`}>
@@ -4406,9 +4558,9 @@ function Chat() {
                                             </div>
 
                                             {/* Audio Playing Indicator - Only show for AI messages when audio is playing and user has premium/ultimate */}
-                                            {msg.role === 'assistant' && 
-                                             audioPlayingForMessage === index && 
-                                             (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
+                                            {msg.role === 'assistant' &&
+                                             audioPlayingForMessage === index &&
+                                             (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') &&
                                              isVoiceResponseEnabled && (
                                               <div className="ml-2 flex items-end pb-1">
                                                 <div className="w-6 h-6 bg-cyan-500/24 rounded-full flex items-center justify-center animate-pulse">
@@ -4425,7 +4577,7 @@ function Chat() {
                                         <div className="flex justify-start animate-fadeIn">
                                           <div className="flex items-start">
                                             <div className="relative w-8 h-8 mr-2">
-                                              <Image 
+                                              <Image
                                                 src={getCharacterImage(character || 'gojo')}
                                                 alt={getCharacterName(character || 'gojo')}
                                                 fill
@@ -4503,7 +4655,7 @@ function Chat() {
                                                 }
                                               }}
                                               style={{
-                                                paddingLeft: '16px', 
+                                                paddingLeft: '16px',
                                                 paddingRight: '16px',
                                                 textIndent: '0',
                                                 whiteSpace: 'pre-wrap',
@@ -4523,8 +4675,8 @@ function Chat() {
                                                   : 'bg-cyan-600 hover:bg-cyan-700'
                                               }`}
                                               title={
-                                                isLoading || isGeneratingVoice 
-                                                  ? 'Stop generation' 
+                                                isLoading || isGeneratingVoice
+                                                  ? 'Stop generation'
                                                   : audioPlayingForMessage !== null
                                                   ? 'Wait for audio to finish'
                                                   : 'Send message'
