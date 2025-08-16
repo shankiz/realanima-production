@@ -1,6 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
+// Custom metadata for subscription page
+export const metadata = {
+  title: "Pricing & Plans - RealAnima",
+};
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import PayPalSubscription from '@/components/PayPalSubscription';
