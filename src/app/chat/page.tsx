@@ -406,49 +406,6 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           loading: boolean;
                         }) => {
                           const { user } = useAuth();
-
-                          // Initialize Chatbase only on discover view
-                          useEffect(() => {
-                            if (typeof window !== 'undefined') {
-                              // Initialize chatbase if not already initialized
-                              if (!window.chatbase || window.chatbase("getState") !== "initialized") {
-                                window.chatbase = (...args: any[]) => {
-                                  if (!window.chatbase.q) {
-                                    window.chatbase.q = [];
-                                  }
-                                  window.chatbase.q.push(args);
-                                };
-
-                                window.chatbase = new Proxy(window.chatbase, {
-                                  get(target, prop) {
-                                    if (prop === "q") {
-                                      return target.q;
-                                    }
-                                    return (...args: any[]) => target(prop, ...args);
-                                  }
-                                });
-                              }
-
-                              const loadChatbase = () => {
-                                const script = document.createElement("script");
-                                script.src = "https://www.chatbase.co/embed.min.js";
-                                script.id = "spPfvHX2tRU-ic83q8sTI";
-                                script.setAttribute("domain", "www.chatbase.co");
-                                document.body.appendChild(script);
-                              };
-
-                              if (document.readyState === "complete") {
-                                loadChatbase();
-                              } else {
-                                window.addEventListener("load", loadChatbase);
-                              }
-
-                              // Cleanup function to remove event listener
-                              return () => {
-                                window.removeEventListener("load", loadChatbase);
-                              };
-                            }
-                          }, []);
                           const [characters, setCharacters] = useState([
                             // Free Characters
                             { id: 'gojo', name: 'Gojo Satoru', description: 'Jujutsu Kaisen', tier: 'free' },
@@ -578,6 +535,70 @@ function Chat() {
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
+
+                          // Initialize Chatbase only when on discover view
+                          useEffect(() => {
+                            if (typeof window !== 'undefined' && view === 'discover') {
+                              // Check if Chatbase script already exists
+                              if (document.getElementById('spPfvHX2tRU-ic83q8sTI')) {
+                                console.log('🎯 Chatbase already initialized');
+                                return;
+                              }
+
+                              // Initialize chatbase if not already initialized
+                              if (!window.chatbase || window.chatbase("getState") !== "initialized") {
+                                window.chatbase = (...args: any[]) => {
+                                  if (!window.chatbase.q) {
+                                    window.chatbase.q = [];
+                                  }
+                                  window.chatbase.q.push(args);
+                                };
+
+                                window.chatbase = new Proxy(window.chatbase, {
+                                  get(target, prop) {
+                                    if (prop === "q") {
+                                      return target.q;
+                                    }
+                                    return (...args: any[]) => target(prop, ...args);
+                                  }
+                                });
+                              }
+
+                              const loadChatbase = () => {
+                                // Double check script doesn't exist
+                                if (!document.getElementById('spPfvHX2tRU-ic83q8sTI')) {
+                                  const script = document.createElement("script");
+                                  script.src = "https://www.chatbase.co/embed.min.js";
+                                  script.id = "spPfvHX2tRU-ic83q8sTI";
+                                  script.setAttribute("domain", "www.chatbase.co");
+                                  document.body.appendChild(script);
+                                  console.log('🎯 Chatbase script loaded for discover view');
+                                }
+                              };
+
+                              if (document.readyState === "complete") {
+                                loadChatbase();
+                              } else {
+                                window.addEventListener("load", loadChatbase);
+                                // Cleanup function to remove event listener
+                                return () => {
+                                  window.removeEventListener("load", loadChatbase);
+                                };
+                              }
+                            }
+
+                            // Cleanup Chatbase when leaving discover view
+                            return () => {
+                              if (typeof window !== 'undefined' && view !== 'discover') {
+                                // Remove the script when not on discover view
+                                const existingScript = document.getElementById('spPfvHX2tRU-ic83q8sTI');
+                                if (existingScript) {
+                                  existingScript.remove();
+                                  console.log('🧹 Chatbase script removed - not on discover view');
+                                }
+                              }
+                            };
+                          }, [view]);
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
