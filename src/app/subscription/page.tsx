@@ -11,11 +11,6 @@ import { useAuth } from '@/app/AuthProvider';
 export default function Subscription() {
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-
-  // Set page title
-  useEffect(() => {
-    document.title = "Pricing & Plans - RealAnima";
-  }, []);
   const [showPayPal, setShowPayPal] = useState(false);
   const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
   const [loading, setLoading] = useState(true);

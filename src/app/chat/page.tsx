@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-
 import { useSearchParams } from 'next/navigation';
                         import { useRouter } from 'next/navigation';
                         import Image from 'next/image';
@@ -15,13 +14,6 @@ import { useSearchParams } from 'next/navigation';
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  // Set page title
-  useEffect(() => {
-    document.title = "Chat - RealAnima";
-  }, []);
   return (
     <Suspense fallback={<div />}> 
       <Chat />
@@ -1717,7 +1709,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
+                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -3597,11 +3589,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-                          );
+          );
 
-                          // Main component return
-                          return (
-                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+          // Main component return
+          return (
+            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -3959,6 +3951,20 @@ function Chat() {
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Voice generation error notification - Fixed at top of chat area */}
+                              {voiceGenerationError && (
+                                <div className="fixed top-4 left-72 right-0 flex justify-center z-50 animate-fadeIn pointer-events-none">
+                                  <div className="bg-gray-900/95 border border-gray-700/50 rounded-lg px-4 py-2 shadow-lg backdrop-blur-sm">
+                                    <div className="text-gray-300 text-sm text-center flex items-center">
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 8.5c-.77.833-.192 2.5 1.732 2.5z" />
+                                      </svg>
+                                      Couldn't generate voice
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Main Content Area */}
                               {view === 'discover' ? (
@@ -4517,5 +4523,7 @@ function Chat() {
                                     </div>
                                   </div>
                                 </div>
-                              );
-                            };
+                              )}
+                            </div>
+                          );
+                        };
