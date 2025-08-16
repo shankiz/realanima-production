@@ -169,22 +169,96 @@ export default function Subscription() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white flex items-center justify-center">
-        <div className="text-center p-8 bg-gray-900/40 backdrop-blur-sm rounded-xl border border-gray-700/30 shadow-lg max-w-md mx-4">
-          <div className="w-12 h-12 mx-auto mb-6 bg-gray-700/50 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white flex items-center justify-center relative overflow-hidden">
+        {/* Enhanced background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-blue-500/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-pink-500/12 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="text-center p-10 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-purple-900/60 backdrop-blur-xl rounded-3xl border border-gray-700/40 shadow-2xl max-w-lg mx-4 relative z-10 animate-in fade-in zoom-in duration-700">
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-pink-500/20 rounded-3xl blur-xl -z-10"></div>
+          
+          {/* Icon with gradient background */}
+          <div className="w-20 h-20 mx-auto mb-8 bg-gradient-to-br from-purple-500 via-blue-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/25 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-2xl"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-medium mb-3 text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>Please Sign In</h1>
-          <p className="text-gray-400 text-sm mb-8 leading-relaxed">You need to be signed in to view subscription plans.</p>
-          <Button
-            onClick={() => window.location.href = '/auth/signin'}
-            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30 px-6 py-2 text-sm font-medium rounded-lg transition-all duration-200 backdrop-blur-sm"
-            style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
-          >
-            Sign In
-          </Button>
+
+          {/* Title with gradient text */}
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+            Please Sign In
+          </h1>
+          
+          {/* Subtitle */}
+          <p className="text-gray-300 text-lg mb-10 leading-relaxed max-w-sm mx-auto">
+            You need to be signed in to view subscription plans and unlock amazing characters.
+          </p>
+
+          {/* Enhanced Sign In Button */}
+          <div className="relative">
+            <Button
+              onClick={() => window.location.href = '/auth/signin'}
+              className="group relative bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 hover:from-purple-500 hover:via-blue-500 hover:to-purple-500 text-white border-0 px-10 py-4 text-lg font-bold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 animate-in slide-in-from-bottom duration-500"
+              style={{ fontFamily: 'Shocka Serif', fontWeight: 700, animationDelay: '200ms' }}
+            >
+              <span className="relative z-10 flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span>Sign In Now</span>
+              </span>
+              
+              {/* Button glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl"></div>
+            </Button>
+          </div>
+
+          {/* Additional info */}
+          <div className="mt-8 pt-6 border-t border-gray-700/30">
+            <p className="text-gray-400 text-sm">
+              New here? 
+              <button 
+                onClick={() => window.location.href = '/auth/signup'}
+                className="ml-2 text-purple-400 hover:text-purple-300 font-medium underline underline-offset-2 transition-colors duration-200"
+                style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+              >
+                Create an account
+              </button>
+            </p>
+          </div>
+
+          {/* Feature highlights */}
+          <div className="mt-8 grid grid-cols-3 gap-4 text-xs text-gray-400">
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <span>Secure</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <span>Fast</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <span>Fun</span>
+            </div>
+          </div>
         </div>
       </div>
     );
