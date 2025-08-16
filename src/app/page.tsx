@@ -2,11 +2,6 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-// Set page title
-useEffect(() => {
-  document.title = "RealAnima";
-}, []);
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
@@ -15,6 +10,11 @@ import { useAuth } from './AuthProvider';
 
 export default function Home() {
   const router = useRouter();
+
+  // Set page title
+  useEffect(() => {
+    document.title = "RealAnima";
+  }, []);
   const { user, loading } = useAuth();
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">

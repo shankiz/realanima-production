@@ -2,10 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 
-// Set page title
-useEffect(() => {
-  document.title = "Sign In - RealAnima";
-}, []);
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -294,6 +290,14 @@ function SignInForm() {
 }
 
 export default function SignInPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Set page title
+  useEffect(() => {
+    document.title = "Sign In - RealAnima";
+  }, []);
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">

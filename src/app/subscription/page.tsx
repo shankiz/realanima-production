@@ -1,11 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
-// Set page title
-useEffect(() => {
-  document.title = "Pricing & Plans - RealAnima";
-}, []);
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import PayPalSubscription from '@/components/PayPalSubscription';
@@ -16,6 +11,11 @@ import { useAuth } from '@/app/AuthProvider';
 export default function Subscription() {
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  // Set page title
+  useEffect(() => {
+    document.title = "Pricing & Plans - RealAnima";
+  }, []);
   const [showPayPal, setShowPayPal] = useState(false);
   const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
   const [loading, setLoading] = useState(true);
