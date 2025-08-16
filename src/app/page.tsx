@@ -18,9 +18,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-7 h-7 rounded-md bg-gradient-to-r from-blue-500 to-purple-600 mr-2 flex items-center justify-center">
-                <span className="text-white text-xs font-light">RA</span>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="RealAnima Logo"
+                width={28}
+                height={28}
+                className="mr-2"
+              />
               <span className="font-medium text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima</span>
             </div>
 
@@ -234,9 +238,13 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <div className="flex items-center mb-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 mr-2 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">RA</span>
-                </div>
+                <Image
+                  src="/logo.png"
+                  alt="RealAnima Logo"
+                  width={24}
+                  height={24}
+                  className="mr-2"
+                />
                 <h3 className="text-xl font-bold text-white">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima AI</span>
                 </h3>
