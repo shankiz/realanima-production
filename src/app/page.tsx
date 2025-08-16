@@ -36,15 +36,21 @@ export default function Home() {
               <a href="#faq" className="text-gray-300 hover:text-orange-400 transition-colors text-sm">FAQ</a>
             </nav>
 
-            <div className="flex space-x-3">
-              {!loading && user ? (
+            <div className="flex space-x-3 min-w-[160px] justify-end">
+              {loading ? (
+                // Reserve space during loading to prevent layout shift
+                <div className="flex space-x-3">
+                  <div className="w-[68px] h-[40px]"></div>
+                  <div className="w-[76px] h-[40px]"></div>
+                </div>
+              ) : user ? (
                 <Button 
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
                   onClick={() => router.push('/chat')}
                 >
                   Dashboard
                 </Button>
-              ) : !loading && (
+              ) : (
                 <>
                   <Button 
                     variant="ghost" 
