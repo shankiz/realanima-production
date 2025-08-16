@@ -169,49 +169,64 @@ export default function Subscription() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center">
-        <div className="w-full max-w-sm mx-4">
-          {/* Simple centered card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-            {/* Minimal icon */}
-            <div className="w-12 h-12 mx-auto mb-6 bg-gray-900 rounded-xl flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white flex items-center justify-center relative overflow-hidden">
+        {/* Enhanced background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-blue-500/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-pink-500/12 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
 
-            {/* Clean title */}
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
-              Please Sign In
-            </h1>
-            
-            {/* Simple subtitle */}
-            <p className="text-gray-600 text-sm mb-8 leading-relaxed">
-              Access subscription plans and characters
-            </p>
+        <div className="text-center p-10 bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-purple-900/60 backdrop-blur-xl rounded-3xl border border-gray-700/40 shadow-2xl max-w-lg mx-4 relative z-10 animate-in fade-in zoom-in duration-700">
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-pink-500/20 rounded-3xl blur-xl -z-10"></div>
+          
+          {/* Icon with gradient background */}
+          <div className="w-20 h-20 mx-auto mb-8 bg-gradient-to-br from-purple-500 via-blue-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/25 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/50 to-blue-600/50 rounded-2xl"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
 
-            {/* Clean sign in button */}
+          {/* Title with gradient text */}
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+            Please Sign In
+          </h1>
+          
+          {/* Subtitle */}
+          <p className="text-gray-300 text-lg mb-10 leading-relaxed max-w-sm mx-auto">
+            You need to be signed in to view subscription plans and unlock amazing characters.
+          </p>
+
+          {/* Enhanced Sign In Button */}
+          <div className="relative">
             <Button
               onClick={() => window.location.href = '/auth/signin'}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white border-0 px-6 py-3 rounded-xl transition-colors duration-200"
+              className="group relative bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 px-8 py-3 text-lg font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/25"
               style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
             >
-              Sign In
+              <span className="relative z-10 flex items-center justify-between w-full">
+                <span>Sign In Now</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
             </Button>
+          </div>
 
-            {/* Minimal footer */}
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <p className="text-gray-500 text-xs">
-                New here?{' '}
-                <button 
-                  onClick={() => window.location.href = '/auth/signup'}
-                  className="text-gray-900 hover:underline font-medium"
-                  style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
-                >
-                  Create account
-                </button>
-              </p>
-            </div>
+          {/* Additional info */}
+          <div className="mt-8 pt-6 border-t border-gray-700/30">
+            <p className="text-gray-400 text-sm">
+              New here? 
+              <button 
+                onClick={() => window.location.href = '/auth/signup'}
+                className="ml-2 text-purple-400 hover:text-purple-300 font-medium underline underline-offset-2 transition-colors duration-200"
+                style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+              >
+                Create an account
+              </button>
+            </p>
           </div>
         </div>
       </div>
