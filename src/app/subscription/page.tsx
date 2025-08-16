@@ -15,7 +15,7 @@ export default function Subscription() {
   const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [splashCursorEnabled, setSplashCursorEnabled] = useState(true);
+  const [splashCursorEnabled, setSplashCursorEnabled] = useState(false);
 
   // Fetch user's current plan
   useEffect(() => {
