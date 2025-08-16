@@ -136,15 +136,14 @@ function SignInForm() {
           priority
         />
         {/* Logo overlay */}
-        <Link href="/" className="absolute top-6 left-6 z-30 flex items-center space-x-2 hover:opacity-80 transition-opacity">
+        <Link href="/" className="absolute top-6 left-6 z-30 hover:opacity-80 transition-opacity">
           <Image
             src="/logo.png"
             alt="RealAnima Logo"
-            width={32}
-            height={32}
+            width={48}
+            height={48}
             className="drop-shadow-lg"
           />
-          <span className="text-white font-medium text-lg drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">RealAnima</span>
         </Link>
       </div>
 
