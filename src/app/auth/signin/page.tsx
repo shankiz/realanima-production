@@ -219,7 +219,6 @@ function SignInForm() {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ fontFamily: 'Shocka Serif' }}
               />
 
               <input
@@ -230,20 +229,18 @@ function SignInForm() {
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                style={{ fontFamily: 'Shocka Serif' }}
               />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50"
-                style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+                className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors disabled:opacity-50"
               >
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
 
-            <p className="text-xs text-gray-400 text-center" style={{ fontFamily: 'Shocka Serif' }}>
+            <p className="text-xs text-gray-400 text-center">
               By continuing, you agree to our{' '}
               <Link href="/terms" className="text-blue-400 hover:underline">
                 Terms of Service
@@ -270,12 +267,11 @@ function SignInForm() {
               <button
                 onClick={handleForgotPassword}
                 className="text-blue-400 hover:text-blue-300 transition-colors text-sm underline"
-                style={{ fontFamily: 'Shocka Serif' }}
               >
                 Forgot password?
               </button>
 
-              <div className="text-gray-400 text-sm" style={{ fontFamily: 'Shocka Serif' }}>
+              <div className="text-gray-400 text-sm">
                 Don't have an account?{' '}
                 <Link href="/auth/signup" className="text-blue-400 hover:underline">
                   Sign up
