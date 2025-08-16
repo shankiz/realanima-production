@@ -189,7 +189,7 @@ export default function SignUp() {
             <button
               onClick={handleGoogleSignIn}
               disabled={googleLoading}
-              className="w-full py-2.5 bg-white text-black border border-gray-300 rounded-full hover:bg-gray-50 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
+              className="w-full py-2.5 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
               style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
             >
               {googleLoading ? (
@@ -224,7 +224,7 @@ export default function SignUp() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
               />
 
               <input
@@ -234,7 +234,7 @@ export default function SignUp() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
               />
 
               <input
@@ -244,7 +244,7 @@ export default function SignUp() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
               />
 
               <input
@@ -254,13 +254,13 @@ export default function SignUp() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+                className="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
               />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full transition-colors disabled:opacity-50"
+                className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>
