@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import SplashCursor from '@/components/SplashCursor';
+import { useAuth } from './AuthProvider';
 
 export default function Home() {
   const router = useRouter();
+  const { user, loading } = useAuth();
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       {/* Fluid Cursor Effect */}
@@ -35,19 +37,32 @@ export default function Home() {
             </nav>
 
             <div className="flex space-x-3">
-              <Button 
-                variant="ghost" 
-                className="text-gray-300 hover:text-white border border-gray-800 hover:bg-gray-900"
-                onClick={() => router.push('/auth/signin')}
-              >
-                Sign In
-              </Button>
-              <Button 
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-                onClick={() => router.push('/auth/signup')}
-              >
-                Sign Up
-              </Button>
+              {loading ? (
+                <div className="w-20 h-9 bg-gray-800 animate-pulse rounded"></div>
+              ) : user ? (
+                <Button 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                  onClick={() => router.push('/chat')}
+                >
+                  Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-300 hover:text-white border border-gray-800 hover:bg-gray-900"
+                    onClick={() => router.push('/auth/signin')}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                    onClick={() => router.push('/auth/signup')}
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -77,15 +92,32 @@ export default function Home() {
                 Unleash your imagination. Step into their world, chat, hear their voices, and create your own anime story.
               </p>
               <div className="flex space-x-4 mt-8">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 glow-effect text-base py-6 px-8"
-                  onClick={() => router.push('/auth/signup')}
-                >
-                  Get Started for Free
-                </Button>
+                {loading ? (
+                  <div className="w-48 h-12 bg-gray-800 animate-pulse rounded-lg"></div>
+                ) : user ? (
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 glow-effect text-base py-6 px-8"
+                    onClick={() => router.push('/chat')}
+                  >
+                    Go to Dashboard
+                  </Button>
+                ) : (
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 glow-effect text-base py-6 px-8"
+                    onClick={() => router.push('/auth/signup')}
+                  >
+                    Get Started for Free
+                  </Button>
+                )}
               </div>
-              <p className="text-sm text-gray-400 mt-3">30 messages daily • No credit card required • Instant access</p>
+              {!loading && !user && (
+                <p className="text-sm text-gray-400 mt-3">30 messages daily • No credit card required • Instant access</p>
+              )}
+              {!loading && user && (
+                <p className="text-sm text-gray-400 mt-3">Welcome back! Continue your anime conversations</p>
+              )}
             </div>
 
             <div className="w-full md:w-1/2 relative h-[800px] md:h-[900px] mx-auto animate-float mt-[-60px] mb-[-180px]" style={{ zIndex: 0 }}>
@@ -214,19 +246,45 @@ export default function Home() {
         </div>
 
         <div className="container mx-auto px-4 text-center relative z-10 max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Shocka Serif, serif' }}>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Ready to Start Talking?</span>
-          </h2>
-          <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-10">
-            Join thousands of anime fans already having meaningful conversations with their favorite characters.
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 px-8 py-6 text-lg"
-            onClick={() => router.push('/auth/signup')}
-          >
-            Create Your Account
-          </Button>
+          {loading ? (
+            <div className="space-y-6">
+              <div className="w-96 h-12 bg-gray-800 animate-pulse rounded mx-auto"></div>
+              <div className="w-full max-w-3xl h-6 bg-gray-800 animate-pulse rounded mx-auto"></div>
+              <div className="w-48 h-12 bg-gray-800 animate-pulse rounded mx-auto"></div>
+            </div>
+          ) : user ? (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Shocka Serif, serif' }}>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-400">Welcome Back!</span>
+              </h2>
+              <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-10">
+                Your anime characters are waiting for you. Continue your conversations or discover new personalities.
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white border-0 px-8 py-6 text-lg"
+                onClick={() => router.push('/chat')}
+              >
+                Continue Chatting
+              </Button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Shocka Serif, serif' }}>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Ready to Start Talking?</span>
+              </h2>
+              <p className="text-lg text-gray-400 max-w-3xl mx-auto mb-10">
+                Join thousands of anime fans already having meaningful conversations with their favorite characters.
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 px-8 py-6 text-lg"
+                onClick={() => router.push('/auth/signup')}
+              >
+                Create Your Account
+              </Button>
+            </>
+          )}
         </div>
       </section>
 
