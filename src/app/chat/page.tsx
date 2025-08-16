@@ -10,59 +10,10 @@ import { useSearchParams } from 'next/navigation';
                         import { useAuth } from '@/app/AuthProvider';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
-
-// Chatbase script - only loads on chat page
-declare global {
-  interface Window {
-    chatbase: any;
-  }
-}
+                        import ChatSupportBubble from '@/components/ChatSupportBubble';
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
-  // Initialize Chatbase only on chat page
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Initialize chatbase if not already initialized
-      if (!window.chatbase || window.chatbase("getState") !== "initialized") {
-        window.chatbase = (...args: any[]) => {
-          if (!window.chatbase.q) {
-            window.chatbase.q = [];
-          }
-          window.chatbase.q.push(args);
-        };
-
-        window.chatbase = new Proxy(window.chatbase, {
-          get(target, prop) {
-            if (prop === "q") {
-              return target.q;
-            }
-            return (...args: any[]) => target(prop, ...args);
-          }
-        });
-      }
-
-      const loadChatbase = () => {
-        const script = document.createElement("script");
-        script.src = "https://www.chatbase.co/embed.min.js";
-        script.id = "spPfvHX2tRU-ic83q8sTI";
-        script.setAttribute("domain", "www.chatbase.co");
-        document.body.appendChild(script);
-      };
-
-      if (document.readyState === "complete") {
-        loadChatbase();
-      } else {
-        window.addEventListener("load", loadChatbase);
-      }
-
-      // Cleanup function to remove event listener
-      return () => {
-        window.removeEventListener("load", loadChatbase);
-      };
-    }
-  }, []);
-
   return (
     <Suspense fallback={<div />}> 
       <Chat />
@@ -547,21 +498,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         Can't find who you're looking for?
                                       </p>
                                       <p>
-                                        Request a new character{' '}
-                                        <button
-                                          onClick={() => {
-                                            // Open Chatbase chatbot
-                                            if (typeof window !== 'undefined' && window.chatbase) {
-                                              window.chatbase('open');
-                                            }
-                                          }}
-                                          className="text-cyan-400 hover:text-cyan-300 font-medium text-sm transition-colors duration-200 px-2 py-0.5 rounded-md hover:bg-cyan-400/10 inline-flex items-center"
-                                        >
-                                          here
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                          </svg>
-                                        </button>
+                                        Request a new character using the support chat button in the bottom right corner
                                       </p>
                                     </div>
                                   </div>
@@ -3666,6 +3603,9 @@ function Chat() {
                                 buttonText={alertConfig.buttonText}
                                 type={alertConfig.type}
                               />
+
+                              {/* Chat Support Bubble - Only shows on discover page */}
+                              <ChatSupportBubble onlyOnDiscover={true} currentView={view} />
 
                               {/* Quick Purchase Modal */}
                               <QuickPurchaseModal />
