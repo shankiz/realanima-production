@@ -169,11 +169,12 @@ export default function Subscription() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800 text-white flex items-center justify-center relative overflow-hidden">
-        {/* Subtle background elements */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-purple-900 text-white flex items-center justify-center relative overflow-hidden">
+        {/* Enhanced background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/3 left-1/3 w-24 h-24 bg-gray-600/8 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-gray-500/6 rounded-full blur-xl"></div>
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/3 w-24 h-24 bg-blue-500/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-pink-500/12 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
         <div className="text-center p-8 bg-gray-900/70 backdrop-blur-sm rounded-2xl border border-gray-700/30 shadow-xl max-w-md mx-4 relative z-10">
@@ -197,7 +198,7 @@ export default function Subscription() {
           {/* Sign In Button */}
           <Button
             onClick={() => window.location.href = '/auth/signin'}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white border-0 px-6 py-3 text-base rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 mb-4"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 px-8 py-3 text-base rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 mb-4 shadow-lg shadow-purple-500/25"
           >
             <span>Sign In Now</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -210,7 +211,7 @@ export default function Subscription() {
             New here?{' '}
             <button 
               onClick={() => window.location.href = '/auth/signup'}
-              className="text-gray-300 hover:text-white font-medium underline underline-offset-2 transition-colors duration-200"
+              className="text-purple-400 hover:text-purple-300 font-medium underline underline-offset-2 transition-colors duration-200"
               style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
             >
               Create an account
