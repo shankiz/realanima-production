@@ -63,7 +63,7 @@ export default function ChatSupportBubble({ onlyOnDiscover = true, currentView =
       <div className={`fixed bottom-24 right-6 z-40 transition-all duration-300 ease-out ${
         isOpen ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4 pointer-events-none'
       }`}>
-        <div className="bg-white rounded-2xl shadow-2xl w-80 sm:w-96 overflow-hidden border border-gray-200" style={{ height: '450px', maxHeight: '70vh' }}>
+        <div className="bg-white rounded-2xl shadow-2xl w-80 sm:w-96 overflow-hidden border border-gray-200" style={{ height: '100%', minHeight: '700px' }}>
           {/* Chatbase Iframe */}
           <iframe
             src="https://www.chatbase.co/chatbot-iframe/spPfvHX2tRU-ic83q8sTI"
@@ -71,7 +71,7 @@ export default function ChatSupportBubble({ onlyOnDiscover = true, currentView =
             frameBorder="0"
             className="w-full h-full rounded-2xl"
             title="Support Chat"
-            style={{ height: '100%' }}
+            style={{ height: '100%', minHeight: '700px' }}
           />
         </div>
       </div>
