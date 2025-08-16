@@ -151,6 +151,15 @@ function SignInForm() {
       <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
         <div className="w-full max-w-sm space-y-4">
           <div className="text-center">
+            <div className="flex justify-center mb-6">
+              <Image
+                src="/logo.png"
+                alt="RealAnima Logo"
+                width={64}
+                height={64}
+                className="drop-shadow-lg"
+              />
+            </div>
             <h1 className="text-2xl text-white mb-8" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>Login to your account</h1>
           </div>
 
