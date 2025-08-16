@@ -498,7 +498,18 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                         Can't find who you're looking for?
                                       </p>
                                       <p>
-                                        Request a new character using the support chat button in the bottom right corner
+                                        Request a new character{' '}
+                                        <button
+                                          onClick={() => {
+                                            const chatBubble = document.querySelector('[title="Need help? Chat with support"]') as HTMLButtonElement;
+                                            if (chatBubble) {
+                                              chatBubble.click();
+                                            }
+                                          }}
+                                          className="text-cyan-400 hover:text-cyan-300 underline cursor-pointer transition-colors duration-200"
+                                        >
+                                          here
+                                        </button>
                                       </p>
                                     </div>
                                   </div>
