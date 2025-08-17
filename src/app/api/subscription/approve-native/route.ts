@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { PayPalSubscriptionService, SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
@@ -13,12 +12,12 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
-    
+
     if (!adminAuth) {
       console.error('❌ Firebase Admin not initialized');
       return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
     }
-    
+
     const decodedToken = await adminAuth.verifyIdToken(token);
 
     if (!decodedToken) {
@@ -69,7 +68,9 @@ export async function POST(request: NextRequest) {
     const userDoc = await userRef.get();
 
     const now = new Date();
-    const nextBillingDate = new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000));
+    // Calculate next billing date (daily for testing)
+    const nextBillingDate = new Date();
+    nextBillingDate.setDate(nextBillingDate.getDate() + 1);
 
     const userData = {
       messagesLeft: plan.credits,

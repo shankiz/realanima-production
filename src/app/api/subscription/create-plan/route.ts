@@ -78,12 +78,12 @@ export async function POST(request: NextRequest) {
     const billingPlan = {
       product_id: productData.id,
       name: planName,
-      description: `Monthly subscription for ${planName}`,
+      description: `Daily subscription for ${planName} (testing)`,
       status: "ACTIVE",
       billing_cycles: [
         {
           frequency: {
-            interval_unit: "MONTH",
+            interval_unit: "DAY",
             interval_count: 1
           },
           tenure_type: "REGULAR",
