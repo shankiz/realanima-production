@@ -15,7 +15,7 @@ if (typeof window === 'undefined') {
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Anime Character Chat",
+  title: "RealAnima AI",
   description: "Chat with your favorite anime characters",
 };
 
