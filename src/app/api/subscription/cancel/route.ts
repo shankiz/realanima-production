@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { verifyIdToken } from '@/lib/firebase/admin-helpers';
+import { PayPalSubscriptionService } from '@/services/PayPalSubscriptionService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,6 +78,23 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date().toISOString();
+
+    // Cancel the subscription on PayPal's side first
+    const paypalService = new PayPalSubscriptionService();
+    const paypalResult = await paypalService.cancelSubscription(
+      subscription.subscriptionId || subscription.id, 
+      'User requested cancellation'
+    );
+
+    if (!paypalResult.success) {
+      console.error('❌ Failed to cancel PayPal subscription:', paypalResult.error);
+      return NextResponse.json({ 
+        error: 'Failed to cancel subscription with PayPal',
+        details: paypalResult.error 
+      }, { status: 500 });
+    }
+
+    console.log('✅ Successfully cancelled PayPal subscription');
 
     // Cancel the subscription (user keeps access until current billing period ends)
     await userRef.update({
