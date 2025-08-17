@@ -889,7 +889,7 @@ function Chat() {
 
                           // Check for subscription upgrade celebration - improved detection
                           useEffect(() => {
-                            if (!user) return;
+                            if (!user || !planLoaded) return;
 
                             const urlParams = new URLSearchParams(window.location.search);
                             const subscriptionSuccess = urlParams.get('subscription');
@@ -898,85 +898,66 @@ function Chat() {
                             if (subscriptionSuccess === 'success') {
                               console.log('🎉 Detected subscription success from URL parameter');
                               
-                              // Create a session-specific key that includes current timestamp to ensure freshness
-                              const currentSession = Date.now();
-                              const lastModalSession = localStorage.getItem(`lastSubscriptionModal_${user.uid}`);
-                              
-                              // Only show if we haven't shown a modal in the last 5 minutes (300000ms)
-                              const shouldShowModal = !lastModalSession || (currentSession - parseInt(lastModalSession)) > 300000;
-
-                              if (shouldShowModal) {
-                                console.log('🎊 Showing subscription celebration modal');
-                                // Show celebration modal after a short delay
-                                setTimeout(() => {
-                                  setShowSubscriptionCelebrationModal(true);
-                                }, 1000);
-
-                                // Mark when we showed the modal for this session
-                                localStorage.setItem(`lastSubscriptionModal_${user.uid}`, currentSession.toString());
-                              } else {
-                                console.log('🚫 Subscription modal already shown recently, skipping');
-                              }
+                              // Show celebration modal immediately for URL parameter
+                              setTimeout(() => {
+                                setShowSubscriptionCelebrationModal(true);
+                              }, 1000);
 
                               // Clean up URL
                               const newUrl = window.location.pathname + (character ? `?character=${character}` : '');
                               window.history.replaceState({}, '', newUrl);
+                              return;
                             }
 
-                            // Also check localStorage for upgrade flag - one time only
+                            // Check localStorage for upgrade flag - one time only
                             const justUpgraded = localStorage.getItem('justUpgraded');
                             if (justUpgraded) {
                               console.log('🎉 Detected justUpgraded flag from localStorage');
                               
-                              const currentSession = Date.now();
-                              const lastModalSession = localStorage.getItem(`lastSubscriptionModal_${user.uid}`);
-                              
-                              // Only show if we haven't shown a modal in the last 5 minutes
-                              const shouldShowModal = !lastModalSession || (currentSession - parseInt(lastModalSession)) > 300000;
-
-                              if (shouldShowModal) {
-                                console.log('🎊 Showing subscription celebration modal from localStorage flag');
-                                setTimeout(() => {
-                                  setShowSubscriptionCelebrationModal(true);
-                                }, 1000);
-
-                                // Mark when we showed the modal for this session
-                                localStorage.setItem(`lastSubscriptionModal_${user.uid}`, currentSession.toString());
-                              }
+                              // Show celebration modal immediately for fresh upgrades
+                              setTimeout(() => {
+                                setShowSubscriptionCelebrationModal(true);
+                              }, 1000);
 
                               localStorage.removeItem('justUpgraded');
+                              return;
                             }
 
-                            // Also check if billing data indicates a very recent subscription (last 10 minutes)
-                            if (billingData?.subscription?.lastChargedAt && planLoaded) {
+                            // Check if billing data indicates a very recent subscription (last 5 minutes)
+                            if (billingData?.subscription?.lastChargedAt && (currentUserPlan === 'premium' || currentUserPlan === 'ultimate')) {
                               try {
-                                const lastChargedDate = new Date(billingData.subscription.lastChargedAt);
-                                const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+                                let lastChargedDate;
                                 
-                                if (lastChargedDate > tenMinutesAgo) {
+                                if (billingData.subscription.lastChargedAt?.seconds) {
+                                  lastChargedDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
+                                } else if (typeof billingData.subscription.lastChargedAt === 'string') {
+                                  lastChargedDate = new Date(billingData.subscription.lastChargedAt);
+                                } else {
+                                  lastChargedDate = new Date(billingData.subscription.lastChargedAt);
+                                }
+                                
+                                const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+                                
+                                if (lastChargedDate > fiveMinutesAgo) {
                                   console.log('🎉 Detected very recent subscription from billing data');
                                   
-                                  const currentSession = Date.now();
-                                  const lastModalSession = localStorage.getItem(`lastSubscriptionModal_${user.uid}`);
-                                  
-                                  // Only show if we haven't shown a modal in the last 5 minutes
-                                  const shouldShowModal = !lastModalSession || (currentSession - parseInt(lastModalSession)) > 300000;
-
-                                  if (shouldShowModal) {
+                                  // Check if we already showed the modal for this subscription
+                                  const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`);
+                                  if (!lastModalTime) {
                                     console.log('🎊 Showing subscription celebration modal from recent billing data');
                                     setTimeout(() => {
                                       setShowSubscriptionCelebrationModal(true);
-                                    }, 2000); // Slightly longer delay to ensure billing data is loaded
+                                    }, 1500);
 
-                                    // Mark when we showed the modal for this session
-                                    localStorage.setItem(`lastSubscriptionModal_${user.uid}`, currentSession.toString());
+                                    // Mark this subscription as having shown the modal
+                                    localStorage.setItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`, Date.now().toString());
                                   }
                                 }
                               } catch (error) {
                                 console.error('Error parsing lastChargedAt date:', error);
                               }
                             }
-                          }, [user, character, billingData, planLoaded]);
+                          }, [user, character, billingData, planLoaded, currentUserPlan]);
 
                           // Load recent conversations from localStorage
                           useEffect(() => {

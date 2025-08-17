@@ -106,14 +106,11 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Updated user', decodedToken.uid, 'with native subscription', subscriptionId);
 
-    return NextResponse.json({
-      success: true,
-      subscriptionId: subscriptionId,
-      planId: planId,
-      status: 'active',
-      message: 'Native PayPal subscription activated successfully',
-      redirectUrl: '/subscription/success?subscription=success'
-    });
+    return NextResponse.json({ 
+        success: true, 
+        message: 'Subscription activated successfully!',
+        subscription: 'success'
+      });
 
   } catch (error) {
     console.error('❌ Native subscription approval error:', error);

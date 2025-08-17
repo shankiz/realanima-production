@@ -141,9 +141,19 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
               console.log('✅ Subscription processed successfully');
               setMessage('Subscription activated successfully!');
 
+              // Handle success without redirect, just call onSuccess and set flag for modal
+              if (result.success) {
+                console.log('✅ Subscription setup completed successfully');
+
+                // Set flag for subscription celebration modal
+                localStorage.setItem('justUpgraded', 'true');
+
+                // Call onSuccess callback
+                onSuccess?.();
+              }
+
               setTimeout(() => {
                 setShowSuccessModal(true);
-                onSuccess?.();
               }, 1000);
 
             } catch (error) {
