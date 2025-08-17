@@ -74,16 +74,17 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-blue-500/5 pointer-events-none" />
         
-        {/* Success Icon with Glow */}
+        {/* Celebration Icon with Glow */}
         <div className="relative pt-8 pb-6 text-center">
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full animate-pulse" />
             <div className="relative bg-gradient-to-br from-green-400 to-emerald-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/25">
               <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V9a2 2 0 012-2h14a2 2 0 012 2v6z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 11h6m-6 4h4" />
               </svg>
             </div>
-          </div>
+          </div></old_str>
           
           <h3 className="text-xl font-bold text-white mb-4 tracking-tight">{title}</h3>
         </div>
