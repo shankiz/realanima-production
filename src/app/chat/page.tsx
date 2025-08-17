@@ -2451,7 +2451,7 @@ function Chat() {
                                           </svg>
                                         </div>
                                         {/* Secondary smaller sparkle */}
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-cyan-300 absolute top-1 right-1.5" fill="currentColor" viewBox="0 0 24 24" style={{ opacity: 0.6 }}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-cyan-300 absolute top-0.5 right-1" fill="currentColor" viewBox="0 0 24 24" style={{ opacity: 0.6 }}>
                                           <path d="M12 0c-0.8 3.2-3.2 5.6-6.4 6.4 3.2 0.8 5.6 3.2 6.4 6.4 0.8-3.2 3.2-5.6 6.4-6.4-3.2-0.8-5.6-3.2-6.4-6.4z"/>
                                         </svg>
                                       </div>
