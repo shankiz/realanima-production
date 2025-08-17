@@ -58,10 +58,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 });
     }
 
-    // Extract plan price and type for the success message
-    const planPrice = plan.price;
-    const planType = planId;
-
     // Update user in Firebase
     if (!adminDb) {
       console.error('❌ Firebase Admin DB not initialized');
@@ -85,7 +81,7 @@ export async function POST(request: NextRequest) {
       paypalSubscriptionId: subscriptionId,
       lastMessageReset: now,
       subscription: {
-        id: subscriptionDetails.id,
+        id: subscriptionId,
         status: 'active',
         planId: planId,
         paypalPlanId: subscriptionDetails.plan_id,
@@ -110,21 +106,12 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Updated user', decodedToken.uid, 'with native subscription', subscriptionId);
 
-    // Return success response with redirect URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const successUrl = `${baseUrl}/subscription/success?subscription=success&amount=${planPrice}&plan=${planType}&payment_id=${subscriptionDetails.id}`;
-
-    return NextResponse.json({ 
-      success: true, 
-      message: `Subscription activated successfully! Your payment of $${planPrice} has been processed.`,
-      redirectUrl: successUrl,
-      subscription: {
-        id: subscriptionDetails.id,
-        status: subscriptionDetails.status,
-        plan_id: subscriptionDetails.plan_id,
-        amount: planPrice,
-        planType: planType
-      }
+    return NextResponse.json({
+      success: true,
+      subscriptionId: subscriptionId,
+      planId: planId,
+      status: 'active',
+      message: 'Native PayPal subscription activated successfully'
     });
 
   } catch (error) {

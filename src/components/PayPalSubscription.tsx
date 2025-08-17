@@ -141,14 +141,6 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
               console.log('✅ Subscription processed successfully');
               setMessage('Subscription activated successfully!');
 
-              // Redirect to success page with payment details
-              if (result.redirectUrl) {
-                window.location.href = result.redirectUrl;
-              } else {
-                // Fallback redirect with basic success info
-                window.location.href = `/subscription/success?subscription=success&plan=${planId}`;
-              }
-
               setTimeout(() => {
                 setShowSuccessModal(true);
                 onSuccess?.();
