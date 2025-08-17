@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useState } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { useAuth } from '@/app/AuthProvider';
 import { SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
-import SuccessModal from '@/components/SuccessModal'; // Import the SuccessModal component
+import SuccessModal from '@/components/SuccessModal';
 
 interface PayPalSubscriptionProps {
   planId: string;
@@ -17,7 +18,7 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [paypalError, setPaypalError] = useState<string | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for the success modal
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const plan = SUBSCRIPTION_PLANS[planId];
 
@@ -36,9 +37,11 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
     "enable-funding": "",
     "disable-funding": "",
     currency: "USD",
+    vault: true,
+    intent: "subscription",
     "data-page-type": "product-details",
     components: "buttons",
-    "data-sdk-integration-source": "developer-studio",
+    "data-sdk-integration-source": "button-factory",
   };
 
   return (
@@ -71,132 +74,129 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
           </div>
         </div>
       ) : (
-        <PayPalScriptProvider 
-          options={initialOptions}
-        >
+        <PayPalScriptProvider options={initialOptions}>
           <PayPalButtons
-          style={{
-            shape: "rect",
-            layout: "vertical",
-            color: "gold",
-            label: "paypal",
-            height: 48,
-          }}
-          disabled={isLoading}
-          createVaultSetupToken={async () => {
-            try {
-              setIsLoading(true);
-              setMessage('Setting up subscription...');
+            style={{
+              shape: "rect",
+              layout: "vertical",
+              color: "gold",
+              label: "subscribe",
+              height: 48,
+            }}
+            disabled={isLoading}
+            createSubscription={async (data, actions) => {
+              try {
+                setIsLoading(true);
+                setMessage('Creating subscription...');
 
-              if (!user) {
-                throw new Error('Please sign in to subscribe');
+                if (!user) {
+                  throw new Error('Please sign in to subscribe');
+                }
+
+                const token = await user.getIdToken();
+
+                // Create the subscription plan in PayPal first
+                const response = await fetch('/api/subscription/create-plan', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    planId,
+                    planName: plan.name,
+                    price: plan.price,
+                    credits: plan.credits,
+                  }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                  console.error('❌ Plan creation failed:', data);
+                  throw new Error(data.error || 'Failed to create subscription plan');
+                }
+
+                console.log('✅ PayPal plan created:', data.paypalPlanId);
+
+                // Use the PayPal plan ID to create subscription
+                return actions.subscription.create({
+                  plan_id: data.paypalPlanId
+                });
+
+              } catch (error) {
+                console.error('❌ Subscription creation error:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                setMessage(`Error: ${errorMessage}`);
+                onError?.(errorMessage);
+                throw error;
+              } finally {
+                setIsLoading(false);
               }
+            }}
+            onApprove={async (data, actions) => {
+              try {
+                setIsLoading(true);
+                setMessage('Processing subscription approval...');
 
-              const token = await user.getIdToken();
-              const returnUrl = `${window.location.origin}/subscription/success`;
-              const cancelUrl = `${window.location.origin}/subscription/cancel`;
+                if (!user) {
+                  throw new Error('Please sign in to complete subscription');
+                }
 
-              console.log('🔧 Sending setup request:', { planId, returnUrl, cancelUrl });
+                const token = await user.getIdToken();
 
-              const response = await fetch('/api/subscription/setup', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  planId,
-                  returnUrl,
-                  cancelUrl,
-                }),
-              });
+                console.log('🔧 Sending approval request:', { subscriptionId: data.subscriptionID, planId });
 
-              const data = await response.json();
+                const response = await fetch('/api/subscription/approve-traditional', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    subscriptionId: data.subscriptionID,
+                    planId,
+                  }),
+                });
 
-              console.log('🔍 Setup response:', { status: response.status, data });
+                const result = await response.json();
 
-              if (!response.ok) {
-                console.error('❌ Setup token creation failed:', data);
-                throw new Error(data.error || 'Failed to create setup token');
+                console.log('🔍 Approval response:', { status: response.status, result });
+
+                if (!response.ok) {
+                  console.error('❌ Subscription approval failed:', result);
+                  throw new Error(result.error || 'Failed to approve subscription');
+                }
+
+                console.log('✅ Subscription activated, showing success modal in 2 seconds...');
+                setMessage('Subscription activated successfully!');
+                
+                // Add a 2-second delay before showing the success modal for better UX
+                setTimeout(() => {
+                  setShowSuccessModal(true);
+                  onSuccess?.();
+                }, 2000);
+
+              } catch (error) {
+                console.error('❌ Approval error:', error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+                setMessage(`Error: ${errorMessage}`);
+                onError?.(errorMessage);
+              } finally {
+                setIsLoading(false);
               }
-
-              setMessage('Setup token created successfully!');
-              console.log('✅ Setup token ID:', data.id);
-              return data.id;
-
-            } catch (error) {
-              console.error('❌ Setup token error:', error);
-              const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-              setMessage(`Error: ${errorMessage}`);
-              onError?.(errorMessage);
-              throw error;
-            } finally {
+            }}
+            onCancel={() => {
+              setMessage('Subscription setup was cancelled');
               setIsLoading(false);
-            }
-          }}
-          onApprove={async (data: any) => {
-            try {
-              setIsLoading(true);
-              setMessage('Processing subscription approval...');
-
-              if (!user) {
-                throw new Error('Please sign in to complete subscription');
-              }
-
-              const token = await user.getIdToken();
-
-              console.log('🔧 Sending approval request:', { setupTokenId: data.vaultSetupToken, planId });
-
-              const response = await fetch('/api/subscription/approve', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  setupTokenId: data.vaultSetupToken,
-                  planId,
-                }),
-              });
-
-              const result = await response.json();
-
-              console.log('🔍 Approval response:', { status: response.status, result });
-
-              if (!response.ok) {
-                console.error('❌ Subscription approval failed:', result);
-                throw new Error(result.error || 'Failed to approve subscription');
-              }
-
-              console.log('✅ Subscription activated, showing success modal in 2 seconds...');
-              setMessage('Subscription activated successfully!');
-              
-              // Add a 2-second delay before showing the success modal for better UX
-              setTimeout(() => {
-                setShowSuccessModal(true);
-                onSuccess?.(); // Then call the success callback
-              }, 2000);
-
-            } catch (error) {
-              console.error('❌ Approval error:', error);
-              const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-              setMessage(`Error: ${errorMessage}`);
-              onError?.(errorMessage);
-            } finally {
+            }}
+            onError={(err) => {
+              console.error('❌ PayPal error:', err);
+              setMessage('An error occurred with PayPal payment processing');
+              onError?.('PayPal error occurred');
               setIsLoading(false);
-            }
-          }}
-          onCancel={() => {
-            setMessage('Subscription setup was cancelled');
-            setIsLoading(false);
-          }}
-          onError={(err) => {
-            console.error('❌ PayPal error:', err);
-            setMessage('An error occurred with PayPal payment processing');
-            onError?.('PayPal error occurred');
-            setIsLoading(false);
-          }}
-        />
+            }}
+          />
         </PayPalScriptProvider>
       )}
 
@@ -212,20 +212,20 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
         </div>
       )}
 
-        {/* Success Modal with Confetti */}
-        <SuccessModal
-          isOpen={showSuccessModal}
-          onClose={() => setShowSuccessModal(false)}
-          title="Subscription Activated! 🎉"
-          message="Your subscription has been successfully activated. You can now enjoy unlimited access to all characters!"
-          onNavigate={() => {
-            // Force refresh of user data when navigating to chat
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('refreshUserData', 'true');
-              window.location.href = '/chat';
-            }
-          }}
-        />
-      </div>
-    );
-  }
+      {/* Success Modal with Confetti */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="Subscription Activated! 🎉"
+        message="Your subscription has been successfully activated. You can now enjoy unlimited access to all characters!"
+        onNavigate={() => {
+          // Force refresh of user data when navigating to chat
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('refreshUserData', 'true');
+            window.location.href = '/chat';
+          }
+        }}
+      />
+    </div>
+  );
+}
