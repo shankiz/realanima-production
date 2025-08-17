@@ -33,13 +33,10 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
   }
 
   const initialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-    "enable-funding": "",
-    "disable-funding": "",
+    "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     currency: "USD",
     vault: true,
     intent: "subscription",
-    "data-page-type": "product-details",
     components: "buttons",
     "data-sdk-integration-source": "button-factory",
   };
