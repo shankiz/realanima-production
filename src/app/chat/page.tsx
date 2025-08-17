@@ -2452,22 +2452,10 @@ function Chat() {
 
                                     {/* Header */}
                                     <div className="text-center mb-6">
-                                      {/* Celebration Icon */}
+                                      {/* Success Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-green-500/15 to-cyan-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M12 2L13.09 8.26L19 7.8L14.55 12.25L21 15.5L13.6 15.9L12 22L10.4 15.9L3 15.5L9.45 12.25L5 7.8L10.91 8.26L12 2Z" />
-                                          <circle cx="6" cy="6" r="1.5" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
-                                          </circle>
-                                          <circle cx="18" cy="8" r="1" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite" />
-                                          </circle>
-                                          <circle cx="4" cy="16" r="1" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.8s" repeatCount="indefinite" />
-                                          </circle>
-                                          <circle cx="20" cy="18" r="1.2" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.6;1;0.6" dur="2.2s" repeatCount="indefinite" />
-                                          </circle>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
