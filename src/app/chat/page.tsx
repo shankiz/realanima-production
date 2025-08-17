@@ -2444,7 +2444,9 @@ function Chat() {
                                     <div className="text-center mb-6">
                                       {/* Celebration Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-purple-500/15 to-pink-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/10">
-                                        <div className="text-3xl">🎉</div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
                                         Welcome to {currentUserPlan === 'ultimate' ? 'Ultimate' : 'Premium'}!
