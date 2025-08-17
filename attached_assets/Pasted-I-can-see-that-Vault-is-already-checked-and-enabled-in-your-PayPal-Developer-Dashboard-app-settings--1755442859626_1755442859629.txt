@@ -1,0 +1,61 @@
+I can see that Vault is already checked and enabled in your PayPal Developer Dashboard app settings (along with Subscriptions, Invoicing, Payouts, etc.). That rules out the most common issue (not having vault enabled).
+
+Since Vault is enabled, but you’re still getting this error in live mode:
+
+NOT_AUTHORIZED
+Authorization failed due to insufficient permissions.
+
+
+here are the next most likely causes:
+
+🔎 Possible Reasons & Fixes
+
+OAuth Token Scope Issue
+
+Even though Vault is enabled, the access token you’re generating may not include the right scopes in live.
+
+Double-check that your token request is made using client ID + secret (not just client ID).
+
+For live vault usage, your token must include https://uri.paypal.com/services/vault/payment-tokens scope (automatically included when you use the client ID + secret from the correct app).
+
+✅ Fix: Ensure your OAuth request looks like:
+
+POST https://api-m.paypal.com/v1/oauth2/token
+Authorization: Basic <base64(client_id:secret)>
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+
+
+Live Environment vs Sandbox Confusion
+
+You’re using https://api.paypal.com (live), which is correct.
+
+But make sure your live client ID/secret are from the Live App in the dashboard (not the Sandbox section).
+
+✅ Fix: Double-check credentials in My Apps & Credentials → Live.
+
+Merchant Account Onboarding (Live)
+
+Even if Vault is “checked” in the app, PayPal sometimes requires business-level approval for live vaulting.
+
+Your live merchant account may still be pending approval for Vault.
+
+✅ Fix: Check Account Status in your developer dashboard, or contact PayPal Merchant Technical Support with the debug ID from the error (e.g. 4ce270a4af45e). That lets them confirm if your account is fully onboarded.
+
+Wrong API Endpoint
+
+For Vault v3, ensure you’re calling the correct endpoint:
+
+POST https://api-m.paypal.com/v3/vault/setup-tokens
+
+
+I noticed in your logs it was hitting https://api.paypal.com (without -m).
+
+While both resolve, PayPal recommends always using api-m.paypal.com for live REST calls.
+
+✅ Fix: Update to https://api-m.paypal.com instead of https://api.paypal.com.
+
+✅ Next Step Suggestion:
+Try switching your base URL from https://api.paypal.com → https://api-m.paypal.com.
+If that still fails, the issue is almost certainly account onboarding for live vault (PayPal support will confirm using your debug ID).
