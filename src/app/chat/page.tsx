@@ -2443,9 +2443,14 @@ function Chat() {
                                     {/* Header */}
                                     <div className="text-center mb-6">
                                       {/* Celebration Icon */}
-                                      <div className="w-16 h-16 bg-gradient-to-br from-green-500/15 to-cyan-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M12 0c-1 4-4 7-8 8 4 1 7 4 8 8 1-4 4-7 8-8-4-1-7-4-8-8z"/>
+                                      <div className="w-20 h-20 bg-gradient-to-br from-green-500/15 to-cyan-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/10 relative">
+                                        {/* Main sparkle */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M12 0c-1.2 4.8-4.8 8.4-9.6 9.6 4.8 1.2 8.4 4.8 9.6 9.6 1.2-4.8 4.8-8.4 9.6-9.6-4.8-1.2-8.4-4.8-9.6-9.6z"/>
+                                        </svg>
+                                        {/* Secondary smaller sparkle */}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-300 absolute top-2 right-3" fill="currentColor" viewBox="0 0 24 24" style={{ opacity: 0.7 }}>
+                                          <path d="M12 0c-0.8 3.2-3.2 5.6-6.4 6.4 3.2 0.8 5.6 3.2 6.4 6.4 0.8-3.2 3.2-5.6 6.4-6.4-3.2-0.8-5.6-3.2-6.4-6.4z"/>
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
