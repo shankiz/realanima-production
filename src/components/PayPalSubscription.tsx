@@ -32,8 +32,11 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
     );
   }
 
+  // Debug PayPal configuration
+  console.log('PayPal Client ID:', process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ? 'Present' : 'Missing');
+  
   const initialOptions = {
-    "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
     currency: "USD",
     vault: true,
     intent: "subscription",
