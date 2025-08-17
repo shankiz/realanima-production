@@ -2445,7 +2445,8 @@ function Chat() {
                                       {/* Celebration Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-purple-500/15 to-pink-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/10">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M9.5 2L8.5 6L12 7.5L15.5 6L14.5 2H9.5ZM6.5 8.5L2 9.5V14.5L6.5 15.5L7.5 12L6.5 8.5ZM17.5 8.5L16.5 12L17.5 15.5L22 14.5V9.5L17.5 8.5ZM8.5 18L9.5 22H14.5L15.5 18L12 16.5L8.5 18ZM12 10.5C11.17 10.5 10.5 11.17 10.5 12S11.17 13.5 12 13.5 13.5 12.83 13.5 12 12.83 10.5 12 10.5Z"/>
+                                          <path d="M12 0L14.59 7.41L22 10L14.59 12.59L12 20L9.41 12.59L2 10L9.41 7.41L12 0Z"/>
+                                          <path d="M19 3L20.5 6.5L24 8L20.5 9.5L19 13L17.5 9.5L14 8L17.5 6.5L19 3Z" fillOpacity="0.6"/>
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
