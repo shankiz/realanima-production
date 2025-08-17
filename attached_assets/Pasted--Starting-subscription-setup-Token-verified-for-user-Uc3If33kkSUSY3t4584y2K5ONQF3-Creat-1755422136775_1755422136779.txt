@@ -1,0 +1,82 @@
+🔧 Starting subscription setup...
+✅ Token verified for user: Uc3If33kkSUSY3t4584y2K5ONQF3
+📋 Creating vault setup token for plan: premium
+🔑 Getting PayPal access token...
+🌐 PayPal Base URL: https://api.paypal.com
+🌐 PayPal Mode: live
+🆔 PayPal Client ID exists: true
+🆔 PayPal Client ID length: 80
+🆔 PayPal Client ID preview: AaPXp4nm_s...
+🔐 PayPal Client Secret exists: true
+🔐 PayPal Client Secret length: 80
+🔐 PayPal Client Secret preview: EHbDTj8Z5-...
+🔑 Basic auth string length: 216
+🔑 Basic auth preview: QWFQWHA0bm1fczVaNlkt...
+📋 Request body: grant_type=client_credentials
+📋 Request headers: [ 'Authorization', 'Content-Type', 'Accept', 'Accept-Language' ]
+📡 PayPal token response status: 200
+📡 PayPal token response headers: {
+  'accept-ranges': 'none',
+  'access-control-expose-headers': 'Server-Timing',
+  'cache-control': 'max-age=0, no-cache, no-store, must-revalidate',
+  connection: 'keep-alive',
+  'content-encoding': 'gzip',
+  'content-type': 'application/json',
+  date: 'Sun, 17 Aug 2025 09:14:58 GMT',
+  'paypal-debug-id': 'b50cf41ffc3e7',
+  pragma: 'no-cache',
+  'server-timing': 'traceparent;desc="00-0000000000000000000b50cf41ffc3e7-4b12feb0f5fc99ca-01"',
+  'set-cookie': 'l7_az=ccg14.slc; Path=/; Domain=paypal.com; Expires=Sun, 17 Aug 2025 09:44:58 GMT; HttpOnly; Secure',
+  'strict-transport-security': 'max-age=63072000; includeSubDomains; preload',
+  traceparent: '00-0000000000000000000b50cf41ffc3e7-0508b0e636e79a2f-01',
+  'transfer-encoding': 'chunked',
+  vary: 'Accept-Encoding',
+  via: '1.1 varnish, 1.1 varnish, 1.1 varnish',
+  'x-cache': 'MISS, MISS, MISS, MISS',
+  'x-cache-hits': '0, 0, 0, 0',
+  'x-paypal-token-service': 'IAAS',
+  'x-served-by': 'cache-del21750-DEL, cache-del21750-DEL',
+  'x-timer': 'S1755422098.376351,VS0,VE409'
+}
+✅ PayPal access token obtained successfully
+🔧 Creating vault setup token with data: {
+  "payment_source": {
+    "paypal": {
+      "description": "Premium subscription with 200 daily messages",
+      "usage_pattern": "IMMEDIATE",
+      "usage_type": "MERCHANT",
+      "customer_type": "CONSUMER",
+      "permit_multiple_payment_tokens": false,
+      "experience_context": {
+        "return_url": "https://560fc481-1828-41f0-a579-94aba1edd5d8-00-3tazdbs13p9l2.pike.replit.dev/subscription/success",
+        "cancel_url": "https://560fc481-1828-41f0-a579-94aba1edd5d8-00-3tazdbs13p9l2.pike.replit.dev/subscription/cancel",
+        "brand_name": "RealAnima AI",
+        "locale": "en-US",
+        "shipping_preference": "NO_SHIPPING",
+        "user_action": "CONTINUE"
+      }
+    }
+  }
+}
+PayPal setup token creation error: {
+  status: 403,
+  statusText: 'Forbidden',
+  result: {
+    name: 'NOT_AUTHORIZED',
+    message: 'Authorization failed due to insufficient permissions.',
+    debug_id: '37a86abd8897a',
+    details: [ [Object] ],
+    links: [ [Object] ]
+  }
+}
+❌ Subscription setup error: Error: Failed to create vault setup token: Authorization failed due to insufficient permissions.
+    at PayPalSubscriptionService.createVaultSetupToken (src/services/PayPalSubscriptionService.ts:161:12)
+    at async POST (src/app/api/subscription/setup/route.ts:40:23)
+  159 |         result: result
+  160 |       });
+> 161 |       throw new Error(`Failed to create vault setup token: ${result.message || result.error_description || 'Unknown error'}`);
+      |            ^
+  162 |     }
+  163 |
+  164 |     console.log('✅ Vault setup token created successfully:', result);
+ POST /api/subscription/setup 500 in 2667ms
