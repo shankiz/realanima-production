@@ -893,7 +893,7 @@ function Chat() {
 
                             const urlParams = new URLSearchParams(window.location.search);
                             const subscriptionSuccess = urlParams.get('subscription');
-                            
+
                             // Check if user just came from subscription success
                             if (subscriptionSuccess === 'success') {
                               // Show celebration modal after a short delay
@@ -914,7 +914,41 @@ function Chat() {
                               }, 1000);
                               localStorage.removeItem('justUpgraded');
                             }
-                          }, [user, character]);
+
+                            // Additional fallback: Check if user just upgraded by comparing billing data
+                            if (billingData && (currentUserPlan === 'premium' || currentUserPlan === 'ultimate')) {
+                              const lastUpgradeCheck = localStorage.getItem('lastUpgradeCheck');
+                              const currentTime = Date.now();
+
+                              // If no previous check or it's been less than 5 minutes since last check
+                              if (!lastUpgradeCheck || (currentTime - parseInt(lastUpgradeCheck)) < 300000) {
+                                // Check if subscription is very recent (within last 10 minutes)
+                                if (billingData.subscription?.lastChargedAt) {
+                                  let chargedDate;
+
+                                  if (billingData.subscription.lastChargedAt?.seconds) {
+                                    chargedDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
+                                  } else if (typeof billingData.subscription.lastChargedAt === 'string') {
+                                    chargedDate = new Date(billingData.subscription.lastChargedAt);
+                                  } else {
+                                    chargedDate = new Date(billingData.subscription.lastChargedAt);
+                                  }
+
+                                  if (chargedDate && !isNaN(chargedDate.getTime())) {
+                                    const timeDiff = currentTime - chargedDate.getTime();
+                                    // If subscription was created within last 10 minutes, show modal
+                                    if (timeDiff < 600000) {
+                                      setTimeout(() => {
+                                        setShowSubscriptionCelebrationModal(true);
+                                      }, 1500);
+                                    }
+                                  }
+                                }
+
+                                localStorage.setItem('lastUpgradeCheck', currentTime.toString());
+                              }
+                            }
+                          }, [user, character, billingData, currentUserPlan]);
 
                           // Load recent conversations from localStorage
                           useEffect(() => {
@@ -2525,7 +2559,7 @@ function Chat() {
                                       {/* Voice Icon */}
                                       <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                                         </svg>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -4101,20 +4135,6 @@ function Chat() {
                                 </div>
                               </div>
 
-                              {/* Voice generation error notification - Fixed at top of chat area */}
-                              {voiceGenerationError && (
-                                <div className="fixed top-4 left-72 right-0 flex justify-center z-50 animate-fadeIn pointer-events-none">
-                                  <div className="bg-gray-900/95 border border-gray-700/50 rounded-lg px-4 py-2 shadow-lg backdrop-blur-sm">
-                                    <div className="text-gray-300 text-sm text-center flex items-center">
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-orange-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.732 8.5c-.77.833-.192 2.5 1.732 2.5z" />
-                                      </svg>
-                                      Couldn't generate voice
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-
                               {/* Main Content Area */}
                               {view === 'discover' ? (
                                 <DiscoverView onSelectCharacter={handleSelectCharacter} loading={loading} />
@@ -4534,7 +4554,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml-2">
+                                              <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>

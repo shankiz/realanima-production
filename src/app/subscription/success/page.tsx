@@ -43,7 +43,7 @@ function SubscriptionSuccessContent() {
 
           <div className="space-y-3">
             <Link
-              href="/chat"
+              href="/chat?subscription=success"
               className="block w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-lg transition-all duration-300"
               onClick={() => {
                 // Force refresh of user data when navigating to chat

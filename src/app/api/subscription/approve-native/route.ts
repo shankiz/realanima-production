@@ -111,7 +111,8 @@ export async function POST(request: NextRequest) {
       subscriptionId: subscriptionId,
       planId: planId,
       status: 'active',
-      message: 'Native PayPal subscription activated successfully'
+      message: 'Native PayPal subscription activated successfully',
+      redirectUrl: '/chat?subscription=success'
     });
 
   } catch (error) {
