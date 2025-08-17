@@ -44,8 +44,8 @@ const PAYPAL_MODE = process.env.PAYPAL_MODE || 'sandbox';
 console.log('🔍 Environment variable check:');
 console.log('PAYPAL_CLIENT_ID from env:', process.env.PAYPAL_CLIENT_ID ? `${process.env.PAYPAL_CLIENT_ID.substring(0, 10)}...` : 'MISSING');
 console.log('PAYPAL_CLIENT_SECRET from env:', process.env.PAYPAL_CLIENT_SECRET ? `${process.env.PAYPAL_CLIENT_SECRET.substring(0, 10)}...` : 'MISSING');
-const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
-  ? 'https://api.paypal.com'
+const PAYPAL_BASE_URL = PAYPAL_MODE === 'live' 
+  ? 'https://api.paypal.com' 
   : 'https://api.sandbox.paypal.com';
 
 async function getPayPalAccessToken() {
@@ -146,8 +146,6 @@ export class PayPalSubscriptionService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
         'PayPal-Request-Id': uuidv4(),
-        'Prefer': 'return=representation',
-        'Accept': 'application/json',
       },
       body: JSON.stringify(setupTokenData),
     });
@@ -187,8 +185,6 @@ export class PayPalSubscriptionService {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
         'PayPal-Request-Id': uuidv4(),
-        'Prefer': 'return=representation',
-        'Accept': 'application/json',
       },
       body: JSON.stringify(paymentTokenData),
     });
@@ -295,8 +291,8 @@ export class PayPalSubscriptionService {
   }
 
   async chargeRecurringSubscription(
-    paymentTokenId: string,
-    planId: string,
+    paymentTokenId: string, 
+    planId: string, 
     subscriptionId: string
   ): Promise<{ success: boolean; orderId?: string; error?: string }> {
     try {
@@ -361,10 +357,10 @@ export class PayPalSubscriptionService {
         const errorText = await orderResponse.text();
         console.error('❌ PayPal vault order creation failed:', {
           status: orderResponse.status,
-          statusText: response.statusText,
+          statusText: orderResponse.statusText,
           body: errorText
         });
-
+        
         // Fallback: Try simpler approach without stored_credential details
         console.log('🔄 Trying simplified vault approach...');
         const simplifiedOrderData = {
@@ -448,8 +444,8 @@ export class PayPalSubscriptionService {
   }
 
   private async captureVaultOrder(
-    orderId: string,
-    subscriptionId: string,
+    orderId: string, 
+    subscriptionId: string, 
     accessToken: string
   ): Promise<{ success: boolean; orderId?: string; error?: string }> {
     const captureResponse = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
