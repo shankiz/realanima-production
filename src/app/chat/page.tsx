@@ -619,6 +619,7 @@ function Chat() {
                           const [showAlertModal, setShowAlertModal] = useState(false);
                           const [showCreditModal, setShowCreditModal] = useState(false);
                           const [showFirstResponseVoiceModal, setShowFirstResponseVoiceModal] = useState(false);
+                          const [showSubscriptionCelebrationModal, setShowSubscriptionCelebrationModal] = useState(false);
                           const [isDeleteHistoryLoading, setIsDeleteHistoryLoading] = useState(false);
                           const [modalConfig, setModalConfig] = useState({
                             title: '',
@@ -885,6 +886,35 @@ function Chat() {
 
                             return () => clearInterval(interval);
                           }, [user]);
+
+                          // Check for subscription upgrade celebration
+                          useEffect(() => {
+                            if (!user) return;
+
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const subscriptionSuccess = urlParams.get('subscription');
+                            
+                            // Check if user just came from subscription success
+                            if (subscriptionSuccess === 'success') {
+                              // Show celebration modal after a short delay
+                              setTimeout(() => {
+                                setShowSubscriptionCelebrationModal(true);
+                              }, 1000);
+
+                              // Clean up URL
+                              const newUrl = window.location.pathname + (character ? `?character=${character}` : '');
+                              window.history.replaceState({}, '', newUrl);
+                            }
+
+                            // Also check localStorage for upgrade flag
+                            const justUpgraded = localStorage.getItem('justUpgraded');
+                            if (justUpgraded) {
+                              setTimeout(() => {
+                                setShowSubscriptionCelebrationModal(true);
+                              }, 1000);
+                              localStorage.removeItem('justUpgraded');
+                            }
+                          }, [user, character]);
 
                           // Load recent conversations from localStorage
                           useEffect(() => {
@@ -2348,6 +2378,119 @@ function Chat() {
                             </div>
                           );
 
+                          // Subscription Celebration Modal Component
+                          const SubscriptionCelebrationModal = () => (
+                            <div 
+                              className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
+                                showSubscriptionCelebrationModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                              }`}
+                              onClick={() => setShowSubscriptionCelebrationModal(false)}
+                            >
+                              <div className="flex items-center justify-center min-h-screen p-4">
+                                <div 
+                                  className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-700 ease-out backdrop-blur-md overflow-hidden ${
+                                    showSubscriptionCelebrationModal ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+                                  }`}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {/* Celebration particles/confetti effect */}
+                                  <div className="absolute inset-0 pointer-events-none">
+                                    {Array.from({ length: 20 }, (_, i) => (
+                                      <div
+                                        key={i}
+                                        className="absolute w-2 h-2 rounded-full animate-bounce"
+                                        style={{
+                                          left: `${Math.random() * 100}%`,
+                                          top: `${Math.random() * 100}%`,
+                                          backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'][Math.floor(Math.random() * 4)],
+                                          animationDelay: `${Math.random() * 2}s`,
+                                          animationDuration: `${1 + Math.random()}s`
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+
+                                  {/* Gradient overlay */}
+                                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-cyan-500/5 pointer-events-none" />
+
+                                  <div className="relative p-8 text-center">
+                                    {/* Success icon with glow */}
+                                    <div className="relative mb-6">
+                                      <div className="absolute inset-0 bg-green-500/20 blur-xl rounded-full animate-pulse" />
+                                      <div className="relative bg-gradient-to-br from-green-400 to-emerald-500 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/25">
+                                        <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                      </div>
+                                    </div>
+
+                                    <h2 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
+                                      🎉 Welcome to {currentUserPlan === 'ultimate' ? 'Ultimate' : 'Premium'}!
+                                    </h2>
+
+                                    <p className="text-gray-300 text-base mb-6 leading-relaxed">
+                                      You've successfully upgraded your plan! Now you can hear authentic character voices in every conversation.
+                                    </p>
+
+                                    {/* Feature highlights */}
+                                    <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-4 mb-6">
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-center">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                          </svg>
+                                          <span className="text-green-400 font-medium text-sm">Character voices unlocked!</span>
+                                        </div>
+                                        <div className="flex items-center justify-center">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                          </svg>
+                                          <span className="text-cyan-400 font-medium text-sm">
+                                            {currentUserPlan === 'ultimate' ? '500' : '200'} messages per day
+                                          </span>
+                                        </div>
+                                        <div className="flex items-center justify-center">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                          </svg>
+                                          <span className="text-purple-400 font-medium text-sm">Enhanced conversations</span>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Action buttons */}
+                                    <div className="space-y-3">
+                                      <button
+                                        onClick={() => {
+                                          setShowSubscriptionCelebrationModal(false);
+                                          // Enable voice responses automatically for new subscribers
+                                          setIsVoiceResponseEnabled(true);
+                                          // Focus on the input to encourage immediate use
+                                          setTimeout(() => {
+                                            document.getElementById('chat-input-field')?.focus();
+                                          }, 300);
+                                        }}
+                                        className="w-full bg-gradient-to-r from-green-500 to-cyan-600 text-white py-3 px-6 rounded-xl font-medium text-base hover:from-green-600 hover:to-cyan-700 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-green-500/25"
+                                      >
+                                        Start Chatting with Voices! 🎤
+                                      </button>
+                                      <button
+                                        onClick={() => setShowSubscriptionCelebrationModal(false)}
+                                        className="w-full bg-gray-800/50 text-gray-400 py-2.5 px-6 rounded-xl font-medium text-sm hover:bg-gray-700/50 hover:text-gray-300 transition-all duration-300"
+                                      >
+                                        Maybe later
+                                      </button>
+                                    </div>
+
+                                    <p className="text-gray-500 text-xs mt-4">
+                                      Voice responses can be toggled on/off anytime in the chat header
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+
                           // First Response Voice Modal Component
                           const FirstResponseVoiceModal = () => (
                             <div 
@@ -3626,6 +3769,9 @@ function Chat() {
 
                               {/* Upgrade Prompt Modal */}
                               <UpgradePromptModal />
+
+                              {/* Subscription Celebration Modal */}
+                              <SubscriptionCelebrationModal />
 
                               {/* First Response Voice Modal */}
                               <FirstResponseVoiceModal />

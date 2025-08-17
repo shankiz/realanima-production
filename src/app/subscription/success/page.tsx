@@ -49,6 +49,7 @@ function SubscriptionSuccessContent() {
                 // Force refresh of user data when navigating to chat
                 if (typeof window !== 'undefined') {
                   localStorage.setItem('refreshUserData', 'true');
+                  localStorage.setItem('justUpgraded', 'true');
                 }
               }}
             >
