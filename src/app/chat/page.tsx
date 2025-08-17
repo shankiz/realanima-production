@@ -2440,23 +2440,11 @@ function Chat() {
                                   <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-cyan-500/5 rounded-3xl pointer-events-none" />
 
                                   <div className="relative p-6">
-                                    {/* Close button */}
-                                    <button
-                                      onClick={() => setShowSubscriptionCelebrationModal(false)}
-                                      className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800/30"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-                                      </svg>
-                                    </button>
-
                                     {/* Header */}
                                     <div className="text-center mb-6">
-                                      {/* Success Icon */}
-                                      <div className="w-16 h-16 bg-gradient-to-br from-green-500/15 to-cyan-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                        </svg>
+                                      {/* Celebration Icon */}
+                                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500/15 to-pink-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/10">
+                                        <div className="text-3xl">🎉</div>
                                       </div>
                                       <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
                                         Welcome to {currentUserPlan === 'ultimate' ? 'Ultimate' : 'Premium'}!
