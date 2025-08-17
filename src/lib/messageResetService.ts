@@ -3,8 +3,8 @@ import { adminDb } from '@/lib/firebase/admin';
 
 class MessageResetService {
   private intervalId: NodeJS.Timeout | null = null;
-  private readonly RESET_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes for testing
-  private readonly CHECK_INTERVAL_MS = 30 * 1000; // Check every 30 seconds
+  private readonly RESET_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+  private readonly CHECK_INTERVAL_MS = 60 * 60 * 1000; // Check every hour
 
   // Message limits per plan
   private readonly MESSAGE_LIMITS = {
