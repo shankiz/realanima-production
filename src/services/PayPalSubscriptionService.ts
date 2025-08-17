@@ -45,7 +45,7 @@ console.log('🔍 Environment variable check:');
 console.log('PAYPAL_CLIENT_ID from env:', process.env.PAYPAL_CLIENT_ID ? `${process.env.PAYPAL_CLIENT_ID.substring(0, 10)}...` : 'MISSING');
 console.log('PAYPAL_CLIENT_SECRET from env:', process.env.PAYPAL_CLIENT_SECRET ? `${process.env.PAYPAL_CLIENT_SECRET.substring(0, 10)}...` : 'MISSING');
 const PAYPAL_BASE_URL = PAYPAL_MODE === 'live' 
-  ? 'https://api.paypal.com' 
+  ? 'https://api-m.paypal.com' 
   : 'https://api.sandbox.paypal.com';
 
 async function getPayPalAccessToken() {
