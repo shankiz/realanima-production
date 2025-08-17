@@ -897,7 +897,7 @@ function Chat() {
                             // Check if user just came from subscription success
                             if (subscriptionSuccess === 'success') {
                               console.log('🎉 Detected subscription success from URL parameter');
-
+                              
                               // Show celebration modal immediately for URL parameter
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -913,7 +913,7 @@ function Chat() {
                             const justUpgraded = localStorage.getItem('justUpgraded');
                             if (justUpgraded) {
                               console.log('🎉 Detected justUpgraded flag from localStorage');
-
+                              
                               // Show celebration modal immediately for fresh upgrades
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -927,7 +927,7 @@ function Chat() {
                             if (billingData?.subscription?.lastChargedAt && (currentUserPlan === 'premium' || currentUserPlan === 'ultimate')) {
                               try {
                                 let lastChargedDate;
-
+                                
                                 if (billingData.subscription.lastChargedAt?.seconds) {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
                                 } else if (typeof billingData.subscription.lastChargedAt === 'string') {
@@ -935,12 +935,12 @@ function Chat() {
                                 } else {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt);
                                 }
-
+                                
                                 const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-
+                                
                                 if (lastChargedDate > fiveMinutesAgo) {
                                   console.log('🎉 Detected very recent subscription from billing data');
-
+                                  
                                   // Check if we already showed the modal for this subscription
                                   const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`);
                                   if (!lastModalTime) {
@@ -2513,7 +2513,7 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      Voice responses can be toggled anytime in the chat header
+                                      Voice responses can be toggled anytime in the header
                                     </p>
                                   </div>
                                 </div>
@@ -4548,7 +4548,7 @@ function Chat() {
                                                 className="rounded-full object-cover"
                                               />
                                             </div>
-                                            <div                                            <div className="text-gray-500 text-sm italic flex items-center">
+                                            <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
                                               <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
