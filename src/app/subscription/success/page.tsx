@@ -50,6 +50,9 @@ function SubscriptionSuccessContent() {
                 if (typeof window !== 'undefined') {
                   localStorage.setItem('refreshUserData', 'true');
                   localStorage.setItem('justUpgraded', 'true');
+                  // Also set a timestamp for when the subscription was completed
+                  localStorage.setItem('subscriptionCompletedAt', Date.now().toString());
+                  console.log('🎯 Setting subscription success flags for modal detection');
                 }
               }}
             >
