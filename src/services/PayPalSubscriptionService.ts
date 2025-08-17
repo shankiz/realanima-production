@@ -24,7 +24,7 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     description: 'Premium subscription with 200 daily messages',
     price: 3.88,
     credits: 200,
-    interval: 'DAY' // Will change to MONTH in production
+    interval: 'MONTH'
   },
   ultimate: {
     id: 'ultimate',
@@ -32,7 +32,7 @@ export const SUBSCRIPTION_PLANS: Record<string, SubscriptionPlan> = {
     description: 'Ultimate subscription with 500 daily messages',
     price: 6.88,
     credits: 500,
-    interval: 'DAY' // Will change to MONTH in production
+    interval: 'MONTH'
   }
 };
 
@@ -295,8 +295,8 @@ export class PayPalSubscriptionService {
 
       // Get plan details - using full monthly prices
       const plans: Record<string, { price: string; description: string }> = {
-        premium: { price: '3.88', description: 'Premium Plan - Daily Billing' },
-        ultimate: { price: '6.88', description: 'Ultimate Plan - Daily Billing' }
+        premium: { price: '3.88', description: 'Premium Plan - Monthly Billing' },
+        ultimate: { price: '6.88', description: 'Ultimate Plan - Monthly Billing' }
       };
 
       const plan = plans[planId];

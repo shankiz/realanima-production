@@ -84,9 +84,9 @@ export async function POST(request: NextRequest) {
         premium: 200,
         ultimate: 500
       };
-      // Calculate next billing date (add 1 day for testing)
+      // Calculate next billing date (add 30 days for monthly billing)
       const nextBillingDate = new Date();
-      nextBillingDate.setDate(nextBillingDate.getDate() + 1);
+      nextBillingDate.setDate(nextBillingDate.getDate() + 30);
 
       // Update user subscription
       await adminDb.collection('users').doc(userId).update({
