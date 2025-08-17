@@ -2513,13 +2513,8 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      Voice responses can be toggled anytime in the chat header
+                                      Voice responses can be toggled anytime in the header
                                     </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );</old_str>
                                   </div>
                                 </div>
                               </div>
