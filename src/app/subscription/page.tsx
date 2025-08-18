@@ -589,25 +589,27 @@ export default function Subscription() {
           }}
         />
 
-        {/* Cancel Subscription Modal with detailed info and actual cancel functionality */}
+        {/* Cancel Subscription Modal with proper confirmation and clear messaging */}
         <AlertModal
           isOpen={showCancelModal}
           onClose={() => {
             setShowCancelModal(false);
             setSubscriptionDetails(null);
           }}
-          title="Cancel Your Subscription"
+          title="⚠️ Cancel Subscription"
           message={(() => {
             if (loadingSubscriptionDetails) {
-              return "Loading subscription details...";
+              return "Loading your subscription details...";
             }
             
             if (!subscriptionDetails?.subscription) {
-              return `Cancel your ${currentUserPlan} subscription?\n\nYour access will continue until your next billing date, then you'll be downgraded to the free plan.`;
+              const planName = currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1);
+              const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
+              return `You're about to cancel your ${planName} plan ($${planPrice}/month).\n\nWhat happens next:\n• Your subscription will be cancelled immediately\n• You'll keep access until your next billing date\n• Then you'll be downgraded to Free plan (30 messages/day)\n• No more charges will be made\n\nThis action cannot be undone.`;
             }
 
             const subscription = subscriptionDetails.subscription;
-            let nextBillingText = "Unknown";
+            let nextBillingText = "your next billing date";
             
             try {
               if (subscription.nextBillingDate) {
@@ -636,19 +638,21 @@ export default function Subscription() {
             const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
             const planCredits = plans.find(p => p.id === currentUserPlan)?.credits || 0;
 
-            return `${planName} Plan ($${planPrice}/month)
-${planCredits} daily messages
+            return `You're about to cancel your ${planName} plan ($${planPrice}/month).
+
+Current benefits: ${planCredits} daily messages
 Access until: ${nextBillingText}
 
-After cancellation:
+What happens after cancellation:
+• Your subscription ends immediately
 • Keep current benefits until ${nextBillingText}
 • Then downgrade to Free plan (30 messages/day)
-• No future charges
+• No more charges will be made
 
-Continue with cancellation?`;
+This action cannot be undone.`;
           })()}
-          buttonText={loadingSubscriptionDetails ? "Loading..." : "Cancel Subscription"}
-          type="warning"
+          buttonText={loadingSubscriptionDetails ? "Loading..." : "Yes, Cancel My Subscription"}
+          type="danger"
           onButtonClick={async () => {
             if (loadingSubscriptionDetails) return;
             
@@ -663,8 +667,10 @@ Continue with cancellation?`;
               });
 
               if (response.ok) {
+                const result = await response.json();
                 setShowCancelModal(false);
                 setSubscriptionDetails(null);
+                
                 // Refresh user plan
                 const profileResponse = await fetch('/api/user/profile', {
                   method: 'GET',
@@ -677,15 +683,17 @@ Continue with cancellation?`;
                   const data = await profileResponse.json();
                   setCurrentUserPlan(data.currentPlan || 'free');
                 }
-                // Show success message
-                alert('Subscription cancelled successfully. Your access will continue until your next billing date.');
+                
+                // Show clear success message
+                alert(`✅ Subscription cancelled successfully!\n\nYou'll keep your current benefits until ${result.accessUntil || 'your next billing date'}.\nAfter that, you'll automatically switch to the Free plan.`);
               } else {
                 const error = await response.json();
-                alert(`Failed to cancel subscription: ${error.error || 'Unknown error'}`);
+                console.error('Cancel subscription error:', error);
+                alert(`❌ Failed to cancel subscription:\n${error.error || 'Unknown error'}\n\nPlease try again or contact support.`);
               }
             } catch (error) {
               console.error('Error cancelling subscription:', error);
-              alert('Failed to cancel subscription. Please try again.');
+              alert('❌ Network error while cancelling subscription.\nPlease check your connection and try again.');
             }
           }}
         />

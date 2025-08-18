@@ -18,7 +18,8 @@ interface AlertModalProps {
   title: string;
   message: string;
   buttonText?: string;
-  type?: 'success' | 'error' | 'info';
+  type?: 'info' | 'warning' | 'success' | 'error' | 'danger';
+  onButtonClick?: () => void;
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -56,11 +57,11 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 bg-black/70 modal-overlay flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
+      <div
         className={`rounded-xl border ${getTypeStyles()} backdrop-blur-md shadow-2xl w-full max-w-md`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -79,10 +80,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 onClick={onConfirm}
                 disabled={confirmText.includes('...')}
                 className={`px-6 py-2.5 rounded-lg font-medium transition-all flex items-center ${
-                  confirmText.includes('...') 
-                    ? 'bg-gray-600 cursor-not-allowed opacity-75' 
-                    : type === 'danger' 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                  confirmText.includes('...')
+                    ? 'bg-gray-600 cursor-not-allowed opacity-75'
+                    : type === 'danger'
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
                     : type === 'warning'
                     ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
                     : 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -106,7 +107,8 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   title,
   message,
   buttonText = 'OK',
-  type = 'info'
+  type = 'info',
+  onButtonClick
 }) => {
   if (!isOpen) return null;
 
@@ -115,6 +117,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
       case 'success':
         return 'border-green-500/30 bg-green-950/20 modal-success';
       case 'error':
+      case 'danger':
         return 'border-red-500/30 bg-red-950/20 modal-error';
       default:
         return 'border-gray-700/30 bg-gray-950/90 modal-info';
@@ -123,21 +126,24 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
   const getButtonStyles = () => {
     switch (type) {
+      case 'warning':
+        return 'bg-yellow-600 hover:bg-yellow-700 text-white';
       case 'success':
         return 'bg-green-600 hover:bg-green-700 text-white';
       case 'error':
-        return 'bg-red-600 hover:bg-red-700 text-white';
+      case 'danger':
+        return 'bg-red-600 hover:bg-red-700 text-white border-2 border-red-500 shadow-lg shadow-red-500/25';
       default:
         return 'bg-blue-600 hover:bg-blue-700 text-white';
     }
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 bg-black/70 modal-overlay flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
+      <div
         className={`rounded-xl border ${getTypeStyles()} backdrop-blur-md shadow-2xl w-full max-w-md`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -146,7 +152,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
           <div className="text-gray-300 modal-message mb-6 whitespace-pre-line leading-relaxed">{message}</div>
           <div className="flex justify-end">
             <Button
-              onClick={onClose}
+              onClick={onButtonClick || onClose}
               className={getButtonStyles()}
             >
               {buttonText}
