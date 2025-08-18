@@ -175,11 +175,11 @@ export default function Subscription() {
     setLoadingSubscriptionDetails(true);
     setShowCancelModal(true);
     
-    // Fetch subscription details
+    // Fetch detailed subscription info like in chat page
     if (user) {
       try {
         const token = await user.getIdToken();
-        const response = await fetch('/api/user/profile', {
+        const response = await fetch('/api/subscription/status', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -490,16 +490,15 @@ export default function Subscription() {
           </div>
         )}
 
-        {/* Cancel Plan Button - Only show for active subscribers and when not in PayPal modal */}
+        {/* Cancel Plan Link - Only show for active subscribers and when not in PayPal modal */}
         {!showPayPal && currentUserPlan !== 'free' && (
           <div className="flex justify-end max-w-5xl mx-auto mb-8">
-            <Button
+            <button
               onClick={handleCancelClick}
-              variant="outline"
-              className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300 transition-all duration-200"
+              className="text-gray-400 hover:text-red-400 text-sm underline underline-offset-2 transition-colors duration-200"
             >
-              Cancel Subscription
-            </Button>
+              Cancel plan?
+            </button>
           </div>
         )}
 
@@ -584,122 +583,76 @@ export default function Subscription() {
           }}
         />
 
-        {/* Enhanced Cancel Subscription Modal */}
-        {showCancelModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
-                  Cancel Subscription
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowCancelModal(false);
-                    setSubscriptionDetails(null);
-                  }}
-                  className="text-gray-400 hover:text-white transition-colors duration-200 p-1 rounded-lg hover:bg-gray-700/30"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+        {/* Cancel Subscription Modal with detailed info like chat page */}
+        <AlertModal
+          isOpen={showCancelModal}
+          onClose={() => {
+            setShowCancelModal(false);
+            setSubscriptionDetails(null);
+          }}
+          title="Cancel Your Subscription"
+          message={(() => {
+            if (loadingSubscriptionDetails) {
+              return "Loading subscription details...";
+            }
+            
+            if (!subscriptionDetails?.subscription) {
+              return "To cancel your subscription:\n\n1. Go to your account settings in the chat page\n2. Navigate to \"Manage Billing\"\n3. Click \"Cancel Subscription\"\n\nYour access will continue until the end of your current billing period.";
+            }
 
-              {loadingSubscriptionDetails ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-500/20 border-t-purple-500"></div>
-                  <span className="ml-3 text-gray-400">Loading subscription details...</span>
-                </div>
-              ) : (
-                <>
-                  {/* Current Plan Info */}
-                  <div className="bg-gray-800/50 rounded-xl p-4 mb-6 border border-gray-700/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-medium text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
-                        Current Plan: {currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1)}
-                      </h3>
-                      <div className="bg-green-500/20 border border-green-500/30 text-green-400 text-xs font-medium px-2 py-1 rounded-full">
-                        ACTIVE
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Monthly Price:</span>
-                        <span className="text-white font-medium">
-                          ${plans.find(p => p.id === currentUserPlan)?.price || 0}/month
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Daily Messages:</span>
-                        <span className="text-white font-medium">
-                          {plans.find(p => p.id === currentUserPlan)?.credits || 0}
-                        </span>
-                      </div>
-                      {subscriptionDetails?.subscriptionEndDate && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Next Billing:</span>
-                          <span className="text-white font-medium">
-                            {new Date(subscriptionDetails.subscriptionEndDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+            const subscription = subscriptionDetails.subscription;
+            let nextBillingText = "Unknown";
+            
+            try {
+              if (subscription.nextBillingDate) {
+                let date;
+                if (typeof subscription.nextBillingDate === 'string') {
+                  date = new Date(subscription.nextBillingDate);
+                } else if (subscription.nextBillingDate?.seconds) {
+                  date = new Date(subscription.nextBillingDate.seconds * 1000);
+                } else {
+                  date = new Date(subscription.nextBillingDate);
+                }
+                
+                if (!isNaN(date.getTime())) {
+                  nextBillingText = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+                }
+              }
+            } catch (error) {
+              console.error('Error formatting next billing date:', error);
+            }
 
-                  {/* Cancellation Info */}
-                  <div className="mb-6">
-                    <h4 className="text-white font-medium mb-3">What happens when you cancel:</h4>
-                    <ul className="space-y-2 text-sm text-gray-400">
-                      <li className="flex items-start">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                        Your subscription will remain active until the end of your current billing period
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                        You'll keep all {plans.find(p => p.id === currentUserPlan)?.credits} daily messages until then
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                        After expiration, you'll be downgraded to the Free plan (30 messages/day)
-                      </li>
-                      <li className="flex items-start">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                        No further charges will be made
-                      </li>
-                    </ul>
-                  </div>
+            const planName = currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1);
+            const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
+            const planCredits = plans.find(p => p.id === currentUserPlan)?.credits || 0;
 
-                  {/* Action Buttons */}
-                  <div className="flex space-x-3">
-                    <Button
-                      onClick={() => {
-                        setShowCancelModal(false);
-                        setSubscriptionDetails(null);
-                        // Navigate to chat page billing management
-                        window.location.href = '/chat';
-                      }}
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white transition-colors duration-200"
-                      style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
-                    >
-                      Proceed to Cancel
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setShowCancelModal(false);
-                        setSubscriptionDetails(null);
-                      }}
-                      variant="outline"
-                      className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700/30"
-                    >
-                      Keep Subscription
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+            return `Current Subscription Details:
+
+Plan: ${planName} ($${planPrice}/month)
+Daily Messages: ${planCredits}
+Status: ${subscription.status === 'active' ? 'Active' : subscription.status}
+Next Billing: ${nextBillingText}
+
+What happens when you cancel:
+• Your subscription remains active until ${nextBillingText}
+• You keep all ${planCredits} daily messages until then
+• After that, you'll be downgraded to Free (30 messages/day)
+• No further charges will be made
+
+Would you like to proceed with cancellation?`;
+          })()}
+          buttonText={loadingSubscriptionDetails ? "Loading..." : "Go to Account Settings"}
+          type="info"
+          onButtonClick={() => {
+            setShowCancelModal(false);
+            setSubscriptionDetails(null);
+            window.location.href = '/chat';
+          }}
+        />
       </div>
     </div>
   );
