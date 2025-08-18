@@ -660,7 +660,7 @@ export default function Subscription() {
                             <h4 className="text-white font-bold text-lg" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
                               {planName} Plan
                             </h4>
-                            <p className="text-gray-400 text-sm">{planCredits} daily messages</p>
+                            <p className="text-gray-400 text-sm">Premium access</p>
                           </div>
                           <div className="text-right">
                             <div className="text-2xl font-bold text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
@@ -684,7 +684,7 @@ export default function Subscription() {
                         <div className="space-y-2">
                           {[
                             "Keep current benefits until " + nextBillingText,
-                            "Downgrade to Free plan (30 messages/day)",
+                            "Downgrade to Free plan",
                             "No more charges will be made",
                             "Can resubscribe anytime"
                           ].map((item, index) => (
@@ -701,21 +701,6 @@ export default function Subscription() {
 
                 {/* Action buttons */}
                 <div className="flex space-x-3">
-                  {/* Keep Plan button */}
-                  <button
-                    onClick={() => {
-                      setShowCancelModal(false);
-                      setSubscriptionDetails(null);
-                    }}
-                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
-                    style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <span>Keep Plan</span>
-                  </button>
-
                   {/* Cancel button */}
                   <button
                     onClick={async () => {
@@ -773,6 +758,21 @@ export default function Subscription() {
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     )}
                     <span>{loadingSubscriptionDetails ? "Cancelling..." : "Cancel Plan"}</span>
+                  </button>
+
+                  {/* Keep Plan button */}
+                  <button
+                    onClick={() => {
+                      setShowCancelModal(false);
+                      setSubscriptionDetails(null);
+                    }}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                    style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span>Keep Plan</span>
                   </button>
                 </div>
 
