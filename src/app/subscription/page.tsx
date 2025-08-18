@@ -589,114 +589,201 @@ export default function Subscription() {
           }}
         />
 
-        {/* Cancel Subscription Modal with proper confirmation and clear messaging */}
-        <AlertModal
-          isOpen={showCancelModal}
-          onClose={() => {
-            setShowCancelModal(false);
-            setSubscriptionDetails(null);
-          }}
-          title="⚠️ Cancel Subscription"
-          message={(() => {
-            if (loadingSubscriptionDetails) {
-              return "Loading your subscription details...";
-            }
-            
-            if (!subscriptionDetails?.subscription) {
-              const planName = currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1);
-              const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
-              return `You're about to cancel your ${planName} plan ($${planPrice}/month).\n\nWhat happens next:\n• Your subscription will be cancelled immediately\n• You'll keep access until your next billing date\n• Then you'll be downgraded to Free plan (30 messages/day)\n• No more charges will be made\n\nThis action cannot be undone.`;
-            }
+        {/* Enhanced Cancel Subscription Modal */}
+        {showCancelModal && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl border border-gray-600/30 shadow-2xl w-full max-w-lg relative overflow-hidden">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-transparent to-orange-500/5 pointer-events-none"></div>
+              
+              {/* Content */}
+              <div className="relative p-8">
+                {/* Header with icon */}
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+                    Cancel Subscription?
+                  </h3>
+                  <p className="text-gray-400 text-sm">This action will cancel your current plan</p>
+                </div>
 
-            const subscription = subscriptionDetails.subscription;
-            let nextBillingText = "your next billing date";
-            
-            try {
-              if (subscription.nextBillingDate) {
-                let date;
-                if (typeof subscription.nextBillingDate === 'string') {
-                  date = new Date(subscription.nextBillingDate);
-                } else if (subscription.nextBillingDate?.seconds) {
-                  date = new Date(subscription.nextBillingDate.seconds * 1000);
-                } else {
-                  date = new Date(subscription.nextBillingDate);
-                }
-                
-                if (!isNaN(date.getTime())) {
-                  nextBillingText = date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  });
-                }
-              }
-            } catch (error) {
-              console.error('Error formatting next billing date:', error);
-            }
+                {/* Plan info card */}
+                {(() => {
+                  if (loadingSubscriptionDetails) {
+                    return (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-500 border-t-transparent"></div>
+                        <span className="ml-3 text-gray-300">Loading details...</span>
+                      </div>
+                    );
+                  }
 
-            const planName = currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1);
-            const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
-            const planCredits = plans.find(p => p.id === currentUserPlan)?.credits || 0;
+                  const planName = currentUserPlan.charAt(0).toUpperCase() + currentUserPlan.slice(1);
+                  const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
+                  const planCredits = plans.find(p => p.id === currentUserPlan)?.credits || 0;
+                  
+                  let nextBillingText = "your next billing date";
+                  if (subscriptionDetails?.subscription?.nextBillingDate) {
+                    try {
+                      const subscription = subscriptionDetails.subscription;
+                      let date;
+                      if (typeof subscription.nextBillingDate === 'string') {
+                        date = new Date(subscription.nextBillingDate);
+                      } else if (subscription.nextBillingDate?.seconds) {
+                        date = new Date(subscription.nextBillingDate.seconds * 1000);
+                      } else {
+                        date = new Date(subscription.nextBillingDate);
+                      }
+                      
+                      if (!isNaN(date.getTime())) {
+                        nextBillingText = date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        });
+                      }
+                    } catch (error) {
+                      console.error('Error formatting date:', error);
+                    }
+                  }
 
-            return `You're about to cancel your ${planName} plan ($${planPrice}/month).
+                  return (
+                    <>
+                      {/* Current plan card */}
+                      <div className="bg-gray-800/50 rounded-xl p-6 mb-6 border border-gray-700/30">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <h4 className="text-white font-bold text-lg" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+                              {planName} Plan
+                            </h4>
+                            <p className="text-gray-400 text-sm">{planCredits} daily messages</p>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-white" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+                              ${planPrice}
+                            </div>
+                            <div className="text-gray-400 text-sm">/month</div>
+                          </div>
+                        </div>
+                        <div className="bg-gray-700/30 rounded-lg p-3">
+                          <p className="text-gray-300 text-sm">
+                            Access until: <span className="text-white font-medium">{nextBillingText}</span>
+                          </p>
+                        </div>
+                      </div>
 
-Current benefits: ${planCredits} daily messages
-Access until: ${nextBillingText}
+                      {/* What happens section */}
+                      <div className="mb-8">
+                        <h5 className="text-white font-medium mb-3" style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}>
+                          What happens after cancellation:
+                        </h5>
+                        <div className="space-y-2">
+                          {[
+                            "Keep current benefits until " + nextBillingText,
+                            "Downgrade to Free plan (30 messages/day)",
+                            "No more charges will be made",
+                            "Can resubscribe anytime"
+                          ].map((item, index) => (
+                            <div key={index} className="flex items-start space-x-3">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                              <p className="text-gray-300 text-sm">{item}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
 
-What happens after cancellation:
-• Your subscription ends immediately
-• Keep current benefits until ${nextBillingText}
-• Then downgrade to Free plan (30 messages/day)
-• No more charges will be made
+                {/* Action buttons */}
+                <div className="flex space-x-3">
+                  {/* Keep Plan button */}
+                  <button
+                    onClick={() => {
+                      setShowCancelModal(false);
+                      setSubscriptionDetails(null);
+                    }}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                    style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span>Keep Plan</span>
+                  </button>
 
-This action cannot be undone.`;
-          })()}
-          buttonText={loadingSubscriptionDetails ? "Loading..." : "Yes, Cancel My Subscription"}
-          type="danger"
-          onButtonClick={async () => {
-            if (loadingSubscriptionDetails) return;
-            
-            try {
-              const token = await user?.getIdToken();
-              const response = await fetch('/api/subscription/cancel', {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              });
+                  {/* Cancel button */}
+                  <button
+                    onClick={async () => {
+                      if (loadingSubscriptionDetails) return;
+                      
+                      try {
+                        const token = await user?.getIdToken();
+                        const response = await fetch('/api/subscription/cancel', {
+                          method: 'POST',
+                          headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                          },
+                        });
 
-              if (response.ok) {
-                const result = await response.json();
-                setShowCancelModal(false);
-                setSubscriptionDetails(null);
-                
-                // Refresh user plan
-                const profileResponse = await fetch('/api/user/profile', {
-                  method: 'GET',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
-                });
-                if (profileResponse.ok) {
-                  const data = await profileResponse.json();
-                  setCurrentUserPlan(data.currentPlan || 'free');
-                }
-                
-                // Show clear success message
-                alert(`✅ Subscription cancelled successfully!\n\nYou'll keep your current benefits until ${result.accessUntil || 'your next billing date'}.\nAfter that, you'll automatically switch to the Free plan.`);
-              } else {
-                const error = await response.json();
-                console.error('Cancel subscription error:', error);
-                alert(`❌ Failed to cancel subscription:\n${error.error || 'Unknown error'}\n\nPlease try again or contact support.`);
-              }
-            } catch (error) {
-              console.error('Error cancelling subscription:', error);
-              alert('❌ Network error while cancelling subscription.\nPlease check your connection and try again.');
-            }
-          }}
-        />
+                        if (response.ok) {
+                          const result = await response.json();
+                          setShowCancelModal(false);
+                          setSubscriptionDetails(null);
+                          
+                          // Refresh user plan
+                          const profileResponse = await fetch('/api/user/profile', {
+                            method: 'GET',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              'Content-Type': 'application/json',
+                            },
+                          });
+                          if (profileResponse.ok) {
+                            const data = await profileResponse.json();
+                            setCurrentUserPlan(data.currentPlan || 'free');
+                          }
+                          
+                          // Show success modal instead of alert
+                          alert(`✅ Subscription cancelled successfully!\n\nYou'll keep your current benefits until ${result.accessUntil || 'your next billing date'}.\nAfter that, you'll automatically switch to the Free plan.`);
+                        } else {
+                          const error = await response.json();
+                          console.error('Cancel subscription error:', error);
+                          alert(`❌ Failed to cancel subscription:\n${error.error || 'Unknown error'}\n\nPlease try again or contact support.`);
+                        }
+                      } catch (error) {
+                        console.error('Error cancelling subscription:', error);
+                        alert('❌ Network error while cancelling subscription.\nPlease check your connection and try again.');
+                      }
+                    }}
+                    disabled={loadingSubscriptionDetails}
+                    className={`flex-1 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 ${
+                      loadingSubscriptionDetails
+                        ? 'bg-gray-600 cursor-not-allowed opacity-75'
+                        : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-500/25'
+                    }`}
+                    style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
+                  >
+                    {loadingSubscriptionDetails && (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    )}
+                    <span>{loadingSubscriptionDetails ? "Cancelling..." : "Cancel Plan"}</span>
+                  </button>
+                </div>
+
+                {/* Fine print */}
+                <p className="text-center text-gray-500 text-xs mt-4">
+                  You can resubscribe anytime with the same benefits
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
