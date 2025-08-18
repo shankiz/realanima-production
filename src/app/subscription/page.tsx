@@ -492,13 +492,19 @@ export default function Subscription() {
 
         {/* Cancel Plan Link - Only show for active subscribers and when not in PayPal modal */}
         {!showPayPal && currentUserPlan !== 'free' && (
-          <div className="flex justify-end max-w-5xl mx-auto mb-8">
-            <button
-              onClick={handleCancelClick}
-              className="text-gray-400 hover:text-red-400 text-sm underline underline-offset-2 transition-colors duration-200"
-            >
-              Cancel plan?
-            </button>
+          <div className="max-w-5xl mx-auto mb-8 -mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div></div>
+              <div></div>
+              <div className="flex justify-center md:justify-end">
+                <button
+                  onClick={handleCancelClick}
+                  className="text-gray-500 hover:text-red-400 text-xs transition-colors duration-200"
+                >
+                  Cancel plan?
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -583,7 +589,7 @@ export default function Subscription() {
           }}
         />
 
-        {/* Cancel Subscription Modal with detailed info like chat page */}
+        {/* Cancel Subscription Modal with detailed info and actual cancel functionality */}
         <AlertModal
           isOpen={showCancelModal}
           onClose={() => {
@@ -597,7 +603,7 @@ export default function Subscription() {
             }
             
             if (!subscriptionDetails?.subscription) {
-              return "To cancel your subscription:\n\n1. Go to your account settings in the chat page\n2. Navigate to \"Manage Billing\"\n3. Click \"Cancel Subscription\"\n\nYour access will continue until the end of your current billing period.";
+              return `Cancel your ${currentUserPlan} subscription?\n\nYour access will continue until your next billing date, then you'll be downgraded to the free plan.`;
             }
 
             const subscription = subscriptionDetails.subscription;
@@ -630,27 +636,57 @@ export default function Subscription() {
             const planPrice = plans.find(p => p.id === currentUserPlan)?.price || 0;
             const planCredits = plans.find(p => p.id === currentUserPlan)?.credits || 0;
 
-            return `Current Subscription Details:
+            return `${planName} Plan ($${planPrice}/month)
+${planCredits} daily messages
+Access until: ${nextBillingText}
 
-Plan: ${planName} ($${planPrice}/month)
-Daily Messages: ${planCredits}
-Status: ${subscription.status === 'active' ? 'Active' : subscription.status}
-Next Billing: ${nextBillingText}
+After cancellation:
+• Keep current benefits until ${nextBillingText}
+• Then downgrade to Free plan (30 messages/day)
+• No future charges
 
-What happens when you cancel:
-• Your subscription remains active until ${nextBillingText}
-• You keep all ${planCredits} daily messages until then
-• After that, you'll be downgraded to Free (30 messages/day)
-• No further charges will be made
-
-Would you like to proceed with cancellation?`;
+Continue with cancellation?`;
           })()}
-          buttonText={loadingSubscriptionDetails ? "Loading..." : "Go to Account Settings"}
-          type="info"
-          onButtonClick={() => {
-            setShowCancelModal(false);
-            setSubscriptionDetails(null);
-            window.location.href = '/chat';
+          buttonText={loadingSubscriptionDetails ? "Loading..." : "Cancel Subscription"}
+          type="warning"
+          onButtonClick={async () => {
+            if (loadingSubscriptionDetails) return;
+            
+            try {
+              const token = await user?.getIdToken();
+              const response = await fetch('/api/subscription/cancel', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              if (response.ok) {
+                setShowCancelModal(false);
+                setSubscriptionDetails(null);
+                // Refresh user plan
+                const profileResponse = await fetch('/api/user/profile', {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+                if (profileResponse.ok) {
+                  const data = await profileResponse.json();
+                  setCurrentUserPlan(data.currentPlan || 'free');
+                }
+                // Show success message
+                alert('Subscription cancelled successfully. Your access will continue until your next billing date.');
+              } else {
+                const error = await response.json();
+                alert(`Failed to cancel subscription: ${error.error || 'Unknown error'}`);
+              }
+            } catch (error) {
+              console.error('Error cancelling subscription:', error);
+              alert('Failed to cancel subscription. Please try again.');
+            }
           }}
         />
       </div>
