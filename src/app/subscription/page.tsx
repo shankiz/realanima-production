@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertModal } from '@/components/ui/modal';
 import PayPalSubscription from '@/components/PayPalSubscription';
 import SuccessModal from '@/components/SuccessModal';
 import SplashCursor from '@/components/SplashCursor';
@@ -15,6 +16,7 @@ export default function Subscription() {
   const [currentUserPlan, setCurrentUserPlan] = useState<'free' | 'premium' | 'ultimate'>('free');
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [splashCursorEnabled, setSplashCursorEnabled] = useState(false);
 
   // Fetch user's current plan
@@ -459,6 +461,18 @@ export default function Subscription() {
           </div>
         )}
 
+        {/* Cancel Plan Link - Only show for active subscribers and when not in PayPal modal */}
+        {!showPayPal && currentUserPlan !== 'free' && (
+          <div className="flex justify-end max-w-5xl mx-auto mb-8">
+            <button
+              onClick={() => setShowCancelModal(true)}
+              className="text-gray-400 hover:text-red-400 text-sm underline underline-offset-2 transition-colors duration-200"
+            >
+              Cancel plan?
+            </button>
+          </div>
+        )}
+
         {/* Security & Trust Section - Only show when not in PayPal modal */}
         {!showPayPal && (
           <div className="text-center mb-32">
@@ -538,6 +552,16 @@ export default function Subscription() {
               window.location.href = '/chat';
             }
           }}
+        />
+
+        {/* Cancel Plan Instructions Modal */}
+        <AlertModal
+          isOpen={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          title="Cancel Your Subscription"
+          message={`To cancel your ${currentUserPlan} subscription:\n\n1. Go to your account settings in the chat page\n2. Navigate to "Manage Billing"\n3. Click "Cancel Subscription"\n\nYour access will continue until the end of your current billing period.`}
+          buttonText="Go to Account Settings"
+          type="info"
         />
       </div>
     </div>
