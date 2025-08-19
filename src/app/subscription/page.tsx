@@ -19,6 +19,7 @@ export default function Subscription() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [subscriptionDetails, setSubscriptionDetails] = useState<any>(null);
   const [loadingSubscriptionDetails, setLoadingSubscriptionDetails] = useState(false);
+  const [cancellingSubscription, setCancellingSubscription] = useState(false);
   const [splashCursorEnabled, setSplashCursorEnabled] = useState(false);
 
   // Fetch user's current plan and subscription details
@@ -839,8 +840,9 @@ export default function Subscription() {
                   {/* Cancel button */}
                   <button
                     onClick={async () => {
-                      if (loadingSubscriptionDetails) return;
+                      if (loadingSubscriptionDetails || cancellingSubscription) return;
                       
+                      setCancellingSubscription(true);
                       try {
                         const token = await user?.getIdToken();
                         const response = await fetch('/api/subscription/cancel', {
@@ -895,20 +897,22 @@ export default function Subscription() {
                       } catch (error) {
                         console.error('Error cancelling subscription:', error);
                         alert('❌ Network error while cancelling subscription.\nPlease check your connection and try again.');
+                      } finally {
+                        setCancellingSubscription(false);
                       }
                     }}
-                    disabled={loadingSubscriptionDetails}
+                    disabled={loadingSubscriptionDetails || cancellingSubscription}
                     className={`flex-1 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 ${
-                      loadingSubscriptionDetails
+                      loadingSubscriptionDetails || cancellingSubscription
                         ? 'bg-gray-600 cursor-not-allowed opacity-75'
                         : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-500/25'
                     }`}
                     style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
                   >
-                    {loadingSubscriptionDetails && (
+                    {cancellingSubscription && (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     )}
-                    <span>{loadingSubscriptionDetails ? "Cancelling..." : "Cancel Plan"}</span>
+                    <span>{cancellingSubscription ? "Cancelling..." : "Cancel Plan"}</span>
                   </button>
 
                   {/* Keep Plan button */}
