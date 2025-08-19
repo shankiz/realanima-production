@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get plan details
-    const plan = SUBSCRIPTION_PLANS[planId];
+    const plan = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS];
     if (!plan) {
       return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 });
     }
