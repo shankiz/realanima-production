@@ -58,6 +58,11 @@ async function handlePaymentCompleted(webhookData: any) {
   try {
     console.log('💳 Processing payment completed');
     
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return;
+    }
+    
     const subscriptionId = webhookData.resource?.billing_agreement_id;
     if (!subscriptionId) {
       console.log('⚠️ No subscription ID found in payment data');
@@ -115,6 +120,11 @@ async function handleSubscriptionActivated(webhookData: any) {
   try {
     console.log('🔄 Processing subscription activated');
     
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return;
+    }
+    
     const subscriptionId = webhookData.resource?.id;
     if (!subscriptionId) return;
 
@@ -139,6 +149,11 @@ async function handleSubscriptionActivated(webhookData: any) {
 async function handleSubscriptionCancelled(webhookData: any) {
   try {
     console.log('❌ Processing subscription cancelled');
+    
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return;
+    }
     
     const subscriptionId = webhookData.resource?.id;
     if (!subscriptionId) return;
@@ -166,6 +181,11 @@ async function handleSubscriptionSuspended(webhookData: any) {
   try {
     console.log('⏸️ Processing subscription suspended');
     
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return;
+    }
+    
     const subscriptionId = webhookData.resource?.id;
     if (!subscriptionId) return;
 
@@ -191,6 +211,11 @@ async function handleSubscriptionSuspended(webhookData: any) {
 async function handlePaymentFailed(webhookData: any) {
   try {
     console.log('⚠️ Processing payment failed');
+    
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return;
+    }
     
     const subscriptionId = webhookData.resource?.billing_agreement_id;
     if (!subscriptionId) return;
