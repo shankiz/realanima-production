@@ -1,8 +1,7 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { PayPalSubscriptionService, SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
-// import { doc, setDoc, updateDoc } from 'firebase/firestore';
-// import { db } from '@/lib/firebase/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,20 +25,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const { setupTokenId, planId } = await request.json();
+    const { orderId, planId } = await request.json();
 
-    if (!setupTokenId || !planId) {
+    if (!orderId || !planId) {
       return NextResponse.json({ 
-        error: 'Missing required fields: setupTokenId, planId' 
+        error: 'Missing required fields: orderId, planId' 
       }, { status: 400 });
     }
 
-    console.log('🔄 Creating payment token from setup token:', setupTokenId);
+    console.log('💰 Capturing PayPal order:', orderId);
 
     const paypalService = new PayPalSubscriptionService();
-    const paymentToken = await paypalService.createPaymentToken(setupTokenId);
+    const capturedOrder = await paypalService.captureOrder(orderId);
 
-    console.log('✅ Payment token created:', paymentToken.id);
+    console.log('✅ Payment captured:', capturedOrder.id);
+
+    // Verify payment was successful
+    if (capturedOrder.status !== 'COMPLETED') {
+      console.error('❌ Payment failed:', capturedOrder);
+      return NextResponse.json({ 
+        error: 'Payment failed', 
+        details: capturedOrder.status 
+      }, { status: 400 });
+    }
 
     // Get plan details
     const plan = SUBSCRIPTION_PLANS[planId];
@@ -50,40 +58,7 @@ export async function POST(request: NextRequest) {
     // Generate subscription ID
     const subscriptionId = `${decodedToken.uid}-${planId}-${Date.now()}`;
 
-    console.log('💳 Creating immediate payment order for subscription...');
-
-    // Create and capture order immediately (like PayPal standard example)
-    const order = await paypalService.createSubscriptionOrder(paymentToken.id, planId);
-    console.log('📦 Order created:', order.id);
-
-    let finalOrder = order;
-    
-    // Only capture if the order is not already completed
-    if (order.status === 'CREATED' || order.status === 'APPROVED') {
-      console.log('🔄 Order needs capture, capturing...');
-      const captureResult = await paypalService.captureOrder(order.id);
-      console.log('💰 Payment captured:', captureResult.id);
-      finalOrder = captureResult;
-    } else if (order.status === 'COMPLETED') {
-      console.log('✅ Order was already completed during creation (vault payment)');
-    } else {
-      console.error('❌ Unexpected order status:', order.status);
-      return NextResponse.json({ 
-        error: 'Payment failed', 
-        details: `Unexpected order status: ${order.status}` 
-      }, { status: 400 });
-    }
-
-    // Verify payment was successful
-    if (finalOrder.status !== 'COMPLETED') {
-      console.error('❌ Payment failed:', finalOrder);
-      return NextResponse.json({ 
-        error: 'Payment failed', 
-        details: finalOrder.status 
-      }, { status: 400 });
-    }
-
-    console.log('✅ Payment processed successfully! Order ID:', finalOrder.id);
+    console.log('✅ Payment processed successfully! Order ID:', capturedOrder.id);
 
     // Save subscription to Firebase
     const subscriptionData = {
@@ -91,15 +66,13 @@ export async function POST(request: NextRequest) {
       userId: decodedToken.uid,
       planId,
       status: 'active',
-      paymentTokenId: paymentToken.id,
       payerInfo: {
-        email: paymentToken.payment_source?.paypal?.email_address || decodedToken.email || 'unknown@example.com',
-        payerId: paymentToken.payment_source?.paypal?.payer_id || paymentToken.customer?.id || 'unknown'
+        email: decodedToken.email || 'unknown@example.com',
+        payerId: capturedOrder.payer?.payer_id || 'unknown'
       },
-      // Add transaction details
       initialPayment: {
-        orderId: finalOrder.id,
-        transactionId: finalOrder.id,
+        orderId: capturedOrder.id,
+        transactionId: capturedOrder.id,
         amount: plan.price,
         currency: 'USD',
         status: 'COMPLETED',
@@ -135,12 +108,11 @@ export async function POST(request: NextRequest) {
           currentPlan: planId,
           subscriptionId: subscriptionId,
           subscriptionStatus: 'active',
-          lastMessageReset: new Date(), // Initialize message reset tracking
+          lastMessageReset: new Date(),
           'subscription.lastChargedAt': new Date().toISOString(),
           'subscription.nextBillingDate': new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000)).toISOString(),
           'subscription.status': 'active',
           'subscription.planId': planId,
-          'subscription.paymentTokenId': paymentToken.id,
           lastUpdated: new Date()
         });
       } else {
@@ -154,13 +126,12 @@ export async function POST(request: NextRequest) {
           currentPlan: planId,
           subscriptionId: subscriptionId,
           subscriptionStatus: 'active',
-          lastMessageReset: new Date(), // Initialize message reset tracking
+          lastMessageReset: new Date(),
           subscription: {
             lastChargedAt: new Date().toISOString(),
             nextBillingDate: new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000)).toISOString(),
             status: 'active',
-            planId: planId,
-            paymentTokenId: paymentToken.id
+            planId: planId
           },
           createdAt: new Date(),
           lastUpdated: new Date()
@@ -180,14 +151,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      paymentToken: paymentToken.id,
       subscriptionId: subscriptionId,
       subscription: subscriptionData,
       planUpgraded: planId,
-      // Add payment confirmation details
       payment: {
-        orderId: finalOrder.id,
-        transactionId: finalOrder.id,
+        orderId: capturedOrder.id,
+        transactionId: capturedOrder.id,
         amount: plan.price,
         status: 'COMPLETED'
       }
