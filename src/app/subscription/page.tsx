@@ -406,7 +406,13 @@ export default function Subscription() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16 -mt-4">
             {plans.map((plan, index) => {
-            const isCurrentPlan = currentUserPlan?.toLowerCase() === plan.id.toLowerCase();
+            // Check if subscription is cancelled
+            const isSubscriptionCancelled = subscriptionDetails?.subscription?.status === 'cancelled' || 
+                                            subscriptionDetails?.subscription?.cancelledAt;
+            
+            // For cancelled subscriptions, don't show as current plan
+            const isCurrentPlan = currentUserPlan?.toLowerCase() === plan.id.toLowerCase() && !isSubscriptionCancelled;
+            
             return (
             <Card 
                 key={plan.id} 
@@ -471,7 +477,7 @@ export default function Subscription() {
                 </CardContent>
 
                 <CardFooter className="px-6 pb-6 mt-auto relative z-10">
-                  {plan.current ? (
+                  {isCurrentPlan ? (
                     <Button 
                       className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 text-sm rounded-lg transition-all duration-200"
                       disabled
@@ -499,7 +505,9 @@ export default function Subscription() {
                       `}
                       style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
                     >
-                      Subscribe Now
+                      {isSubscriptionCancelled && currentUserPlan?.toLowerCase() === plan.id.toLowerCase() 
+                        ? 'Resubscribe' 
+                        : 'Subscribe Now'}
                     </Button>
                   )}
                 </CardFooter>
