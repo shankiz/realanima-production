@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       nextBillingDate.setMonth(nextBillingDate.getMonth() + (billingFrequency.interval_count || 1));
     } else if (billingFrequency.interval_unit === 'YEAR') {
       nextBillingDate.setFullYear(nextBillingDate.getFullYear() + (billingFrequency.interval_count || 1));
-    }onth() + 1);
+    }
 
     // Update user in Firestore
     const userRef = adminDb.collection('users').doc(uid);
