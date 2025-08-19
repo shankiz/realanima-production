@@ -341,4 +341,43 @@ export class PayPalSubscriptionService {
       return { success: false, error: error instanceof Error ? error.message : 'Failed to activate subscription' };
     }
   }
+
+  async chargeRecurringSubscription(paymentTokenId: string, planId: string, subscriptionId: string): Promise<{ success: boolean; orderId?: string; error?: string }> {
+    try {
+      console.log(`💳 Starting recurring charge for subscription ${subscriptionId} with plan ${planId}`);
+
+      // Create order using the payment token
+      const orderResult = await this.createSubscriptionOrder(paymentTokenId, planId);
+      
+      if (!orderResult.id) {
+        return { success: false, error: 'Failed to create order for recurring charge' };
+      }
+
+      console.log(`📦 Order created for recurring charge: ${orderResult.id}`);
+
+      // Capture the order
+      const captureResult = await this.captureOrder(orderResult.id);
+      
+      if (captureResult.status === 'COMPLETED') {
+        console.log(`✅ Recurring charge completed successfully for order ${orderResult.id}`);
+        return { 
+          success: true, 
+          orderId: orderResult.id 
+        };
+      } else {
+        console.error(`❌ Recurring charge failed for order ${orderResult.id}:`, captureResult);
+        return { 
+          success: false, 
+          error: `Payment capture failed: ${captureResult.status}` 
+        };
+      }
+
+    } catch (error) {
+      console.error('Error processing recurring charge:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to process recurring charge' 
+      };
+    }
+  }
 }
