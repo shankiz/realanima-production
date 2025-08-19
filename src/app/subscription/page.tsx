@@ -72,7 +72,7 @@ export default function Subscription() {
     fetchUserPlan();
   }, [user]);
 
-  // Listen for payment success from URL parameters
+  // Listen for payment success from URL parameters or page focus
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -96,6 +96,22 @@ export default function Subscription() {
             if (response.ok) {
               const data = await response.json();
               setCurrentUserPlan(data.currentPlan || 'free');
+              
+              // Also refresh subscription details
+              if (data.currentPlan === 'premium' || data.currentPlan === 'ultimate') {
+                const subResponse = await fetch('/api/subscription/status', {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (subResponse.ok) {
+                  const subData = await subResponse.json();
+                  setSubscriptionDetails(subData);
+                }
+              }
             }
           } catch (error) {
             console.error('Error refreshing user plan:', error);
@@ -109,7 +125,61 @@ export default function Subscription() {
         window.history.replaceState({}, '', newUrl);
       }
     }
-  }, [user]);
+
+    // Also refresh data when the page becomes visible (user returns from PayPal)
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && user) {
+        console.log('🔄 Page became visible, refreshing subscription data...');
+        try {
+          const token = await user.getIdToken();
+          const response = await fetch('/api/user/profile', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const newPlan = data.currentPlan || 'free';
+            
+            // Only update if the plan actually changed
+            if (newPlan !== currentUserPlan) {
+              console.log(`📱 Plan changed from ${currentUserPlan} to ${newPlan}`);
+              setCurrentUserPlan(newPlan);
+              
+              // Refresh subscription details if needed
+              if (newPlan === 'premium' || newPlan === 'ultimate') {
+                const subResponse = await fetch('/api/subscription/status', {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (subResponse.ok) {
+                  const subData = await subResponse.json();
+                  setSubscriptionDetails(subData);
+                }
+              } else {
+                setSubscriptionDetails(null);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing user plan on visibility change:', error);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, currentUserPlan]);
 
   const plans = [
     {
@@ -158,15 +228,12 @@ export default function Subscription() {
     setShowPayPal(false);
     setSelectedPlan(null);
 
-    // Add a 2-second delay before showing the success modal for better UX
-    setTimeout(() => {
-      setShowSuccessModal(true);
-    }, 2000);
-
-    // Refresh user plan data after successful payment
+    // Refresh user plan data immediately after successful payment
     if (user) {
       try {
         const token = await user.getIdToken();
+        
+        // Refresh user profile
         const response = await fetch('/api/user/profile', {
           method: 'GET',
           headers: {
@@ -178,11 +245,35 @@ export default function Subscription() {
         if (response.ok) {
           const data = await response.json();
           setCurrentUserPlan(data.currentPlan || 'free');
+          
+          // Also refresh subscription details to get the latest status
+          if (data.currentPlan === 'premium' || data.currentPlan === 'ultimate') {
+            const subResponse = await fetch('/api/subscription/status', {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (subResponse.ok) {
+              const subData = await subResponse.json();
+              setSubscriptionDetails(subData);
+            }
+          } else {
+            // Clear subscription details if user is back to free plan
+            setSubscriptionDetails(null);
+          }
         }
       } catch (error) {
         console.error('Error refreshing user plan:', error);
       }
     }
+
+    // Add a 2-second delay before showing the success modal for better UX
+    setTimeout(() => {
+      setShowSuccessModal(true);
+    }, 2000);
   };
 
   const handlePayPalError = (error: string) => {
