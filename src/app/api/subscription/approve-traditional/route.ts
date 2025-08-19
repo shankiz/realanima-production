@@ -88,9 +88,18 @@ export async function POST(request: NextRequest) {
 
     const credits = planCredits[planId as keyof typeof planCredits] || 0;
 
-    // Calculate next billing date (monthly)
+    // Get billing frequency from PayPal subscription details
+    const billingFrequency = subscriptionData.billing_info?.cycle_executions?.[0]?.frequency || { interval_unit: 'DAY', interval_count: 1 };
+    
+    // Calculate next billing date based on actual frequency
     const nextBillingDate = new Date();
-    nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+    if (billingFrequency.interval_unit === 'DAY') {
+      nextBillingDate.setDate(nextBillingDate.getDate() + (billingFrequency.interval_count || 1));
+    } else if (billingFrequency.interval_unit === 'MONTH') {
+      nextBillingDate.setMonth(nextBillingDate.getMonth() + (billingFrequency.interval_count || 1));
+    } else if (billingFrequency.interval_unit === 'YEAR') {
+      nextBillingDate.setFullYear(nextBillingDate.getFullYear() + (billingFrequency.interval_count || 1));
+    }onth() + 1);
 
     // Update user in Firestore
     const userRef = adminDb.collection('users').doc(uid);

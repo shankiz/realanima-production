@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { PayPalSubscriptionService } from '@/services/PayPalSubscriptionService';
@@ -23,7 +22,7 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     const userDoc = await adminDb.collection('users').doc(userId).get();
     if (!userDoc.exists) {
       return NextResponse.json(
@@ -85,7 +84,30 @@ export async function POST(request: NextRequest) {
     // Update next billing date if available
     if (nextBillingTime) {
       updatedFields['subscription.nextBillingDate'] = new Date(nextBillingTime).toISOString();
+    } else {
+      // Calculate next billing based on subscription frequency
+      let nextBilling;
+      if (subscriptionDetails.billing_info?.next_billing_time) {
+        nextBilling = new Date(subscriptionDetails.billing_info.next_billing_time);
+      } else {
+        // Fallback: calculate based on plan frequency
+        const billingFrequency = subscriptionDetails.plan?.billing_cycles?.[0]?.frequency || { interval_unit: 'DAY', interval_count: 1 };
+        nextBilling = new Date();
+
+        if (billingFrequency.interval_unit === 'DAY') {
+          nextBilling.setDate(nextBilling.getDate() + (billingFrequency.interval_count || 1));
+        } else if (billingFrequency.interval_unit === 'MONTH') {
+          nextBilling.setMonth(nextBilling.getMonth() + (billingFrequency.interval_count || 1));
+        } else if (billingFrequency.interval_unit === 'YEAR') {
+          nextBilling.setFullYear(nextBilling.getFullYear() + (billingFrequency.interval_count || 1));
+        } else {
+          // Default fallback to daily
+          nextBilling.setDate(nextBilling.getDate() + 1);
+        }
+      }
+      updatedFields['subscription.nextBillingDate'] = nextBilling.toISOString();
     }
+
 
     // Update user data
     await adminDb.collection('users').doc(userId).update(updatedFields);
