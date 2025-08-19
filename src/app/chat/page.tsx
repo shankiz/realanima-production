@@ -4744,5 +4744,3 @@ function Chat() {
                             </div>
                           );
                         };
-```
-This change correctly closes the `Chat` component, resolving the JSX parsing error.
