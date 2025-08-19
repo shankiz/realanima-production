@@ -44,8 +44,8 @@ console.log('🔍 Environment variable check:');
 console.log('PAYPAL_CLIENT_ID from env:', process.env.PAYPAL_CLIENT_ID ? `${process.env.PAYPAL_CLIENT_ID.substring(0, 10)}...` : 'MISSING');
 console.log('PAYPAL_CLIENT_SECRET from env:', process.env.PAYPAL_CLIENT_SECRET ? `${process.env.PAYPAL_CLIENT_SECRET.substring(0, 10)}...` : 'MISSING');
 
-const PAYPAL_BASE_URL = PAYPAL_MODE === 'live' 
-  ? 'https://api.paypal.com' 
+const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
+  ? 'https://api.paypal.com'
   : 'https://api.sandbox.paypal.com';
 
 async function getPayPalAccessToken() {
@@ -89,118 +89,6 @@ async function getPayPalAccessToken() {
 }
 
 export class PayPalSubscriptionService {
-  async createPaymentToken(setupTokenId: string) {
-    const accessToken = await getPayPalAccessToken();
-
-    const response = await fetch(`${PAYPAL_BASE_URL}/v2/vault/payment-tokens`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': uuidv4(),
-      },
-      body: JSON.stringify({
-        payment_source: {
-          token: {
-            id: setupTokenId,
-            type: 'SETUP_TOKEN'
-          }
-        }
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error('PayPal create payment token error:', {
-        status: response.status,
-        statusText: response.statusText,
-        result: result
-      });
-      throw new Error(`Failed to create payment token: ${result.message || result.error_description || 'Unknown error'}`);
-    }
-
-    console.log('✅ Payment token created successfully:', result);
-    return result;
-  }
-
-  async createSubscriptionOrder(paymentTokenId: string, planId: string) {
-    const accessToken = await getPayPalAccessToken();
-    const plan = SUBSCRIPTION_PLANS[planId];
-
-    if (!plan) {
-      throw new Error(`Invalid plan ID: ${planId}`);
-    }
-
-    const orderData = {
-      intent: 'CAPTURE',
-      purchase_units: [{
-        amount: {
-          currency_code: 'USD',
-          value: plan.price.toFixed(2)
-        },
-        description: `${plan.name} - ${plan.description}`
-      }],
-      payment_source: {
-        token: {
-          id: paymentTokenId,
-          type: 'PAYMENT_TOKEN'
-        }
-      }
-    };
-
-    const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': uuidv4(),
-      },
-      body: JSON.stringify(orderData),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error('PayPal create order error:', {
-        status: response.status,
-        statusText: response.statusText,
-        result: result
-      });
-      throw new Error(`Failed to create order: ${result.message || result.error_description || 'Unknown error'}`);
-    }
-
-    console.log('✅ Order created successfully:', result);
-    return result;
-  }
-
-  async captureOrder(orderId: string) {
-    const accessToken = await getPayPalAccessToken();
-
-    const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': uuidv4(),
-      },
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error('PayPal capture order error:', {
-        status: response.status,
-        statusText: response.statusText,
-        result: result
-      });
-      throw new Error(`Failed to capture order: ${result.message || result.error_description || 'Unknown error'}`);
-    }
-
-    console.log('✅ Order captured successfully:', result);
-    return result;
-  }
-
   async getSubscriptionDetails(subscriptionId: string) {
     const accessToken = await getPayPalAccessToken();
 
@@ -339,45 +227,6 @@ export class PayPalSubscriptionService {
     } catch (error) {
       console.error('Error activating subscription:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Failed to activate subscription' };
-    }
-  }
-
-  async chargeRecurringSubscription(paymentTokenId: string, planId: string, subscriptionId: string): Promise<{ success: boolean; orderId?: string; error?: string }> {
-    try {
-      console.log(`💳 Starting recurring charge for subscription ${subscriptionId} with plan ${planId}`);
-
-      // Create order using the payment token
-      const orderResult = await this.createSubscriptionOrder(paymentTokenId, planId);
-      
-      if (!orderResult.id) {
-        return { success: false, error: 'Failed to create order for recurring charge' };
-      }
-
-      console.log(`📦 Order created for recurring charge: ${orderResult.id}`);
-
-      // Capture the order
-      const captureResult = await this.captureOrder(orderResult.id);
-      
-      if (captureResult.status === 'COMPLETED') {
-        console.log(`✅ Recurring charge completed successfully for order ${orderResult.id}`);
-        return { 
-          success: true, 
-          orderId: orderResult.id 
-        };
-      } else {
-        console.error(`❌ Recurring charge failed for order ${orderResult.id}:`, captureResult);
-        return { 
-          success: false, 
-          error: `Payment capture failed: ${captureResult.status}` 
-        };
-      }
-
-    } catch (error) {
-      console.error('Error processing recurring charge:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to process recurring charge' 
-      };
     }
   }
 }
