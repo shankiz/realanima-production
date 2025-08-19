@@ -11,9 +11,6 @@ import { useSearchParams } from 'next/navigation';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
                         import ChatSupportBubble from '@/components/ChatSupportBubble';
-                        // Importing the CallInterface component
-                        import CallInterface from '@/components/CallInterface';
-
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
@@ -900,7 +897,7 @@ function Chat() {
                             // Check if user just came from subscription success
                             if (subscriptionSuccess === 'success') {
                               console.log('🎉 Detected subscription success from URL parameter');
-
+                              
                               // Show celebration modal immediately for URL parameter
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -916,7 +913,7 @@ function Chat() {
                             const justUpgraded = localStorage.getItem('justUpgraded');
                             if (justUpgraded) {
                               console.log('🎉 Detected justUpgraded flag from localStorage');
-
+                              
                               // Show celebration modal immediately for fresh upgrades
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -930,7 +927,7 @@ function Chat() {
                             if (billingData?.subscription?.lastChargedAt && (currentUserPlan === 'premium' || currentUserPlan === 'ultimate')) {
                               try {
                                 let lastChargedDate;
-
+                                
                                 if (billingData.subscription.lastChargedAt?.seconds) {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
                                 } else if (typeof billingData.subscription.lastChargedAt === 'string') {
@@ -938,12 +935,12 @@ function Chat() {
                                 } else {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt);
                                 }
-
+                                
                                 const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-
+                                
                                 if (lastChargedDate > fiveMinutesAgo) {
                                   console.log('🎉 Detected very recent subscription from billing data');
-
+                                  
                                   // Check if we already showed the modal for this subscription
                                   const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`);
                                   if (!lastModalTime) {
@@ -1026,7 +1023,7 @@ function Chat() {
                             // Check cache first (valid for 10 seconds)
                             const cacheKey = `${user.uid}-${character}`;
                             const cached = historyCache.get(cacheKey);
-                            const now = Date.Date.now();
+                            const now = Date.now();
 
                             if (!forceRefresh && cached && (now - cached.timestamp < 10000)) {
                               console.log('Using cached history for character:', character);
@@ -3595,7 +3592,6 @@ function Chat() {
                                                     </div>
                                                   )}
                                                 </div>
-
                                               </div>
                                             </div>
                                           </div>
@@ -3766,530 +3762,21 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-                          );
+          );
 
-                          // Call Interface Component
-                          const CallInterface = () => {
-                            const { user } = useAuth();
-                            const micRef = useRef<HTMLButtonElement>(null);
-                            const videoRef = useRef<HTMLButtonElement>(null);
-                            const hangupRef = useRef<HTMLButtonElement>(null);
-                            const inputFieldRef = useRef<HTMLTextAreaElement>(null);
-                            const transcriptRef = useRef<HTMLDivElement>(null);
-                            const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-                            const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-                            const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
-                            const [isMuted, setIsMuted] = useState(false);
-                            const [isCameraOff, setIsCameraOff] = useState(false);
-                            const [currentCallStatus, setCurrentCallStatus] = useState<'idle' | 'connecting' | 'connected' | 'disconnected'>('idle');
-                            const [localVideoEnabled, setLocalVideoEnabled] = useState(true);
-
-                            const characterName = getCharacterName(character || 'gojo');
-                            const characterImage = getCharacterImage(character || 'gojo');
-
-                            const handleToggleMic = () => {
-                              if (localStream) {
-                                const audioTracks = localStream.getAudioTracks();
-                                if (audioTracks.length > 0) {
-                                  const isMuted = audioTracks[0].enabled === false;
-                                  audioTracks[0].enabled = !isMuted;
-                                  setIsMuted(!isMuted);
-                                }
-                              }
-                            };
-
-                            const handleToggleCamera = () => {
-                              if (localStream) {
-                                const videoTracks = localStream.getVideoTracks();
-                                if (videoTracks.length > 0) {
-                                  const isEnabled = videoTracks[0].enabled === false;
-                                  videoTracks[0].enabled = !isEnabled;
-                                  setIsCameraOff(!isCameraOff);
-                                  setLocalVideoEnabled(!isEnabled);
-                                }
-                              }
-                            };
-
-                            // Placeholder for starting the call
-                            const handleStartCall = async () => {
-                              console.log('📞 Starting call...');
-                              if (!user || !character) return;
-
-                              try {
-                                const token = await user.getIdToken();
-                                const response = await fetch('/api/call/start', {
-                                  method: 'POST',
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json',
-                                  },
-                                  body: JSON.JSON.stringify({ characterId: character }),
-                                });
-
-                                if (response.ok) {
-                                  const data = await response.json();
-                                  console.log('✅ Call started:', data);
-                                  // Proceed to initialize media and establish connection
-                                  initializeMedia();
-                                } else {
-                                  console.error('❌ Failed to start call:', response.status, await response.text());
-                                  showCustomAlert('Call Error', 'Failed to initiate the call. Please try again.', { type: 'error' });
-                                }
-                              } catch (error) {
-                                console.error('❌ Error starting call:', error);
-                                showCustomAlert('Call Error', 'An unexpected error occurred while starting the call.', { type: 'error' });
-                              }
-                            };
-
-                            // Initialize media devices (camera and microphone)
-                            const initializeMedia = async () => {
-                              console.log('Initializing media devices...');
-                              try {
-                                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                                setLocalStream(stream);
-                                console.log('✅ Media stream acquired:', stream);
-
-                                // Set up peer connection
-                                setupPeerConnection();
-                                console.log('✅ Peer connection setup complete.');
-
-                                // Set initial call status
-                                setCurrentCallStatus('connecting');
-                                setShowCallInterface(true); // Show the call interface
-                              } catch (err) {
-                                console.error('❌ Error accessing media devices:', err);
-                                showCustomAlert('Media Error', 'Could not access your camera or microphone. Please grant permissions.', { type: 'error' });
-                              }
-                            };
-
-                            // Setup RTCPeerConnection
-                            const setupPeerConnection = async () => {
-                              const pc = new RTCPeerConnection({
-                                iceServers: [
-                                  { urls: 'stun:stun.l.google.com:19302' }
-                                ]
-                              });
-                              setPeerConnection(pc);
-                              console.log('✅ RTCPeerConnection created.');
-
-                              // Add local stream tracks to the peer connection
-                              if (localStream) {
-                                localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-                                console.log('✅ Local stream tracks added to peer connection.');
-                              }
-
-                              // Handle incoming remote stream
-                              pc.ontrack = (event) => {
-                                console.log('▶️ Remote track received:', event.streams[0]);
-                                if (event.streams && event.streams[0]) {
-                                  setRemoteStream(event.streams[0]);
-                                  setCurrentCallStatus('connected');
-                                  console.log('✅ Remote stream set.');
-                                }
-                              };
-
-                              // Handle ICE candidates
-                              pc.onicecandidate = async (event) => {
-                                if (event.candidate && user && character) {
-                                  console.log('🤝 ICE candidate found, sending to server...');
-                                  try {
-                                    const token = await user.getIdToken();
-                                    await fetch('/api/call/candidate', {
-                                      method: 'POST',
-                                      headers: {
-                                        'Authorization': `Bearer ${token}`,
-                                        'Content-Type': 'application/json',
-                                      },
-                                      body: JSON.stringify({
-                                        characterId: character,
-                                        candidate: event.candidate,
-                                      }),
-                                    });
-                                    console.log('✅ ICE candidate sent.');
-                                  } catch (error) {
-                                    console.error('❌ Error sending ICE candidate:', error);
-                                  }
-                                }
-                              };
-
-                              // Handle connection state changes
-                              pc.onconnectionstatechange = () => {
-                                console.log(`📞 Connection state changed: ${pc.connectionState}`);
-                                if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed' || pc.connectionState === 'closed') {
-                                  setCurrentCallStatus('disconnected');
-                                  handleEndCall(); // Automatically end call on disconnection
-                                }
-                              };
-                            };
-
-                            // Function to create and send an offer
-                            const createOffer = async () => {
-                              if (peerConnection && localStream) {
-                                console.log('🎁 Creating offer...');
-                                try {
-                                  const offer = await peerConnection.createOffer();
-                                  await peerConnection.setLocalDescription(offer);
-                                  console.log('✅ Local description set.');
-
-                                  // Send offer to server
-                                  const token = await user!.getIdToken();
-                                  await fetch('/api/call/offer', {
-                                    method: 'POST',
-                                    headers: {
-                                      'Authorization': `Bearer ${token}`,
-                                      'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                      characterId: character,
-                                      offer: offer,
-                                    }),
-                                  });
-                                  console.log('✅ Offer sent.');
-                                } catch (error) {
-                                  console.error('❌ Error creating or sending offer:', error);
-                                }
-                              }
-                            };
-
-                            // Function to handle received offer and create answer
-                            const handleReceivedOffer = async (offer: RTCSessionDescriptionInit) => {
-                              if (peerConnection && localStream) {
-                                console.log('📥 Received offer, creating answer...');
-                                try {
-                                  await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-                                  console.log('✅ Remote description set from offer.');
-
-                                  const answer = await peerConnection.createAnswer();
-                                  await peerConnection.setLocalDescription(answer);
-                                  console.log('✅ Local description set from answer.');
-
-                                  // Send answer to server
-                                  const token = await user!.getIdToken();
-                                  await fetch('/api/call/answer', {
-                                    method: 'POST',
-                                    headers: {
-                                      'Authorization': `Bearer ${token}`,
-                                      'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                      characterId: character,
-                                      answer: answer,
-                                    }),
-                                  });
-                                  console.log('✅ Answer sent.');
-                                } catch (error) {
-                                  console.error('❌ Error creating or sending answer:', error);
-                                }
-                              }
-                            };
-
-                            // Function to handle received answer
-                            const handleReceivedAnswer = async (answer: RTCSessionDescriptionInit) => {
-                              if (peerConnection) {
-                                console.log('✅ Received answer, setting remote description.');
-                                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-                                console.log('✅ Remote description set from answer.');
-                              }
-                            };
-
-                            // Function to handle received ICE candidate
-                            const handleReceivedCandidate = async (candidate: RTCIceCandidateInit) => {
-                              if (peerConnection && candidate) {
-                                console.log('📥 Received ICE candidate, adding to peer connection.');
-                                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                                console.log('✅ ICE candidate added.');
-                              }
-                            };
-
-                            // Function to end the call
-                            const handleEndCall = () => {
-                              console.log('☎️ Ending call...');
-                              if (peerConnection) {
-                                peerConnection.close();
-                                setPeerConnection(null);
-                                console.log('✅ Peer connection closed.');
-                              }
-                              if (localStream) {
-                                localStream.getTracks().forEach(track => track.stop());
-                                setLocalStream(null);
-                                console.log('✅ Local stream stopped.');
-                              }
-                              if (remoteStream) {
-                                remoteStream.getTracks().forEach(track => track.stop());
-                                setRemoteStream(null);
-                                console.log('✅ Remote stream stopped.');
-                              }
-                              setShowCallInterface(false);
-                              setCurrentCallStatus('disconnected');
-                              setMessages(prev => [...prev, { role: 'assistant', content: `The call has ended.` }]);
-                            };
-
-                            // Listen for signaling messages from the server
-                            useEffect(() => {
-                              if (!user || !character) return;
-
-                              const token = user.getIdToken();
-                              const socket = new WebSocket(`wss://your-signal-server.com?token=${token}&characterId=${character}`); // Replace with your actual signaling server URL
-
-                              socket.onopen = () => {
-                                console.log('🟢 Signaling socket connected.');
-                                // Once connected, potentially create an offer if this user is initiating
-                                // In this setup, the backend likely handles offer creation based on who initiates.
-                                // If this client is initiating, call createOffer() here.
-                                // For now, assume backend handles the initial offer setup.
-                              };
-
-                              socket.onmessage = async (event) => {
-                                const message = JSON.parse(event.data);
-                                console.log('📬 Signaling message received:', message.type);
-
-                                switch (message.type) {
-                                  case 'offer':
-                                    handleReceivedOffer(message.offer);
-                                    break;
-                                  case 'answer':
-                                    handleReceivedAnswer(message.answer);
-                                    break;
-                                  case 'candidate':
-                                    handleReceivedCandidate(message.candidate);
-                                    break;
-                                  case 'call_accepted':
-                                    console.log('📞 Call accepted, initiating offer...');
-                                    // If the other party accepts, create the offer
-                                    await createOffer();
-                                    break;
-                                  case 'call_ended':
-                                    console.log('☎️ Call ended by remote party.');
-                                    handleEndCall();
-                                    break;
-                                  default:
-                                    console.warn('❓ Unknown signaling message type:', message.type);
-                                }
-                              };
-
-                              socket.onerror = (err) => {
-                                console.error('🔴 Signaling socket error:', err);
-                                showCustomAlert('Call Error', 'A problem occurred with the call signaling. Please try again.', { type: 'error' });
-                                handleEndCall();
-                              };
-
-                              socket.onclose = () => {
-                                console.log('🟠 Signaling socket disconnected.');
-                                // If disconnected unexpectedly, end the call
-                                if (currentCallStatus !== 'disconnected') {
-                                  handleEndCall();
-                                }
-                              };
-
-                              // Cleanup on component unmount
-                              return () => {
-                                console.log('🧹 Cleaning up signaling socket.');
-                                socket.close();
-                              };
-                            }, [user, character, currentCallStatus, createOffer, handleReceivedOffer, handleReceivedAnswer, handleReceivedCandidate, handleEndCall]);
-
-                            // Effect to start the call when component mounts and character is selected
-                            useEffect(() => {
-                              // Only trigger if character is selected and user is authenticated
-                              if (character && user && !localStream && !peerConnection) {
-                                // Initial call to start media and setup connection
-                                // The actual offer/answer logic is handled by the signaling socket
-                                initializeMedia(); 
-                              }
-                            }, [character, user, localStream, peerConnection]); // Dependencies for this effect
-
-                            // Effect to handle the 'connecting' state and trigger offer if needed
-                            useEffect(() => {
-                              if (currentCallStatus === 'connecting' && !peerConnection) {
-                                console.log('Waiting for peer connection setup...');
-                              } else if (currentCallStatus === 'connecting' && peerConnection) {
-                                // If connection is ready, create offer
-                                createOffer(); 
-                              }
-                            }, [currentCallStatus, peerConnection, createOffer]);
-
-
-                            return (
-                              <div className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center transition-all duration-300 ease-out ${
-                                showCallInterface ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'
-                              }`}>
-                                <div className="relative w-full h-full flex flex-col items-center justify-center p-8">
-                                  {/* Background Video/Image */}
-                                  <div className="absolute inset-0 -z-10 overflow-hidden">
-                                    {remoteStream ? (
-                                      <video
-                                        ref={(ref) => {
-                                          if (ref && remoteStream) {
-                                            ref.srcObject = remoteStream;
-                                          }
-                                        }}
-                                        autoPlay
-                                        playsInline
-                                        className="w-full h-full object-cover transform scale-110"
-                                      />
-                                    ) : (
-                                      // Placeholder or character image if no remote stream yet
-                                      <Image 
-                                        src={characterImage}
-                                        alt={`${characterName} background`}
-                                        fill
-                                        className="object-cover blur-sm"
-                                      />
-                                    )}
-                                  </div>
-                                  {/* Overlay for better readability */}
-                                  <div className="absolute inset-0 bg-black/60 -z-5" />
-
-                                  {/* Call Controls Overlay */}
-                                  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center space-x-6 z-10">
-                                    {/* Mute Button */}
-                                    <button
-                                      ref={micRef}
-                                      onClick={handleToggleMic}
-                                      className={`p-3 rounded-full transition-all duration-200 ${
-                                        isMuted ? 'bg-red-600/80 hover:bg-red-700' : 'bg-gray-800/60 hover:bg-gray-700/70'
-                                      }`}
-                                    >
-                                      {isMuted ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.114 14.114a9 9 0 00-10.228-10.228m0 0a9 9 0 01-4.728-4.728l-4.493 4.493M4.487 19.714a9 9 0 0010.228 10.228m0 0a9 9 0 014.728-4.728l4.493-4.493" />
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
-                                        </svg>
-                                      ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.114 14.114a9 9 0 00-10.228-10.228m0 0a9 9 0 01-4.728-4.728l-4.493 4.493M4.487 19.714a9 9 0 0010.228 10.228m0 0a9 9 0 014.728-4.728l4.493-4.493" />
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2a2 2 0 012 2v1a2 2 0 002 2h1m0 0h0m-6 0h1" />
-                                        </svg>
-                                      )}
-                                    </button>
-
-                                    {/* Hangup Button */}
-                                    <button
-                                      ref={hangupRef}
-                                      onClick={handleEndCall}
-                                      className="p-4 rounded-full bg-red-600 hover:bg-red-700 transition-all duration-200"
-                                    >
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                      </svg>
-                                    </button>
-
-                                    {/* Video Toggle Button */}
-                                    <button
-                                      ref={videoRef}
-                                      onClick={handleToggleCamera}
-                                      className={`p-3 rounded-full transition-all duration-200 ${
-                                        isCameraOff ? 'bg-red-600/80 hover:bg-red-700' : 'bg-gray-800/60 hover:bg-gray-700/70'
-                                      }`}
-                                    >
-                                      {isCameraOff ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.114 14.114a9 9 0 00-10.228-10.228m0 0a9 9 0 01-4.728-4.728l-4.493 4.493M4.487 19.714a9 9 0 0010.228 10.228m0 0a9 9 0 014.728-4.728l4.493-4.493" />
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2a2 2 0 012 2v1a2 2 0 002 2h1m0 0h0m-6 0h1" />
-                                        </svg>
-                                      ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                      )}
-                                    </button>
-                                  </div>
-
-                                  {/* Character Video Feed */}
-                                  <div className="absolute top-4 left-4 w-32 h-32 md:w-40 md:h-40 z-20 rounded-xl overflow-hidden border-2 border-cyan-500/50 shadow-lg shadow-cyan-500/10">
-                                    {remoteStream ? (
-                                      <video
-                                        ref={(ref) => {
-                                          if (ref && remoteStream) {
-                                            ref.srcObject = remoteStream;
-                                          }
-                                        }}
-                                        autoPlay
-                                        playsInline
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : (
-                                      <Image 
-                                        src={characterImage}
-                                        alt={`${characterName} placeholder`}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    )}
-                                  </div>
-
-                                  {/* Local Video Feed */}
-                                  <div className="absolute bottom-24 right-4 w-24 h-24 md:w-32 md:h-32 z-20 rounded-xl overflow-hidden border-2 border-cyan-500/50 shadow-lg shadow-cyan-500/10">
-                                    {localStream && !isCameraOff ? (
-                                      <video
-                                        ref={(ref) => {
-                                          if (ref && localStream) {
-                                            ref.srcObject = localStream;
-                                          }
-                                        }}
-                                        autoPlay
-                                        playsInline
-                                        muted // Mute local video to avoid feedback
-                                        className="w-full h-full object-cover transform scale-x-[-1]" // Mirror local video
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full bg-black/70 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19.114 14.114a9 9 0 00-10.228-10.228m0 0a9 9 0 01-4.728-4.728l-4.493 4.493M4.487 19.714a9 9 0 0010.228 10.228m0 0a9 9 0 014.728-4.728l4.493-4.493" />
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2a2 2 0 012 2v1a2 2 0 002 2h1m0 0h0m-6 0h1" />
-                                        </svg>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Call Status Indicator */}
-                                  <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300
-                                    ${currentCallStatus === 'connecting' ? 'bg-yellow-500/20 text-yellow-400' 
-                                    : currentCallStatus === 'connected' || currentCallStatus === 'listening' ? 'bg-green-500/20 text-green-400' 
-                                    : currentCallStatus === 'disconnected' ? 'bg-red-500/20 text-red-400' 
-                                    : 'bg-gray-500/20 text-gray-400'}
-                                  ">
-                                    {currentCallStatus === 'connecting' && 'Connecting...'}
-                                    {currentCallStatus === 'connected' && 'Connected'}
-                                    {currentCallStatus === 'listening' && 'Listening...'}
-                                    {currentCallStatus === 'disconnected' && 'Call Ended'}
-                                  </div>
-
-                                  {/* Live Transcription Display */}
-                                  {liveTranscriptDisplay && (
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-xl w-full text-center px-4">
-                                      <div className="bg-black/70 border border-gray-700/50 rounded-lg p-4 backdrop-blur-sm">
-                                        <p className="text-gray-300 text-lg leading-relaxed break-words">
-                                          {liveTranscriptDisplay}
-                                        </p>
-                                        <div className="text-cyan-400 text-sm mt-2">
-                                          {callStatus === 'listening' ? 'Listening...' : ''}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          };
-
-
-                          // Main component return
-                          return (
-                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+          // Main component return
+          return (
+            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
-                                onConfirm={() => {
-                                  modalConfig.onConfirm();
-                                  setShowConfirmModal(false);
-                                }}
-                                onCancel={() => setShowConfirmModal(false)}
+                                onClose={() => setShowConfirmModal(false)}
+                                onConfirm={modalConfig.onConfirm}
                                 title={modalConfig.title}
                                 message={modalConfig.message}
-                                type={modalConfig.type}
                                 confirmText={modalConfig.confirmText}
                                 cancelText={modalConfig.cancelText}
+                                type={modalConfig.type}
                               />
 
                               <AlertModal
@@ -4297,20 +3784,66 @@ function Chat() {
                                 onClose={() => setShowAlertModal(false)}
                                 title={alertConfig.title}
                                 message={alertConfig.message}
-                                type={alertConfig.type}
                                 buttonText={alertConfig.buttonText}
+                                type={alertConfig.type}
                               />
-
-                              <UpgradePromptModal />
-                              <SubscriptionCelebrationModal />
-                              <FirstResponseVoiceModal />
-                              <QuickPurchaseModal />
-                              <SettingsModal />
-                              <CallInterface />
-                              {/* Coming Soon Modal - removed as per changes */}
 
                               {/* Chat Support Bubble - Only shows on discover page */}
                               <ChatSupportBubble onlyOnDiscover={true} currentView={view} />
+
+                              {/* Quick Purchase Modal */}
+                              <QuickPurchaseModal />
+
+                              {/* Upgrade Prompt Modal */}
+                              <UpgradePromptModal />
+
+                              {/* Subscription Celebration Modal */}
+                              <SubscriptionCelebrationModal />
+
+                              {/* First Response Voice Modal */}
+                              <FirstResponseVoiceModal />
+
+                              {/* Coming Soon Modal */}
+                              <div 
+                                className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
+                                  comingSoonModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                }`}
+                                onClick={() => setShowComingSoonModal(false)}
+                              >
+                                <div className="flex items-center justify-center min-h-screen p-4">
+                                  <div 
+                                    className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
+                                      comingSoonModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+                                    }`}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <div className="relative p-6">
+                                      <div className="text-center">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                          </svg>
+                                        </div>
+                                        <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                                          Voice Calls Coming Soon!
+                                        </h2>
+                                        <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                                          We're working on bringing you real-time voice conversations with your favorite characters. Stay tuned for this exciting feature!
+                                        </p>
+                                        <button
+                                          onClick={() => setShowComingSoonModal(false)}
+                                          className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20"
+                                        >
+                                          Got it!
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Settings Modal Overlay */}
+                              <SettingsModal />
 
                               {/* Voice generation error notification - Fixed at top of chat area */}
                               {voiceGenerationError && (
@@ -4567,7 +4100,7 @@ function Chat() {
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.066z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings
@@ -4767,7 +4300,7 @@ function Chat() {
                                             className="w-full flex items-center p-3 text-gray-400 hover:text-white hover:bg-gray-800/20 rounded-md transition-colors text-left"
                                           >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                                             </svg>
                                             <span className="text-sm">New chat</span>
                                           </button>
@@ -5027,7 +4560,7 @@ function Chat() {
                                           <div className="flex items-start max-w-[70%]">
                                             <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-3 py-3">
                                               <div className="text-cyan-300 text-sm italic">
-                                                {liveTranscriptDisplay}
+                                                {liveTranscriptDisplay}...
                                               </div>
                                               <div className="text-xs text-cyan-400/60 mt-1">
                                                 Recording
