@@ -643,35 +643,6 @@ function Chat() {
                           const [showCallInterface, setShowCallInterface] = useState(false);
                           const [comingSoonModal, setShowComingSoonModal] = useState(false);
 
-                          // State for Call Upgrade Modal
-                          const [showCallUpgradeModal, setShowCallUpgradeModal] = useState(false);
-
-                          // Function to start a call
-                          const startCall = () => {
-                            console.log('📞 Starting call...');
-                            setIsCallActive(true);
-                            setShowCallInterface(true);
-                            setCallStatus('connecting');
-                            // Add logic to establish connection and character greeting
-                          };
-
-                          // Placeholder for the actual call initiation logic
-                          const initializeCall = async () => {
-                            // This function would handle the setup of the Deepgram client,
-                            // Gemini API connection, and Fish Audio TTS setup.
-                            // For now, we'll just log a message.
-                            console.log('📞 Initializing call session...');
-                          };
-
-                          // Handler for ending the call
-                          const endCall = () => {
-                            console.log('📞 Ending call...');
-                            setIsCallActive(false);
-                            setShowCallInterface(false);
-                            setCallStatus('ended');
-                            // Add cleanup logic for audio streams, API connections etc.
-                          };
-
 
                           useEffect(() => {
                             const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' || 'system'
@@ -2640,6 +2611,8 @@ function Chat() {
                             </div>
                           );
 
+
+
                           // Quick Purchase Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
                             <div 
@@ -3789,11 +3762,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-                          );
+          );
 
-                          // Main component return
-                          return (
-                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+          // Main component return
+          return (
+            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -4127,7 +4100,7 @@ function Chat() {
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 001.066-2.573c.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.066z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings
@@ -4191,32 +4164,6 @@ function Chat() {
 
                                     {/* Right Side Controls */}
                                     <div className="flex items-center space-x-2">
-                                      {/* Call Button */}
-                                      <button
-                                        onClick={() => {
-                                          if (currentUserPlan === 'ultimate') {
-                                            startCall();
-                                          } else {
-                                            setShowCallUpgradeModal(true);
-                                          }
-                                        }}
-                                        className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                          currentUserPlan === 'ultimate'
-                                            ? 'bg-green-600/20 text-green-400 hover:bg-green-600/30 border border-green-600/30'
-                                            : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 border border-gray-600/30'
-                                        }`}
-                                      >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                        <span>Call</span>
-                                        {currentUserPlan !== 'ultimate' && (
-                                          <div className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[8px] rounded-md font-medium">
-                                            Ultimate
-                                          </div>
-                                        )}
-                                      </button>
-
                                       {/* Voice Response Toggle */}
                                       <div className="flex items-center">
                                         <span className={`text-xs font-medium mr-2 ${currentUserPlan === 'free' ? 'text-gray-500' : 'text-gray-300'}`}>
@@ -4230,7 +4177,6 @@ function Chat() {
                                               e.preventDefault();
                                               e.stopPropagation();
                                               if (currentUserPlan === 'free') {
-                                                setShowSettingsModal(false);
                                                 setShowUpgradePrompt(true);
                                               } else {
                                                 setIsVoiceResponseEnabled(e.target.checked);
@@ -4252,7 +4198,6 @@ function Chat() {
                                               e.preventDefault();
                                               e.stopPropagation();
                                               if (currentUserPlan === 'free') {
-                                                setShowSettingsModal(false);
                                                 setShowUpgradePrompt(true);
                                               } else {
                                                 setIsVoiceResponseEnabled(!isVoiceResponseEnabled);
@@ -4266,7 +4211,7 @@ function Chat() {
                                         </div>
                                         <div className="ml-2">
                                           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${currentUserPlan === 'free' ? 'text-gray-500' : isVoiceResponseEnabled ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 010 2V9a1 1 0 11-2 0v3z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
                                           </svg>
                                         </div>
                                       </div>
@@ -4276,7 +4221,7 @@ function Chat() {
                                         onClick={() => setShowChatSidebar(!showChatSidebar)}
                                       >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                                          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                                         </svg>
                                       </button>
                                     </div>
@@ -4340,7 +4285,7 @@ function Chat() {
                                                 // Save new session to localStorage with character validation
                                                 try {
                                                   localStorage.setItem(storageKey, JSON.stringify({
-                                                    sessionId:                                                    newSessionId,
+                                                    sessionId: newSessionId,
                                                     messages: initialMessages,
                                                     timestamp: Date.now(),
                                                     character: character // Always include character for validation
@@ -4602,7 +4547,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml-2">
+                                              <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4704,7 +4649,7 @@ function Chat() {
                                                 </svg>
                                               ) : (
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 10l7-7m0 0l7 7m-7-10v18" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                                                 </svg>
                                               )}
                                             </button>
