@@ -897,7 +897,7 @@ function Chat() {
                             // Check if user just came from subscription success
                             if (subscriptionSuccess === 'success') {
                               console.log('🎉 Detected subscription success from URL parameter');
-                              
+
                               // Show celebration modal immediately for URL parameter
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -913,7 +913,7 @@ function Chat() {
                             const justUpgraded = localStorage.getItem('justUpgraded');
                             if (justUpgraded) {
                               console.log('🎉 Detected justUpgraded flag from localStorage');
-                              
+
                               // Show celebration modal immediately for fresh upgrades
                               setTimeout(() => {
                                 setShowSubscriptionCelebrationModal(true);
@@ -927,7 +927,7 @@ function Chat() {
                             if (billingData?.subscription?.lastChargedAt && (currentUserPlan === 'premium' || currentUserPlan === 'ultimate')) {
                               try {
                                 let lastChargedDate;
-                                
+
                                 if (billingData.subscription.lastChargedAt?.seconds) {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
                                 } else if (typeof billingData.subscription.lastChargedAt === 'string') {
@@ -935,12 +935,12 @@ function Chat() {
                                 } else {
                                   lastChargedDate = new Date(billingData.subscription.lastChargedAt);
                                 }
-                                
+
                                 const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-                                
+
                                 if (lastChargedDate > fiveMinutesAgo) {
                                   console.log('🎉 Detected very recent subscription from billing data');
-                                  
+
                                   // Check if we already showed the modal for this subscription
                                   const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`);
                                   if (!lastModalTime) {
@@ -1785,7 +1785,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -2603,15 +2603,13 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      Join thousands experiencing authentic character voices
+                                      Voice responses can be toggled anytime in the chat header
                                     </p>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           );
-
-
 
                           // Quick Purchase Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
@@ -3169,8 +3167,8 @@ function Chat() {
                                                     </button>
                                                   </div>
                                                 </div>
-                                              </>
-                                            )}
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
 
@@ -3762,11 +3760,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-          );
+                          );
 
-          // Main component return
-          return (
-            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+                          // Main component return
+                          return (
+                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -3802,45 +3800,6 @@ function Chat() {
 
                               {/* First Response Voice Modal */}
                               <FirstResponseVoiceModal />
-
-                              {/* Coming Soon Modal */}
-                              <div 
-                                className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
-                                  comingSoonModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                                }`}
-                                onClick={() => setShowComingSoonModal(false)}
-                              >
-                                <div className="flex items-center justify-center min-h-screen p-4">
-                                  <div 
-                                    className={`bg-gradient-to-br from-gray-950/95 via-black/95 to-gray-900/95 border border-gray-800/50 rounded-3xl shadow-2xl w-full max-w-md transition-all duration-300 ease-out backdrop-blur-md ${
-                                      comingSoonModal ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-                                    }`}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <div className="relative p-6">
-                                      <div className="text-center">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/15 to-purple-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-500/10">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                          </svg>
-                                        </div>
-                                        <h2 className="text-xl font-semibold text-white mb-2 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                                          Voice Calls Coming Soon!
-                                        </h2>
-                                        <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                                          We're working on bringing you real-time voice conversations with your favorite characters. Stay tuned for this exciting feature!
-                                        </p>
-                                        <button
-                                          onClick={() => setShowComingSoonModal(false)}
-                                          className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20"
-                                        >
-                                          Got it!
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
 
                               {/* Settings Modal Overlay */}
                               <SettingsModal />
@@ -4100,7 +4059,7 @@ function Chat() {
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.066z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings
@@ -4547,7 +4506,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
+                                              <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
