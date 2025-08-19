@@ -854,9 +854,8 @@ export default function Subscription() {
                         if (response.ok) {
                           const result = await response.json();
                           setShowCancelModal(false);
-                          setSubscriptionDetails(null);
                           
-                          // Refresh user plan
+                          // Refresh user plan and subscription details
                           const profileResponse = await fetch('/api/user/profile', {
                             method: 'GET',
                             headers: {
@@ -867,6 +866,23 @@ export default function Subscription() {
                           if (profileResponse.ok) {
                             const data = await profileResponse.json();
                             setCurrentUserPlan(data.currentPlan || 'free');
+                          }
+
+                          // Refresh subscription details to get the latest status
+                          const subResponse = await fetch('/api/subscription/status', {
+                            method: 'GET',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              'Content-Type': 'application/json',
+                            },
+                          });
+
+                          if (subResponse.ok) {
+                            const subData = await subResponse.json();
+                            setSubscriptionDetails(subData);
+                          } else {
+                            // Clear subscription details if API call fails
+                            setSubscriptionDetails(null);
                           }
                           
                           // Show success modal instead of alert
