@@ -89,6 +89,118 @@ async function getPayPalAccessToken() {
 }
 
 export class PayPalSubscriptionService {
+  async createPaymentToken(setupTokenId: string) {
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(`${PAYPAL_BASE_URL}/v2/vault/payment-tokens`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': uuidv4(),
+      },
+      body: JSON.stringify({
+        payment_source: {
+          token: {
+            id: setupTokenId,
+            type: 'SETUP_TOKEN'
+          }
+        }
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('PayPal create payment token error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      throw new Error(`Failed to create payment token: ${result.message || result.error_description || 'Unknown error'}`);
+    }
+
+    console.log('✅ Payment token created successfully:', result);
+    return result;
+  }
+
+  async createSubscriptionOrder(paymentTokenId: string, planId: string) {
+    const accessToken = await getPayPalAccessToken();
+    const plan = SUBSCRIPTION_PLANS[planId];
+
+    if (!plan) {
+      throw new Error(`Invalid plan ID: ${planId}`);
+    }
+
+    const orderData = {
+      intent: 'CAPTURE',
+      purchase_units: [{
+        amount: {
+          currency_code: 'USD',
+          value: plan.price.toFixed(2)
+        },
+        description: `${plan.name} - ${plan.description}`
+      }],
+      payment_source: {
+        token: {
+          id: paymentTokenId,
+          type: 'PAYMENT_TOKEN'
+        }
+      }
+    };
+
+    const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': uuidv4(),
+      },
+      body: JSON.stringify(orderData),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('PayPal create order error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      throw new Error(`Failed to create order: ${result.message || result.error_description || 'Unknown error'}`);
+    }
+
+    console.log('✅ Order created successfully:', result);
+    return result;
+  }
+
+  async captureOrder(orderId: string) {
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': uuidv4(),
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('PayPal capture order error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      throw new Error(`Failed to capture order: ${result.message || result.error_description || 'Unknown error'}`);
+    }
+
+    console.log('✅ Order captured successfully:', result);
+    return result;
+  }
+
   async getSubscriptionDetails(subscriptionId: string) {
     const accessToken = await getPayPalAccessToken();
 
