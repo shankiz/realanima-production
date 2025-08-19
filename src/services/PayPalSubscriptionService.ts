@@ -138,4 +138,30 @@ export class PayPalSubscriptionService {
     console.log('✅ Order captured successfully:', result);
     return result;
   }
+
+  async getSubscriptionDetails(subscriptionId: string) {
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions/${subscriptionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('PayPal get subscription details error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      throw new Error(`Failed to get subscription details: ${result.message || result.error_description || 'Unknown error'}`);
+    }
+
+    console.log('✅ Subscription details retrieved:', result);
+    return result;
+  }
 }
