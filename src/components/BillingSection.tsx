@@ -246,14 +246,14 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
           </Button>
         )}
 
-        {/* Show reactivate button for cancelled subscriptions */}
+        {/* Show resubscribe button for cancelled subscriptions */}
         {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
          subscription && subscription.cancelledAt && (
           <Button
             onClick={() => router.push('/subscription')}
             className="bg-green-600 hover:bg-green-700 text-white"
           >
-            Reactivate Subscription
+            Resubscribe
           </Button>
         )}
 

@@ -21,7 +21,7 @@ export default function Subscription() {
   const [loadingSubscriptionDetails, setLoadingSubscriptionDetails] = useState(false);
   const [splashCursorEnabled, setSplashCursorEnabled] = useState(false);
 
-  // Fetch user's current plan
+  // Fetch user's current plan and subscription details
   useEffect(() => {
     const fetchUserPlan = async () => {
       if (!user) {
@@ -31,6 +31,8 @@ export default function Subscription() {
 
       try {
         const token = await user.getIdToken();
+        
+        // Fetch user profile
         const response = await fetch('/api/user/profile', {
           method: 'GET',
           headers: {
@@ -41,10 +43,27 @@ export default function Subscription() {
 
         if (response.ok) {
           const data = await response.json();
-          setCurrentUserPlan(data.currentPlan || 'free');
+          const plan = data.currentPlan || 'free';
+          setCurrentUserPlan(plan);
+          
+          // Fetch subscription details if user has premium/ultimate plan
+          if (plan === 'premium' || plan === 'ultimate') {
+            const subResponse = await fetch('/api/subscription/status', {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (subResponse.ok) {
+              const subData = await subResponse.json();
+              setSubscriptionDetails(subData);
+            }
+          }
         }
       } catch (error) {
-        console.error('Error fetching user plan:', error);
+        console.error('Error fetching user data:', error);
       } finally {
         setLoading(false);
       }
@@ -490,19 +509,36 @@ export default function Subscription() {
           </div>
         )}
 
-        {/* Cancel Plan Link - Only show for active subscribers and when not in PayPal modal */}
+        {/* Cancel Plan Link or Status - Only show for premium/ultimate users and when not in PayPal modal */}
         {!showPayPal && currentUserPlan !== 'free' && (
           <div className="max-w-5xl mx-auto mb-8 -mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div></div>
               <div></div>
               <div className="flex justify-center md:justify-end">
-                <button
-                  onClick={handleCancelClick}
-                  className="text-gray-500 hover:text-red-400 text-xs transition-colors duration-200"
-                >
-                  Cancel plan?
-                </button>
+                {/* Show different content based on subscription status */}
+                {(() => {
+                  // Check if subscription is cancelled
+                  const isSubscriptionCancelled = subscriptionDetails?.subscription?.status === 'cancelled' || 
+                                                  subscriptionDetails?.subscription?.cancelledAt;
+                  
+                  if (isSubscriptionCancelled) {
+                    return (
+                      <span className="text-orange-400 text-xs font-medium">
+                        Plan Cancelled
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <button
+                        onClick={handleCancelClick}
+                        className="text-gray-500 hover:text-red-400 text-xs transition-colors duration-200"
+                      >
+                        Cancel plan?
+                      </button>
+                    );
+                  }
+                })()}
               </div>
             </div>
           </div>
