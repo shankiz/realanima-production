@@ -56,6 +56,9 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
         },
         body: JSON.stringify({
           planId,
+          userId: user.uid,
+          userEmail: user.email,
+          userName: user.displayName || 'User',
           planName: plan.name,
           price: plan.price,
           credits: plan.credits,
@@ -84,7 +87,7 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
 
   const onApprove = async (data: any, actions: any) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       setMessage('Processing subscription...');
 
       if (!user) {
@@ -130,7 +133,7 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
       setMessage(`Error: ${errorMessage}`);
       onError?.(errorMessage);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
