@@ -604,6 +604,7 @@ function Chat() {
                               cancelledAt?: string | { seconds: number } | Date | any;
                               cancelReason?: string;
                               subscriptionId?: string;
+                              paypalPlanId?: string; // Added for testing plan detection
                             } | null;
                           }
 
@@ -3264,6 +3265,14 @@ function Chat() {
                                                     </div>
 
                                                     <div className="text-xs text-gray-400 space-y-1">
+                                                      {/* Show billing info even for free users */}
+                                                      {currentUserPlan === 'free' && (
+                                                        <div className="text-xs text-gray-500 mt-2">
+                                                          <p>• No payment method on file</p>
+                                                          <p>• Upgrade to unlock premium features</p>
+                                                        </div>
+                                                      )}
+
                                                       {/* Show subscription details if user has premium/ultimate plan */}
                                                       {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && billingData?.subscription && (
                                                         <>
@@ -3279,15 +3288,48 @@ function Chat() {
                                                               : billingData.subscription.status?.charAt(0).toUpperCase() + billingData.subscription.status?.slice(1)}
                                                           </span></p>
 
-                                                          {billingData.subscription.nextBillingDate && (() => {
+                                                          {/* Format Date With Time Helper */}
+                                                          const formatDateWithTime = (dateValue) => {
                                                             try {
-                                                              let nextDate;
+                                                              let date;
+                                                              if (typeof dateValue === 'string') {
+                                                                date = new Date(dateValue);
+                                                              } else if (dateValue?.seconds) {
+                                                                // Firestore timestamp
+                                                                date = new Date(dateValue.seconds * 1000);
+                                                              } else if (dateValue?._seconds) {
+                                                                // Firestore timestamp with _seconds
+                                                                date = new Date(dateValue._seconds * 1000);
+                                                              } else if (typeof dateValue === 'number') {
+                                                                // Unix timestamp
+                                                                date = new Date(dateValue > 1e12 ? dateValue : dateValue * 1000);
+                                                              } else {
+                                                                date = new Date(dateValue);
+                                                              }
 
-                                                              // Handle different date formats
+                                                              if (isNaN(date.getTime())) return 'Invalid Date';
+
+                                                              return date.toLocaleString('en-US', {
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric',
+                                                                hour: 'numeric',
+                                                                minute: '2-digit',
+                                                                timeZoneName: 'short'
+                                                              });
+                                                            } catch (error) {
+                                                              console.error('Error formatting date:', error);
+                                                              return 'Invalid Date';
+                                                            }
+                                                          };
+
+                                                          {/* Next Billing Date */}
+                                                          {billingData.subscription.nextBillingDate && (() => {
+                                                            let nextDate;
+                                                            try {
                                                               if (typeof billingData.subscription.nextBillingDate === 'string') {
                                                                 nextDate = new Date(billingData.subscription.nextBillingDate);
                                                               } else if (billingData.subscription.nextBillingDate?.seconds) {
-                                                                // Firestore timestamp
                                                                 nextDate = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
                                                               } else {
                                                                 nextDate = new Date(billingData.subscription.nextBillingDate);
@@ -3295,57 +3337,12 @@ function Chat() {
 
                                                               if (isNaN(nextDate.getTime())) return null;
 
-                                                              // Detect billing interval by comparing with last charged date
-                                                              let billingInterval = 'Unknown';
-                                                              if (billingData.subscription.lastChargedAt) {
-                                                                let lastDate;
-                                                                if (typeof billingData.subscription.lastChargedAt === 'string') {
-                                                                  lastDate = new Date(billingData.subscription.lastChargedAt);
-                                                                } else if (billingData.subscription.lastChargedAt?.seconds) {
-                                                                  lastDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
-                                                                } else if (billingData.subscription.lastChargedAt?._seconds) {
-                                                                  lastDate = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
-                                                                } else {
-                                                                  lastDate = new Date(billingData.subscription.lastChargedAt);
-                                                                }
-
-                                                                if (!isNaN(lastDate.getTime())) {
-                                                                  const diffInHours = Math.abs(nextDate.getTime() - lastDate.getTime()) / (1000 * 3600);
-                                                                  const diffInDays = diffInHours / 24;
-                                                                  
-                                                                  if (diffInHours >= 22 && diffInHours <= 26) {
-                                                                    billingInterval = 'Daily - Testing';
-                                                                  } else if (diffInDays >= 28 && diffInDays <= 32) {
-                                                                    billingInterval = 'Monthly';
-                                                                  } else if (diffInDays >= 6 && diffInDays <= 8) {
-                                                                    billingInterval = 'Weekly';
-                                                                  } else if (diffInDays >= 350 && diffInDays <= 380) {
-                                                                    billingInterval = 'Yearly';
-                                                                  } else {
-                                                                    billingInterval = `Every ${Math.round(diffInDays)} days`;
-                                                                  }
-                                                                }
-                                                              }
-
-                                                              // Format with time
-                                                              const formatDateWithTime = (dateString) => {
-                                                                const date = new Date(dateString);
-                                                                return date.toLocaleString('en-US', {
-                                                                  year: 'numeric',
-                                                                  month: 'long',
-                                                                  day: 'numeric',
-                                                                  hour: 'numeric',
-                                                                  minute: '2-digit',
-                                                                  timeZoneName: 'short'
-                                                                });
-                                                              };
-
                                                               return (
                                                                 <p>
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
                                                                     ? 'Access until:' 
                                                                     : 'Next billing:'} {formatDateWithTime(nextDate)}
-                                                                  <span className="text-yellow-400 text-xs ml-2">({billingInterval})</span>
+                                                                  <span className="text-yellow-400 text-xs ml-2">({detectBillingInterval()})</span>
                                                                 </p>
                                                               );
                                                             } catch (error) {
@@ -3354,30 +3351,20 @@ function Chat() {
                                                             }
                                                           })()}
 
-                                                          {/* Last Charged - Show only for active subscriptions */}
+                                                          {/* Last Charged Date */}
                                                           {!billingData.subscription.cancelledAt && billingData.subscription.status !== 'cancelled' && (() => {
                                                             try {
                                                               if (!billingData.subscription.lastChargedAt) {
                                                                 return <p>Last charged: Not yet billed</p>;
                                                               }
-
                                                               let lastDate;
-
-                                                              // Handle different date formats with improved logic
-                                                              if (billingData.subscription.lastChargedAt?.seconds) {
-                                                                // Firestore timestamp with seconds
+                                                              if (typeof billingData.subscription.lastChargedAt === 'string') {
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt);
+                                                              } else if (billingData.subscription.lastChargedAt?.seconds) {
                                                                 lastDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
                                                               } else if (billingData.subscription.lastChargedAt?._seconds) {
-                                                                // Firestore timestamp with _seconds
                                                                 lastDate = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
-                                                              } else if (typeof billingData.subscription.lastChargedAt === 'string') {
-                                                                // ISO string format
-                                                                lastDate = new Date(billingData.subscription.lastChargedAt);
-                                                              } else if (typeof billingData.subscription.lastChargedAt === 'number') {
-                                                                // Unix timestamp
-                                                                lastDate = new Date(billingData.subscription.lastChargedAt > 1e12 ? billingData.subscription.lastChargedAt : billingData.subscription.lastChargedAt * 1000);
                                                               } else {
-                                                                // Try direct Date constructor as fallback
                                                                 lastDate = new Date(billingData.subscription.lastChargedAt);
                                                               }
 
@@ -3385,100 +3372,20 @@ function Chat() {
                                                                 return <p>Last charged: Invalid date</p>;
                                                               }
 
-                                                              // Detect billing interval using next billing date
-                                                              let billingInterval = 'Unknown';
-                                                              if (billingData.subscription.nextBillingDate) {
-                                                                let nextDate;
-                                                                if (typeof billingData.subscription.nextBillingDate === 'string') {
-                                                                  nextDate = new Date(billingData.subscription.nextBillingDate);
-                                                                } else if (billingData.subscription.nextBillingDate?.seconds) {
-                                                                  nextDate = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
-                                                                } else {
-                                                                  nextDate = new Date(billingData.subscription.nextBillingDate);
-                                                                }
-
-                                                                if (!isNaN(nextDate.getTime())) {
-                                                                  const diffInHours = Math.abs(nextDate.getTime() - lastDate.getTime()) / (1000 * 3600);
-                                                                  const diffInDays = diffInHours / 24;
-                                                                  
-                                                                  if (diffInHours >= 22 && diffInHours <= 26) {
-                                                                    billingInterval = 'Daily - Testing';
-                                                                  } else if (diffInDays >= 28 && diffInDays <= 32) {
-                                                                    billingInterval = 'Monthly';
-                                                                  } else if (diffInDays >= 6 && diffInDays <= 8) {
-                                                                    billingInterval = 'Weekly';
-                                                                  } else if (diffInDays >= 350 && diffInDays <= 380) {
-                                                                    billingInterval = 'Yearly';
-                                                                  } else {
-                                                                    billingInterval = `Every ${Math.round(diffInDays)} days`;
-                                                                  }
-                                                                }
-                                                              }
-
-                                                              // Format with time
-                                                              const formatDateWithTime = (dateString) => {
-                                                                const date = new Date(dateString);
-                                                                return date.toLocaleString('en-US', {
-                                                                  year: 'numeric',
-                                                                  month: 'long',
-                                                                  day: 'numeric',
-                                                                  hour: 'numeric',
-                                                                  minute: '2-digit',
-                                                                  timeZoneName: 'short'
-                                                                });
-                                                              };
-
                                                               return (
                                                                 <p>Last charged: {formatDateWithTime(lastDate)}
-                                                                  <span className="text-yellow-400 text-xs ml-2">({billingInterval})</span>
+                                                                  <span className="text-yellow-400 text-xs ml-2">({detectBillingInterval()})</span>
                                                                 </p>
                                                               );
                                                             } catch (error) {
-                                                              console.error('❌ Error formatting last charged date:', error);
+                                                              console.error('Error formatting last charged date:', error);
                                                               return <p>Last charged: Error loading date</p>;
                                                             }
                                                           })()}
 
                                                           {(billingData.subscription.cancelledAt || billingData.subscription.status === 'cancelled') && (
                                                             <>
-                                                              <p>Cancelled on: {(() => {
-                                                                try {
-                                                                  let date;
-
-                                                                  if (billingData.subscription.cancelledAt) {
-                                                                    if (typeof billingData.subscription.cancelledAt === 'string') {
-                                                                      date = new Date(billingData.subscription.cancelledAt);
-                                                                    } else if (billingData.subscription.cancelledAt?.seconds) {
-                                                                      // Firestore timestamp
-                                                                      date = new Date(billingData.subscription.cancelledAt.seconds * 1000);
-                                                                    } else {
-                                                                      date = new Date(billingData.subscription.cancelledAt);
-                                                                    }
-                                                                  } else {
-                                                                    return 'Unknown';
-                                                                  }
-
-                                                                  if (isNaN(date.getTime())) return 'Unknown';
-                                                                  
-                                                                  // Format with time using the same function as BillingSection
-                                                                  const formatDateWithTime = (dateString) => {
-                                                                    const date = new Date(dateString);
-                                                                    return date.toLocaleString('en-US', {
-                                                                      year: 'numeric',
-                                                                      month: 'long',
-                                                                      day: 'numeric',
-                                                                      hour: 'numeric',
-                                                                      minute: '2-digit',
-                                                                      timeZoneName: 'short'
-                                                                    });
-                                                                  };
-                                                                  
-                                                                  return formatDateWithTime(date);
-                                                                } catch (error) {
-                                                                  console.error('Error formatting cancelled date:', error);
-                                                                  return 'Unknown';
-                                                                }
-                                                              })()}</p>
+                                                              <p>Cancelled on: {formatDateWithTime(billingData.subscription.cancelledAt)}</p>
                                                               <p className="text-yellow-400 text-xs">Your subscription will end on the access date above.</p>
                                                             </>
                                                           )}
@@ -3487,14 +3394,6 @@ function Chat() {
                                                             <p className="text-xs text-gray-500">ID: {billingData.subscription.subscriptionId}</p>
                                                           )}
                                                         </>
-                                                      )}
-
-                                                      {/* Show billing info even for free users */}
-                                                      {currentUserPlan === 'free' && (
-                                                        <div className="text-xs text-gray-500 mt-2">
-                                                          <p>• No payment method on file</p>
-                                                          <p>• Upgrade to unlock premium features</p>
-                                                        </div>
                                                       )}
                                                     </div>
                                                   </div>
@@ -3546,7 +3445,7 @@ function Chat() {
                                                         </button>
                                                       )}
 
-                                                      {/* Plan Change Options - only show for premium/ultimate users unless cancelled */}
+                                                      {/* Change Plan Options - only show for premium/ultimate users unless cancelled */}
                                                       {(currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
                                                        !(billingData?.subscription?.cancelledAt || billingData?.subscription?.status === 'cancelled') && (
                                                         <button
@@ -4391,8 +4290,7 @@ function Chat() {
                                               setShowChatSidebar(false);
                                               setShowHistorySidebar(true);
                                               // Always fetch fresh data when opening history
-                                              fetchChatHistory();
-                                            }}
+                                              fetchChatHistory();                                            }}
                                             className="w-full flex items-center p-3 text-gray-400 hover:text-white hover:bg-gray-800/20 rounded-md transition-colors text-left"
                                           >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -4627,7 +4525,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
+                                              <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
