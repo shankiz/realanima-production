@@ -2,33 +2,72 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/admin';
 // import { getUserDataAdmin } from '@/lib/firebase/admin-helpers';
 
-// Assume PayPalSubscriptionService is imported and configured correctly elsewhere
-// import PayPalSubscriptionService from '@/lib/paypal-service'; // Placeholder for actual import
-
+// Real PayPal API integration
 class PayPalSubscriptionService {
+  private async getPayPalAccessToken() {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+    const isProduction = process.env.PAYPAL_MODE === 'production';
+    const baseURL = isProduction ? 'https://api.paypal.com' : 'https://api.sandbox.paypal.com';
+
+    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    
+    const response = await fetch(`${baseURL}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get PayPal access token');
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  }
+
   async getSubscriptionDetails(subscriptionId: string) {
-    // This is a mock implementation. Replace with actual PayPal API call.
-    console.log(`Mock: Fetching details for subscription ID: ${subscriptionId}`);
-    // Simulate a response that includes next_billing_time
-    if (subscriptionId.startsWith('legacy-')) {
-      // Simulate legacy data without time
+    try {
+      console.log(`📞 Fetching real PayPal subscription details for: ${subscriptionId}`);
+      const accessToken = await this.getPayPalAccessToken();
+      const isProduction = process.env.PAYPAL_MODE === 'production';
+      const baseURL = isProduction ? 'https://api.paypal.com' : 'https://api.sandbox.paypal.com';
+
+      const response = await fetch(`${baseURL}/v1/billing/subscriptions/${subscriptionId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`❌ PayPal API error: ${response.status} ${response.statusText}`);
+        return null;
+      }
+
+      const subscriptionData = await response.json();
+      console.log('📊 Real PayPal subscription data received:', {
+        status: subscriptionData.status,
+        next_billing_time: subscriptionData.billing_info?.next_billing_time,
+        last_payment_time: subscriptionData.billing_info?.last_payment?.time
+      });
+
       return {
-        status: 'ACTIVE',
-        planId: 'plan_abc',
+        status: subscriptionData.status,
+        planId: subscriptionData.plan_id,
         billing_info: {
-          next_billing_time: '2025-08-21T10:00:00Z', // Example with time
-          last_payment: { time: '2025-07-21T10:00:00Z' }
+          next_billing_time: subscriptionData.billing_info?.next_billing_time,
+          last_payment: subscriptionData.billing_info?.last_payment
         }
       };
+    } catch (error) {
+      console.error('❌ Error fetching PayPal subscription details:', error);
+      return null;
     }
-    return {
-      status: 'ACTIVE',
-      planId: 'plan_xyz',
-      billing_info: {
-        next_billing_time: '2025-09-15T12:30:00Z',
-        last_payment: { time: '2025-08-15T12:30:00Z' }
-      }
-    };
   }
 }
 
@@ -99,20 +138,36 @@ export async function GET(request: NextRequest) {
 
     // If subscription data exists, fetch real-time details from PayPal
     if (finalSubscription && finalSubscription.subscriptionId) {
-      // Get subscription details from PayPal for real-time status
-      const paypalService = new PayPalSubscriptionService();
-      const subscriptionDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
+      try {
+        console.log('🔄 Fetching real-time PayPal data for subscription:', finalSubscription.subscriptionId);
+        const paypalService = new PayPalSubscriptionService();
+        const subscriptionDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
 
-      console.log('📊 PayPal subscription details:', subscriptionDetails);
+        if (subscriptionDetails) {
+          console.log('📊 PayPal subscription details received:', subscriptionDetails);
 
-      finalSubscription = {
-        status: subscriptionDetails.status || finalSubscription.status,
-        planId: subscriptionDetails.planId || finalSubscription.planId,
-        nextBillingDate: subscriptionDetails.billing_info?.next_billing_time || finalSubscription.nextBillingDate,
-        lastChargedAt: subscriptionDetails.billing_info?.last_payment?.time || finalSubscription.lastChargedAt,
-        cancelledAt: subscriptionDetails.cancelledAt || finalSubscription.cancelledAt,
-        cancelReason: subscriptionDetails.cancelReason || finalSubscription.cancelReason
-      };
+          // Update subscription with real PayPal data
+          finalSubscription = {
+            ...finalSubscription,
+            status: subscriptionDetails.status?.toLowerCase() || finalSubscription.status,
+            planId: subscriptionDetails.planId || finalSubscription.planId,
+            nextBillingDate: subscriptionDetails.billing_info?.next_billing_time || finalSubscription.nextBillingDate,
+            lastChargedAt: subscriptionDetails.billing_info?.last_payment?.time || finalSubscription.lastChargedAt,
+            subscriptionId: finalSubscription.subscriptionId, // Keep original subscription ID
+          };
+
+          console.log('✅ Updated subscription with PayPal data:', {
+            nextBillingDate: finalSubscription.nextBillingDate,
+            lastChargedAt: finalSubscription.lastChargedAt,
+            status: finalSubscription.status
+          });
+        } else {
+          console.log('⚠️ Could not fetch PayPal details, using cached data');
+        }
+      } catch (error) {
+        console.error('❌ Error fetching PayPal subscription details:', error);
+        // Continue with cached data if PayPal API fails
+      }
     }
 
 
