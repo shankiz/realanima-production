@@ -3231,7 +3231,7 @@ function Chat() {
                                                     <div className="text-lg text-white font-medium">Billing Management</div>
                                                     <button
                                                       onClick={() => setShowBillingDropdown(false)}
-                                                      className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-800/50"
+                                                      className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-md hover:bg-gray-800/50"
                                                     >
                                                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
@@ -3299,7 +3299,9 @@ function Chat() {
                                                               const now = new Date();
                                                               const timeDiff = date.getTime() - now.getTime();
                                                               const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                                                              const isDailySubscription = daysDiff <= 2; // If next billing is within 2 days, assume daily
+                                                              const hoursDiff = Math.ceil(timeDiff / (1000 * 3600));
+                                                              // If next billing is within 25 hours, assume daily testing
+                                                              const isDailySubscription = hoursDiff <= 25 && daysDiff <= 1;
 
                                                               return (
                                                                 <p>
@@ -3321,7 +3323,7 @@ function Chat() {
                                                             }
                                                           })()}
 
-                                                          {/* Always show last charged for active subscriptions */}
+                                                          {/* Last Charged - Show only for active subscriptions */}
                                                           {!billingData.subscription.cancelledAt && billingData.subscription.status !== 'cancelled' && (() => {
                                                             try {
                                                               if (!billingData.subscription.lastChargedAt) {
@@ -3368,11 +3370,13 @@ function Chat() {
                                                                 day: 'numeric',
                                                               });
 
-                                                              // Check if this was charged recently (within last 2 days for daily billing)
+                                                              // Check if this was charged recently (within last 25 hours for daily billing)
                                                               const now = new Date();
                                                               const timeDiff = now.getTime() - date.getTime();
+                                                              const hoursSinceCharge = Math.floor(timeDiff / (1000 * 3600));
                                                               const daysSinceCharge = Math.floor(timeDiff / (1000 * 3600 * 24));
-                                                              const isDailySubscription = daysSinceCharge <= 1; // If charged within last day, assume daily
+                                                              // If charged within last 25 hours, assume daily testing
+                                                              const isDailySubscription = hoursSinceCharge <= 25 && daysSinceCharge <= 1;
 
                                                               console.log('✅ Formatted date:', formattedDate);
 
@@ -4120,7 +4124,7 @@ function Chat() {
                                                 className="flex items-center w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-gray-800/50 transition-colors"
                                               >
                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.066z" />
                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 Settings

@@ -12,17 +12,17 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
 // Subscription plans configuration
 export const SUBSCRIPTION_PLANS = {
   premium: {
-    name: 'Premium Monthly',
-    price: 9.99,
+    name: 'Premium Daily (Testing)',
+    price: 0.33, // Daily rate for testing
     credits: 200,
-    interval: 'MONTH',
+    interval: 'DAY',
     intervalCount: 1
   },
   ultimate: {
-    name: 'Ultimate Monthly',
-    price: 19.99,
+    name: 'Ultimate Daily (Testing)',
+    price: 0.66, // Daily rate for testing
     credits: 500,
-    interval: 'MONTH',
+    interval: 'DAY',
     intervalCount: 1
   }
 };
