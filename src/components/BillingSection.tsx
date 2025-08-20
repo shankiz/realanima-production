@@ -137,6 +137,18 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
     });
   };
 
+  const formatDateWithTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -199,12 +211,12 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
 
               {subscription.nextBillingDate && (
             <p>
-              {subscription.status === 'cancelled' || subscription.cancelledAt ? 'Access until:' : 'Next billing:'} {formatDate(subscription.nextBillingDate)}
+              {subscription.status === 'cancelled' || subscription.cancelledAt ? 'Access until:' : 'Next billing:'} {formatDateWithTime(subscription.nextBillingDate)}
             </p>
           )}
 
               {subscription.lastChargedAt && (
-                <p>Last charged: {formatDate(subscription.lastChargedAt)}</p>
+                <p>Last charged: {formatDateWithTime(subscription.lastChargedAt)}</p>
               )}
 
               {subscription.cancelledAt && (
