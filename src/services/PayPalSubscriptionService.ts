@@ -9,11 +9,6 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
   ? 'https://api.paypal.com'
   : 'https://api.sandbox.paypal.com';
 
-// Only check for credentials on server-side (when PAYPAL_CLIENT_SECRET is expected)
-if (typeof window === 'undefined' && (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET)) {
-  throw new Error('PayPal credentials not found in environment variables');
-}
-
 // Subscription plans configuration
 export const SUBSCRIPTION_PLANS = {
   premium: {
@@ -35,6 +30,11 @@ export const SUBSCRIPTION_PLANS = {
 async function getPayPalAccessToken() {
   if (PAYPAL_DEBUG) {
     console.log('🔑 Getting PayPal access token...');
+  }
+
+  // Check for credentials when actually needed
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || PAYPAL_CLIENT_SECRET === 'your_paypal_client_secret_here') {
+    throw new Error('PayPal credentials not found in environment variables');
   }
 
   const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
