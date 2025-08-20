@@ -63,7 +63,10 @@ async function handlePaymentCompleted(webhookData: any) {
       return;
     }
     
-    const subscriptionId = webhookData.resource?.billing_agreement_id;
+    // Try both possible subscription ID fields for different PayPal subscription types
+    const subscriptionId = webhookData.resource?.billing_agreement_id || 
+                          webhookData.resource?.subscription_id ||
+                          webhookData.resource?.id;
     if (!subscriptionId) {
       console.log('⚠️ No subscription ID found in payment data');
       return;
@@ -87,10 +90,10 @@ async function handlePaymentCompleted(webhookData: any) {
     const paypalService = new PayPalSubscriptionService();
     const subscriptionDetails = await paypalService.getSubscriptionDetails(subscriptionId);
 
-    // Calculate next billing date (add 1 month)
+    // Calculate next billing date (add 1 day for daily billing)
     const now = new Date();
     const nextBilling = new Date(now);
-    nextBilling.setMonth(nextBilling.getMonth() + 1);
+    nextBilling.setDate(nextBilling.getDate() + 1);
 
     // Reset credits based on plan
     let newCredits = 30; // free default
