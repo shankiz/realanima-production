@@ -3294,6 +3294,13 @@ function Chat() {
                                                               }
 
                                                               if (isNaN(date.getTime())) return null;
+
+                                                              // Check if this is a daily subscription (for testing) by comparing dates
+                                                              const now = new Date();
+                                                              const timeDiff = date.getTime() - now.getTime();
+                                                              const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                                                              const isDailySubscription = daysDiff <= 2; // If next billing is within 2 days, assume daily
+
                                                               return (
                                                                 <p>
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
@@ -3303,6 +3310,9 @@ function Chat() {
                                                                     month: 'long',
                                                                     day: 'numeric',
                                                                   })}
+                                                                  {isDailySubscription && (
+                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing Mode)</span>
+                                                                  )}
                                                                 </p>
                                                               );
                                                             } catch (error) {
@@ -3358,10 +3368,20 @@ function Chat() {
                                                                 day: 'numeric',
                                                               });
 
+                                                              // Check if this was charged recently (within last 2 days for daily billing)
+                                                              const now = new Date();
+                                                              const timeDiff = now.getTime() - date.getTime();
+                                                              const daysSinceCharge = Math.floor(timeDiff / (1000 * 3600 * 24));
+                                                              const isDailySubscription = daysSinceCharge <= 1; // If charged within last day, assume daily
+
                                                               console.log('✅ Formatted date:', formattedDate);
 
                                                               return (
-                                                                <p>Last charged: {formattedDate}</p>
+                                                                <p>Last charged: {formattedDate}
+                                                                  {isDailySubscription && (
+                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
+                                                                  )}
+                                                                </p>
                                                               );
                                                             } catch (error) {
                                                               console.error('❌ Error formatting last charged date:', error);
