@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
 const PAYPAL_MODE = process.env.PAYPAL_MODE || 'sandbox';
 const PAYPAL_DEBUG = process.env.PAYPAL_DEBUG === 'true';
@@ -9,7 +9,8 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
   ? 'https://api.paypal.com'
   : 'https://api.sandbox.paypal.com';
 
-if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+// Only check for credentials on server-side (when PAYPAL_CLIENT_SECRET is expected)
+if (typeof window === 'undefined' && (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET)) {
   throw new Error('PayPal credentials not found in environment variables');
 }
 
