@@ -164,4 +164,36 @@ export class PayPalSubscriptionService {
     console.log('✅ Subscription details retrieved:', result);
     return result;
   }
+
+  async cancelSubscription(subscriptionId: string, reason: string) {
+    const accessToken = await getPayPalAccessToken();
+
+    const response = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions/${subscriptionId}/cancel`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': uuidv4(),
+      },
+      body: JSON.stringify({
+        reason: reason || 'User requested cancellation'
+      }),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      console.error('PayPal cancel subscription error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      return {
+        success: false,
+        error: `Failed to cancel subscription: ${result.message || result.error_description || 'Unknown error'}`
+      };
+    }
+
+    console.log('✅ Subscription cancelled successfully on PayPal');
+    return { success: true };
+  }
 }
