@@ -62,7 +62,7 @@ async function getPayPalAccessToken() {
 }
 
 export class PayPalSubscriptionService {
-  async createSubscriptionOrder(paymentSourceToken: string, planId: string) {
+  async createSubscriptionOrder(paymentSourceToken: string, planId: keyof typeof SUBSCRIPTION_PLANS) {
     const accessToken = await getPayPalAccessToken();
     const plan = SUBSCRIPTION_PLANS[planId];
 
