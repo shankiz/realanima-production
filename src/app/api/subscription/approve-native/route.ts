@@ -1,41 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PayPalSubscriptionService, SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { adminDb } from '@/lib/firebase/admin';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    console.log('🎉 Starting native PayPal subscription approval...');
+    const { subscriptionId, userId, planId } = await req.json();
 
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+    if (!subscriptionId || !userId || !planId) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
-    const token = authHeader.substring(7);
-
-    if (!adminAuth) {
-      console.error('❌ Firebase Admin not initialized');
-      return NextResponse.json({ error: 'Authentication service not available' }, { status: 500 });
+    if (!adminDb) {
+      console.error('❌ Firebase Admin DB not initialized');
+      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
     }
 
-    const decodedToken = await adminAuth.verifyIdToken(token);
-
-    if (!decodedToken) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
-    const { subscriptionId, planId } = await request.json();
-
-    if (!subscriptionId || !planId) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: subscriptionId, planId' 
-      }, { status: 400 });
-    }
-
-    console.log('🔍 Processing subscription approval for user', decodedToken.uid, 'subscription', subscriptionId, 'plan', planId);
+    const paypalService = new PayPalSubscriptionService();
 
     // Get subscription details from PayPal
-    const paypalService = new PayPalSubscriptionService();
     const subscriptionDetails = await paypalService.getSubscriptionDetails(subscriptionId);
 
     console.log('📋 Subscription details:', {
@@ -44,37 +29,28 @@ export async function POST(request: NextRequest) {
       plan_id: subscriptionDetails.plan_id
     });
 
-    // Verify subscription is active
     if (subscriptionDetails.status !== 'ACTIVE') {
-      return NextResponse.json({ 
-        error: 'Subscription is not active', 
-        status: subscriptionDetails.status 
-      }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Subscription not active' },
+        { status: 400 }
+      );
     }
 
-    // Get plan details
     const plan = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS];
     if (!plan) {
       return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 });
     }
 
-    // Update user in Firebase
-    if (!adminDb) {
-      console.error('❌ Firebase Admin DB not initialized');
-      return NextResponse.json({ error: 'Database not available' }, { status: 500 });
-    }
-
-    const userRef = adminDb.collection('users').doc(decodedToken.uid);
-    const userDoc = await userRef.get();
-
+    // Calculate next billing date
     const now = new Date();
     // Calculate next billing date (daily for testing)
     const nextBillingDate = new Date();
     nextBillingDate.setDate(nextBillingDate.getDate() + 1);
 
-    const userData = {
-      messagesLeft: plan.credits,
+    // Update user with subscription and credits
+    await adminDb.collection('users').doc(userId).update({
       credits: plan.credits,
+      messagesLeft: plan.credits,
       currentPlan: planId,
       subscriptionId: subscriptionId,
       subscriptionStatus: 'active',
@@ -90,27 +66,15 @@ export async function POST(request: NextRequest) {
         isNativePayPal: true
       },
       lastUpdated: now
-    };
+    });
 
-    if (userDoc.exists) {
-      await userRef.update(userData);
-    } else {
-      await userRef.set({
-        uid: decodedToken.uid,
-        email: decodedToken.email,
-        name: decodedToken.name || 'User',
-        createdAt: now,
-        ...userData
-      });
-    }
+    console.log(`✅ Subscription activated for user ${userId}: ${planId}`);
 
-    console.log('✅ Updated user', decodedToken.uid, 'with native subscription', subscriptionId);
-
-    return NextResponse.json({ 
-        success: true, 
-        message: 'Subscription activated successfully!',
-        subscription: 'success'
-      });
+    return NextResponse.json({
+      success: true,
+      message: 'Subscription activated successfully!',
+      credits: plan.credits
+    });
 
   } catch (error) {
     console.error('❌ Native subscription approval error:', error);

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       console.error('❌ Firebase Admin DB not initialized');
       return NextResponse.json({ error: 'Database not available' }, { status: 500 });
     }
-    
+
     const userRef = adminDb.collection('users').doc(uid);
     const userDoc = await userRef.get();
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Check if subscription is already cancelled
     if (subscription.status === 'cancelled' || subscription.cancelledAt) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Subscription is already cancelled',
         details: {
           status: subscription.status,
@@ -79,47 +79,48 @@ export async function POST(request: NextRequest) {
 
     const now = new Date().toISOString();
 
-    // Cancel the subscription on PayPal's side first
+    // Get user's PayPal subscription ID
+    const userDocForCancel = await adminDb.collection('users').doc(uid).get();
+    const userDataForCancel = userDocForCancel.data();
+
+    if (!userDataForCancel?.subscription?.paypalSubscriptionId) {
+      return NextResponse.json(
+        { error: 'No active PayPal subscription found' },
+        { status: 404 }
+      );
+    }
+
+    // Cancel the actual PayPal subscription
     const paypalService = new PayPalSubscriptionService();
-    const paypalResult = await paypalService.cancelSubscription(
-      subscription.subscriptionId || subscription.id, 
-      'User requested cancellation'
+    const cancelResult = await paypalService.cancelSubscription(
+      userDataForCancel.subscription.paypalSubscriptionId,
+      'User requested cancellation' // Assuming 'reason' is not passed in this endpoint, using a default.
     );
 
-    if (!paypalResult.success) {
-      console.error('❌ Failed to cancel PayPal subscription:', paypalResult.error);
-      return NextResponse.json({ 
-        error: 'Failed to cancel subscription with PayPal',
-        details: paypalResult.error 
-      }, { status: 500 });
+    if (!cancelResult.success) {
+      console.error('❌ Failed to cancel PayPal subscription:', cancelResult.error);
+      return NextResponse.json(
+        { error: cancelResult.error || 'Failed to cancel PayPal subscription' },
+        { status: 500 }
+      );
     }
 
     console.log('✅ Successfully cancelled PayPal subscription');
 
-    // Cancel the subscription (user keeps access until current billing period ends)
+    // Update our database
     await userRef.update({
       'subscription.status': 'cancelled',
-      'subscription.cancelledAt': now,
-      'subscription.cancelReason': 'user_requested',
+      'subscription.cancelledAt': new Date().toISOString(),
+      'subscription.cancelReason': 'user_requested', // Added reason for clarity
       'subscription.updatedAt': now,
     });
-
-    // Also update the user's plan status if needed
-    const updateData: any = {
-      'subscription.status': 'cancelled',
-      'subscription.cancelledAt': now,
-      'subscription.cancelReason': 'user_requested',
-      'subscription.updatedAt': now,
-    };
-
-    await userRef.update(updateData);
 
     console.log(`✅ Subscription cancelled successfully for user: ${uid}`);
     console.log(`📊 User will retain access until: ${subscription.nextBillingDate}`);
 
     return NextResponse.json({
       success: true,
-      message: 'Subscription cancelled successfully',
+      message: 'Subscription cancelled successfully with PayPal',
       accessUntil: subscription.nextBillingDate || 'immediately',
       status: 'cancelled'
     });

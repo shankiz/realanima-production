@@ -4,6 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
+// Mock SUBSCRIPTION_PLANS for demonstration purposes. In a real app, this would be fetched or imported.
+const SUBSCRIPTION_PLANS: Record<string, { name: string; price: number }> = {
+  premium: { name: 'Premium', price: 10 },
+  ultimate: { name: 'Ultimate', price: 20 },
+};
+
 interface BillingSectionProps {
   user: any;
   currentUserPlan: string;
@@ -20,6 +26,7 @@ interface SubscriptionData {
     lastChargedAt?: string;
     cancelledAt?: string;
     cancelReason?: string;
+    paypalSubscriptionId?: string; // Added PayPal Subscription ID
   } | null;
 }
 
@@ -130,6 +137,7 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
   };
 
   const formatDate = (dateString: string) => {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -138,6 +146,7 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
   };
 
   const formatDateWithTime = (dateString: string) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       year: 'numeric',
