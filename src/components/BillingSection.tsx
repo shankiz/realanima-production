@@ -175,6 +175,17 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
   };
 
   const detectBillingInterval = () => {
+    // Check if this is a testing subscription based on plan configuration
+    // From PayPalSubscriptionService.ts, we know testing plans use DAY interval
+    const isTestingPlan = subscription?.planId === 'premium' || subscription?.planId === 'ultimate';
+    
+    // For testing plans, ALWAYS show as Daily - Testing regardless of PayPal's date scheduling
+    // PayPal sandbox often schedules daily subscriptions with monthly-looking intervals for testing
+    if (isTestingPlan) {
+      console.log('🔍 Billing interval detection: Testing plan detected, showing Daily - Testing');
+      return 'Daily - Testing';
+    }
+    
     if (!subscription?.nextBillingDate || !subscription?.lastChargedAt) return 'Unknown';
     
     try {
@@ -212,16 +223,6 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
         subscriptionPlanId: subscription.planId,
         paypalPlanId: subscription.paypalPlanId
       });
-      
-      // Check if this is a testing subscription based on plan configuration
-      // From PayPalSubscriptionService.ts, we know testing plans use DAY interval
-      const isTestingPlan = subscription.planId === 'premium' || subscription.planId === 'ultimate';
-      
-      // For testing plans, ALWAYS show as Daily - Testing regardless of PayPal's date scheduling
-      // PayPal sandbox often schedules daily subscriptions with monthly-looking intervals for testing
-      if (isTestingPlan) {
-        return 'Daily - Testing';
-      }
       
       // For non-testing plans, use the actual date difference calculation
       // If difference is close to 24 hours (within 4 hours tolerance), it's daily
