@@ -3281,29 +3281,53 @@ function Chat() {
 
                                                           {billingData.subscription.nextBillingDate && (() => {
                                                             try {
-                                                              let date;
+                                                              let nextDate;
 
                                                               // Handle different date formats
                                                               if (typeof billingData.subscription.nextBillingDate === 'string') {
-                                                                date = new Date(billingData.subscription.nextBillingDate);
+                                                                nextDate = new Date(billingData.subscription.nextBillingDate);
                                                               } else if (billingData.subscription.nextBillingDate?.seconds) {
                                                                 // Firestore timestamp
-                                                                date = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
+                                                                nextDate = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
                                                               } else {
-                                                                date = new Date(billingData.subscription.nextBillingDate);
+                                                                nextDate = new Date(billingData.subscription.nextBillingDate);
                                                               }
 
-                                                              if (isNaN(date.getTime())) return null;
+                                                              if (isNaN(nextDate.getTime())) return null;
 
-                                                              // Check if this is a daily subscription (for testing) by comparing dates
-                                                              const now = new Date();
-                                                              const timeDiff = date.getTime() - now.getTime();
-                                                              const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                                                              const hoursDiff = Math.ceil(timeDiff / (1000 * 3600));
-                                                              // If next billing is within 25 hours, assume daily testing
-                                                              const isDailySubscription = hoursDiff <= 25 && daysDiff <= 1;
+                                                              // Detect billing interval by comparing with last charged date
+                                                              let billingInterval = 'Unknown';
+                                                              if (billingData.subscription.lastChargedAt) {
+                                                                let lastDate;
+                                                                if (typeof billingData.subscription.lastChargedAt === 'string') {
+                                                                  lastDate = new Date(billingData.subscription.lastChargedAt);
+                                                                } else if (billingData.subscription.lastChargedAt?.seconds) {
+                                                                  lastDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
+                                                                } else if (billingData.subscription.lastChargedAt?._seconds) {
+                                                                  lastDate = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
+                                                                } else {
+                                                                  lastDate = new Date(billingData.subscription.lastChargedAt);
+                                                                }
 
-                                                              // Format with time using the same function as BillingSection
+                                                                if (!isNaN(lastDate.getTime())) {
+                                                                  const diffInHours = Math.abs(nextDate.getTime() - lastDate.getTime()) / (1000 * 3600);
+                                                                  const diffInDays = diffInHours / 24;
+                                                                  
+                                                                  if (diffInHours >= 22 && diffInHours <= 26) {
+                                                                    billingInterval = 'Daily - Testing';
+                                                                  } else if (diffInDays >= 28 && diffInDays <= 32) {
+                                                                    billingInterval = 'Monthly';
+                                                                  } else if (diffInDays >= 6 && diffInDays <= 8) {
+                                                                    billingInterval = 'Weekly';
+                                                                  } else if (diffInDays >= 350 && diffInDays <= 380) {
+                                                                    billingInterval = 'Yearly';
+                                                                  } else {
+                                                                    billingInterval = `Every ${Math.round(diffInDays)} days`;
+                                                                  }
+                                                                }
+                                                              }
+
+                                                              // Format with time
                                                               const formatDateWithTime = (dateString) => {
                                                                 const date = new Date(dateString);
                                                                 return date.toLocaleString('en-US', {
@@ -3320,10 +3344,8 @@ function Chat() {
                                                                 <p>
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
                                                                     ? 'Access until:' 
-                                                                    : 'Next billing:'} {formatDateWithTime(date)}
-                                                                  {isDailySubscription && (
-                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
-                                                                  )}
+                                                                    : 'Next billing:'} {formatDateWithTime(nextDate)}
+                                                                  <span className="text-yellow-400 text-xs ml-2">({billingInterval})</span>
                                                                 </p>
                                                               );
                                                             } catch (error) {
@@ -3339,41 +3361,61 @@ function Chat() {
                                                                 return <p>Last charged: Not yet billed</p>;
                                                               }
 
-                                                              console.log('🔍 Processing lastChargedAt:', billingData.subscription.lastChargedAt, 'Type:', typeof billingData.subscription.lastChargedAt);
-
-                                                              let date;
+                                                              let lastDate;
 
                                                               // Handle different date formats with improved logic
                                                               if (billingData.subscription.lastChargedAt?.seconds) {
                                                                 // Firestore timestamp with seconds
-                                                                date = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
-                                                                console.log('📅 Firestore seconds format detected:', billingData.subscription.lastChargedAt.seconds);
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
                                                               } else if (billingData.subscription.lastChargedAt?._seconds) {
                                                                 // Firestore timestamp with _seconds
-                                                                date = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
-                                                                console.log('📅 Firestore _seconds format detected:', billingData.subscription.lastChargedAt._seconds);
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
                                                               } else if (typeof billingData.subscription.lastChargedAt === 'string') {
                                                                 // ISO string format
-                                                                date = new Date(billingData.subscription.lastChargedAt);
-                                                                console.log('📅 ISO string format detected:', billingData.subscription.lastChargedAt);
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt);
                                                               } else if (typeof billingData.subscription.lastChargedAt === 'number') {
                                                                 // Unix timestamp
-                                                                date = new Date(billingData.subscription.lastChargedAt > 1e12 ? billingData.subscription.lastChargedAt : billingData.subscription.lastChargedAt * 1000);
-                                                                console.log('📅 Number format detected:', billingData.subscription.lastChargedAt);
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt > 1e12 ? billingData.subscription.lastChargedAt : billingData.subscription.lastChargedAt * 1000);
                                                               } else {
                                                                 // Try direct Date constructor as fallback
-                                                                date = new Date(billingData.subscription.lastChargedAt);
-                                                                console.log('📅 Fallback Date constructor:', billingData.subscription.lastChargedAt);
+                                                                lastDate = new Date(billingData.subscription.lastChargedAt);
                                                               }
 
-                                                              console.log('📅 Parsed date:', date, 'Valid:', !isNaN(date.getTime()));
-
-                                                              if (!date || isNaN(date.getTime())) {
-                                                                console.error('❌ Invalid lastChargedAt date:', billingData.subscription.lastChargedAt, 'Parsed:', date);
+                                                              if (!lastDate || isNaN(lastDate.getTime())) {
                                                                 return <p>Last charged: Invalid date</p>;
                                                               }
 
-                                                              // Format with time using the same function as BillingSection
+                                                              // Detect billing interval using next billing date
+                                                              let billingInterval = 'Unknown';
+                                                              if (billingData.subscription.nextBillingDate) {
+                                                                let nextDate;
+                                                                if (typeof billingData.subscription.nextBillingDate === 'string') {
+                                                                  nextDate = new Date(billingData.subscription.nextBillingDate);
+                                                                } else if (billingData.subscription.nextBillingDate?.seconds) {
+                                                                  nextDate = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
+                                                                } else {
+                                                                  nextDate = new Date(billingData.subscription.nextBillingDate);
+                                                                }
+
+                                                                if (!isNaN(nextDate.getTime())) {
+                                                                  const diffInHours = Math.abs(nextDate.getTime() - lastDate.getTime()) / (1000 * 3600);
+                                                                  const diffInDays = diffInHours / 24;
+                                                                  
+                                                                  if (diffInHours >= 22 && diffInHours <= 26) {
+                                                                    billingInterval = 'Daily - Testing';
+                                                                  } else if (diffInDays >= 28 && diffInDays <= 32) {
+                                                                    billingInterval = 'Monthly';
+                                                                  } else if (diffInDays >= 6 && diffInDays <= 8) {
+                                                                    billingInterval = 'Weekly';
+                                                                  } else if (diffInDays >= 350 && diffInDays <= 380) {
+                                                                    billingInterval = 'Yearly';
+                                                                  } else {
+                                                                    billingInterval = `Every ${Math.round(diffInDays)} days`;
+                                                                  }
+                                                                }
+                                                              }
+
+                                                              // Format with time
                                                               const formatDateWithTime = (dateString) => {
                                                                 const date = new Date(dateString);
                                                                 return date.toLocaleString('en-US', {
@@ -3386,23 +3428,9 @@ function Chat() {
                                                                 });
                                                               };
 
-                                                              const formattedDate = formatDateWithTime(date);
-
-                                                              // Check if this was charged recently (within last 25 hours for daily billing)
-                                                              const now = new Date();
-                                                              const timeDiff = now.getTime() - date.getTime();
-                                                              const hoursSinceCharge = Math.floor(timeDiff / (1000 * 3600));
-                                                              const daysSinceCharge = Math.floor(timeDiff / (1000 * 3600 * 24));
-                                                              // If charged within last 25 hours, assume daily testing
-                                                              const isDailySubscription = hoursSinceCharge <= 25 && daysSinceCharge <= 1;
-
-                                                              console.log('✅ Formatted date with time:', formattedDate);
-
                                                               return (
-                                                                <p>Last charged: {formattedDate}
-                                                                  {isDailySubscription && (
-                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
-                                                                  )}
+                                                                <p>Last charged: {formatDateWithTime(lastDate)}
+                                                                  <span className="text-yellow-400 text-xs ml-2">({billingInterval})</span>
                                                                 </p>
                                                               );
                                                             } catch (error) {
