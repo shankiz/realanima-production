@@ -458,7 +458,7 @@ export default function Subscription() {
                 </div>
 
                 <PayPalSubscription
-                  planId={selectedPlan}
+                  planId={selectedPlan as "premium" | "ultimate"}
                   onSuccess={handlePayPalSuccess}
                   onError={handlePayPalError}
                 />
