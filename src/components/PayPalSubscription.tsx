@@ -101,10 +101,11 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.getIdToken()}`,
+          'Authorization': `Bearer ${await user.getIdToken()}`,
         },
         body: JSON.stringify({
           subscriptionId: data.subscriptionID,
+          userId: user.uid,
           planId,
         }),
       });
