@@ -942,7 +942,7 @@ function Chat() {
                                   console.log('🎉 Detected very recent subscription from billing data');
 
                                   // Check if we already showed the modal for this subscription
-                                  const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`);
+                                  const lastModalTime = localStorage.getItem(`subscriptionModal_${user.uid}_${billingData.subscription.subscriptionId}`);
                                   if (!lastModalTime) {
                                     console.log('🎊 Showing subscription celebration modal from recent billing data');
                                     setTimeout(() => {
@@ -950,7 +950,7 @@ function Chat() {
                                     }, 1500);
 
                                     // Mark this subscription as having shown the modal
-                                    localStorage.setItem(`subscriptionModal_${user.uid}_${billingData.subscription.id}`, Date.now().toString());
+                                    localStorage.setItem(`subscriptionModal_${user.uid}_${billingData.subscription.subscriptionId}`, Date.now().toString());
                                   }
                                 }
                               } catch (error) {
