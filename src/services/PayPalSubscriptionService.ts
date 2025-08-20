@@ -13,14 +13,14 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
 export const SUBSCRIPTION_PLANS = {
   premium: {
     name: 'Premium Daily (Testing)',
-    price: 0.33, // Daily rate for testing
+    price: 3.88, // Keep original price for testing
     credits: 200,
     interval: 'DAY',
     intervalCount: 1
   },
   ultimate: {
     name: 'Ultimate Daily (Testing)',
-    price: 0.66, // Daily rate for testing
+    price: 6.88, // Keep original price for testing
     credits: 500,
     interval: 'DAY',
     intervalCount: 1
