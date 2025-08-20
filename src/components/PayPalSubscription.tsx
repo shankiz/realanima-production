@@ -7,7 +7,7 @@ import { SUBSCRIPTION_PLANS } from '@/services/PayPalSubscriptionService';
 import SuccessModal from '@/components/SuccessModal';
 
 interface PayPalSubscriptionProps {
-  planId: string;
+  planId: keyof typeof SUBSCRIPTION_PLANS;
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
