@@ -52,7 +52,7 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.getIdToken()}`,
+          'Authorization': `Bearer ${await user.getIdToken()}`,
         },
         body: JSON.stringify({
           planId,
@@ -71,8 +71,9 @@ export default function PayPalSubscription({ planId, onSuccess, onError }: PayPa
         throw new Error(data.error || 'Failed to create subscription plan');
       }
 
-      console.log('✅ Using PayPal plan:', data.paypalPlanId);
-      return data.paypalPlanId;
+      // Return the actual subscription ID, not the plan ID
+      console.log('✅ PayPal subscription created:', data.subscriptionId);
+      return data.subscriptionId;
 
     } catch (error) {
       console.error('❌ Subscription creation error:', error);

@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { PayPalSubscriptionService } from '@/services/PayPalSubscriptionService';
 import { adminDb } from '@/lib/firebase/admin';
@@ -44,9 +43,11 @@ export async function POST(req: NextRequest) {
       'subscription.paypalSubscriptionId': subscription.id,
     });
 
+    // Return the subscription ID for the PayPal subscription creation
     return NextResponse.json({
+      success: true,
       subscriptionId: subscription.id,
-      approvalUrl: subscription.links.find((link: any) => link.rel === 'approve')?.href
+      paypalPlanId: subscription.plan_id
     });
 
   } catch (error) {
