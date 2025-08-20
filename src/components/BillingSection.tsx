@@ -209,38 +209,40 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
         lastDate: lastDate.toISOString(),
         diffInHours,
         diffInDays,
-        subscriptionPlanId: subscription.planId
+        subscriptionPlanId: subscription.planId,
+        paypalPlanId: subscription.paypalPlanId
       });
       
       // Check if this is a testing subscription based on plan configuration
       // From PayPalSubscriptionService.ts, we know testing plans use DAY interval
       const isTestingPlan = subscription.planId === 'premium' || subscription.planId === 'ultimate';
       
-      // If difference is close to 24 hours (within 4 hours tolerance for testing), it's daily
-      if (diffInHours >= 20 && diffInHours <= 28) {
-        return isTestingPlan ? 'Daily - Testing' : 'Daily';
+      // For testing plans, ALWAYS show as Daily - Testing regardless of PayPal's date scheduling
+      // PayPal sandbox often schedules daily subscriptions with monthly-looking intervals for testing
+      if (isTestingPlan) {
+        return 'Daily - Testing';
       }
-      // If difference is close to 30 days (within 3 days tolerance), it's monthly
-      else if (diffInDays >= 27 && diffInDays <= 33) {
-        // For testing plans that show monthly intervals, this is likely due to PayPal's scheduling
-        // but the plan is configured for daily billing
-        if (isTestingPlan) {
-          return 'Daily - Testing (PayPal scheduled monthly)';
-        }
-        return 'Monthly';
+      
+      // For non-testing plans, use the actual date difference calculation
+      // If difference is close to 24 hours (within 4 hours tolerance), it's daily
+      if (diffInHours >= 20 && diffInHours <= 28) {
+        return 'Daily';
       }
       // If difference is close to 7 days, it's weekly
       else if (diffInDays >= 6 && diffInDays <= 8) {
         return 'Weekly';
+      }
+      // If difference is close to 30 days (within 3 days tolerance), it's monthly
+      else if (diffInDays >= 27 && diffInDays <= 33) {
+        return 'Monthly';
       }
       // If difference is close to 365 days, it's yearly
       else if (diffInDays >= 350 && diffInDays <= 380) {
         return 'Yearly';
       }
       
-      // For any other interval, show the actual days with testing note if applicable
-      const intervalText = `Every ${Math.round(diffInDays)} days`;
-      return isTestingPlan ? `${intervalText} - Testing` : intervalText;
+      // For any other interval, show the actual days
+      return `Every ${Math.round(diffInDays)} days`;
     } catch (error) {
       console.error('Error detecting billing interval:', error);
       return 'Unknown';
