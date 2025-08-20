@@ -1785,7 +1785,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -3435,7 +3435,7 @@ function Chat() {
 
                                                       {/* Show billing info even for free users */}
                                                       {currentUserPlan === 'free' && (
-                                                        <div className="text-xs text-gray-500 mt-2">
+                                                        <div className="text-xs text-gray-500">
                                                           <p>• No payment method on file</p>
                                                           <p>• Upgrade to unlock premium features</p>
                                                         </div>
@@ -4288,10 +4288,7 @@ function Chat() {
                                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character || 'gojo') }];
 
-                                              // Clear any existing chat cache if needed
-                                              console.log('🧹 Starting new chat session - clearing previous context');
-
-                                              // Clear localStorage session for this specific character
+                                              // Clear any                                              // Clear localStorage session for this specific character
                                               const storageKey = `chat_session_${user.uid}_${character}`;
                                               localStorage.removeItem(storageKey);
 
