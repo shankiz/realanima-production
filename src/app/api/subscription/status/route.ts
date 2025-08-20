@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/admin';
 // import { getUserDataAdmin } from '@/lib/firebase/admin-helpers';
 
+// Assume PayPalSubscriptionService is imported and configured correctly elsewhere
+// import PayPalSubscriptionService from '@/lib/paypal-service'; // Placeholder for actual import
+
+class PayPalSubscriptionService {
+  async getSubscriptionDetails(subscriptionId: string) {
+    // This is a mock implementation. Replace with actual PayPal API call.
+    console.log(`Mock: Fetching details for subscription ID: ${subscriptionId}`);
+    // Simulate a response that includes next_billing_time
+    if (subscriptionId.startsWith('legacy-')) {
+      // Simulate legacy data without time
+      return {
+        status: 'ACTIVE',
+        planId: 'plan_abc',
+        billing_info: {
+          next_billing_time: '2025-08-21T10:00:00Z', // Example with time
+          last_payment: { time: '2025-07-21T10:00:00Z' }
+        }
+      };
+    }
+    return {
+      status: 'ACTIVE',
+      planId: 'plan_xyz',
+      billing_info: {
+        next_billing_time: '2025-09-15T12:30:00Z',
+        last_payment: { time: '2025-08-15T12:30:00Z' }
+      }
+    };
+  }
+}
+
+
 export async function GET(request: NextRequest) {
   try {
     // Check if Firebase Admin is initialized
@@ -27,10 +58,10 @@ export async function GET(request: NextRequest) {
     }
 
     const userData = userDoc.data();
-    const subscription = userData?.subscription || userData?.payerInfo;
+    const subscriptionData = userData?.subscription; // Renamed for clarity
 
     console.log('📊 Fetching subscription status for user:', uid);
-    console.log('📊 Current subscription data:', subscription);
+    console.log('📊 Current subscription data:', subscriptionData);
 
     console.log('📊 User data for subscription status:', {
       uid,
@@ -38,15 +69,15 @@ export async function GET(request: NextRequest) {
       credits: userData?.credits,
       hasPayerInfo: !!userData?.payerInfo,
       payerInfo: userData?.payerInfo,
-      hasSubscription: !!subscription,
-      subscription: subscription
+      hasSubscription: !!subscriptionData,
+      subscription: subscriptionData
     });
 
     // For users with premium/ultimate plans but missing subscription data, create and save a basic structure
     const shouldHaveSubscription = userData?.currentPlan && userData?.currentPlan !== 'free';
-    let finalSubscription = subscription;
+    let finalSubscription = subscriptionData;
 
-    if (shouldHaveSubscription && !subscription) {
+    if (shouldHaveSubscription && !subscriptionData) {
       console.log('⚠️ User has premium plan but missing subscription data, creating and saving basic structure');
       finalSubscription = {
         status: 'active',
@@ -66,13 +97,32 @@ export async function GET(request: NextRequest) {
       console.log(`✅ Created subscription data for user ${uid} with plan ${userData.currentPlan}`);
     }
 
+    // If subscription data exists, fetch real-time details from PayPal
+    if (finalSubscription && finalSubscription.subscriptionId) {
+      // Get subscription details from PayPal for real-time status
+      const paypalService = new PayPalSubscriptionService();
+      const subscriptionDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
+
+      console.log('📊 PayPal subscription details:', subscriptionDetails);
+
+      finalSubscription = {
+        status: subscriptionDetails.status || finalSubscription.status,
+        planId: subscriptionDetails.planId || finalSubscription.planId,
+        nextBillingDate: subscriptionDetails.billing_info?.next_billing_time || finalSubscription.nextBillingDate,
+        lastChargedAt: subscriptionDetails.billing_info?.last_payment?.time || finalSubscription.lastChargedAt,
+        cancelledAt: subscriptionDetails.cancelledAt || finalSubscription.cancelledAt,
+        cancelReason: subscriptionDetails.cancelReason || finalSubscription.cancelReason
+      };
+    }
+
+
     return NextResponse.json({
       currentPlan: userData?.currentPlan || 'free',
       credits: userData?.credits || 0,
       subscription: finalSubscription ? {
         status: finalSubscription.status,
         planId: finalSubscription.planId,
-        subscriptionId: finalSubscription.subscriptionId || finalSubscription.id,
+        subscriptionId: finalSubscription.subscriptionId || finalSubscription.id, // Ensure subscriptionId is present
         nextBillingDate: finalSubscription.nextBillingDate,
         lastChargedAt: finalSubscription.createdAt || finalSubscription.lastChargedAt,
         cancelledAt: finalSubscription.cancelledAt,
