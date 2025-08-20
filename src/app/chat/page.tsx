@@ -3303,17 +3303,26 @@ function Chat() {
                                                               // If next billing is within 25 hours, assume daily testing
                                                               const isDailySubscription = hoursDiff <= 25 && daysDiff <= 1;
 
+                                                              // Format with time using the same function as BillingSection
+                                                              const formatDateWithTime = (dateString) => {
+                                                                const date = new Date(dateString);
+                                                                return date.toLocaleString('en-US', {
+                                                                  year: 'numeric',
+                                                                  month: 'long',
+                                                                  day: 'numeric',
+                                                                  hour: 'numeric',
+                                                                  minute: '2-digit',
+                                                                  timeZoneName: 'short'
+                                                                });
+                                                              };
+
                                                               return (
                                                                 <p>
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
                                                                     ? 'Access until:' 
-                                                                    : 'Next billing:'} {date.toLocaleDateString('en-US', {
-                                                                    year: 'numeric',
-                                                                    month: 'long',
-                                                                    day: 'numeric',
-                                                                  })}
+                                                                    : 'Next billing:'} {formatDateWithTime(date)}
                                                                   {isDailySubscription && (
-                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing Mode)</span>
+                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
                                                                   )}
                                                                 </p>
                                                               );
@@ -3364,11 +3373,20 @@ function Chat() {
                                                                 return <p>Last charged: Invalid date</p>;
                                                               }
 
-                                                              const formattedDate = date.toLocaleDateString('en-US', {
-                                                                year: 'numeric',
-                                                                month: 'long',
-                                                                day: 'numeric',
-                                                              });
+                                                              // Format with time using the same function as BillingSection
+                                                              const formatDateWithTime = (dateString) => {
+                                                                const date = new Date(dateString);
+                                                                return date.toLocaleString('en-US', {
+                                                                  year: 'numeric',
+                                                                  month: 'long',
+                                                                  day: 'numeric',
+                                                                  hour: 'numeric',
+                                                                  minute: '2-digit',
+                                                                  timeZoneName: 'short'
+                                                                });
+                                                              };
+
+                                                              const formattedDate = formatDateWithTime(date);
 
                                                               // Check if this was charged recently (within last 25 hours for daily billing)
                                                               const now = new Date();
@@ -3378,7 +3396,7 @@ function Chat() {
                                                               // If charged within last 25 hours, assume daily testing
                                                               const isDailySubscription = hoursSinceCharge <= 25 && daysSinceCharge <= 1;
 
-                                                              console.log('✅ Formatted date:', formattedDate);
+                                                              console.log('✅ Formatted date with time:', formattedDate);
 
                                                               return (
                                                                 <p>Last charged: {formattedDate}
@@ -3413,11 +3431,21 @@ function Chat() {
                                                                   }
 
                                                                   if (isNaN(date.getTime())) return 'Unknown';
-                                                                  return date.toLocaleDateString('en-US', {
-                                                                    year: 'numeric',
-                                                                    month: 'long',
-                                                                    day: 'numeric',
-                                                                  });
+                                                                  
+                                                                  // Format with time using the same function as BillingSection
+                                                                  const formatDateWithTime = (dateString) => {
+                                                                    const date = new Date(dateString);
+                                                                    return date.toLocaleString('en-US', {
+                                                                      year: 'numeric',
+                                                                      month: 'long',
+                                                                      day: 'numeric',
+                                                                      hour: 'numeric',
+                                                                      minute: '2-digit',
+                                                                      timeZoneName: 'short'
+                                                                    });
+                                                                  };
+                                                                  
+                                                                  return formatDateWithTime(date);
                                                                 } catch (error) {
                                                                   console.error('Error formatting cancelled date:', error);
                                                                   return 'Unknown';
