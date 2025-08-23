@@ -68,34 +68,33 @@ export async function POST(request: NextRequest) {
     const userDoc = await userRef.get();
 
     const now = new Date();
-    // Calculate next billing date based on plan interval
-    const nextBilling = new Date(now);
 
-    // Use the plan configuration to determine the correct interval
-    const planConfig = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS];
-    if (planConfig?.interval === 'DAY' && planConfig?.intervalCount === 1) {
-      nextBilling.setDate(nextBilling.getDate() + 1); // Daily plan
-    } else {
-      nextBilling.setDate(nextBilling.getDate() + 30); // Monthly plan fallback
-    }
+    // ALWAYS use PayPal's real billing dates - they are the source of truth
+    const paypalNextBilling = subscriptionDetails.billing_info?.next_billing_time;
+    const paypalLastPayment = subscriptionDetails.billing_info?.last_payment?.time;
+
+    console.log('📊 Using PayPal billing dates:', {
+      paypalNextBilling,
+      paypalLastPayment,
+      subscriptionStatus: subscriptionDetails.status
+    });
 
     const userData = {
       messagesLeft: plan.credits,
-      credits: plan.credits,
       currentPlan: planId,
-      subscriptionId: subscriptionId,
-      subscriptionStatus: 'active',
-      paypalSubscriptionId: subscriptionId,
-      lastMessageReset: now,
       subscription: {
         id: subscriptionId,
-        status: 'active',
+        status: subscriptionDetails.status?.toLowerCase() || 'active',
         planId: planId,
         paypalPlanId: subscriptionDetails.plan_id,
-        lastChargedAt: now.toISOString(),
-        nextBillingDate: nextBilling.toISOString(),
+        // Use PayPal's real billing dates - never calculate them
+        lastChargedAt: paypalLastPayment || now.toISOString(),
+        nextBillingDate: paypalNextBilling || now.toISOString(),
         isNativePayPal: true
       },
+      credits: plan.credits,
+      paypalSubscriptionId: subscriptionId,
+      lastMessageReset: now,
       lastUpdated: now
     };
 
