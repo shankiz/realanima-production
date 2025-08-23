@@ -2613,7 +2613,7 @@ function Chat() {
 
 
 
-                          // Quick Purchase Component - Integrated into chat flow
+                          // Quick Purchase Modal Component - Integrated into chat flow
                           const QuickPurchaseModal = () => (
                             <div 
                               className={`fixed inset-0 z-50 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-out ${
@@ -3281,32 +3281,36 @@ function Chat() {
 
                                                           {billingData.subscription.nextBillingDate && (() => {
                                                             try {
-                                                              let date;
+                                                              // ALWAYS use PayPal's exact date - no calculations!
+                                                              const paypalDate = billingData.subscription.nextBillingDate;
+                                                              console.log('🔍 [CHAT] Raw PayPal next billing date:', paypalDate);
 
-                                                              // Handle different date formats
-                                                              if (typeof billingData.subscription.nextBillingDate === 'string') {
-                                                                date = new Date(billingData.subscription.nextBillingDate);
-                                                              } else if (billingData.subscription.nextBillingDate?.seconds) {
-                                                                // Firestore timestamp
-                                                                date = new Date(billingData.subscription.nextBillingDate.seconds * 1000);
+                                                              let date;
+                                                              if (typeof paypalDate === 'string') {
+                                                                date = new Date(paypalDate);
+                                                              } else if (paypalDate?.seconds) {
+                                                                date = new Date(paypalDate.seconds * 1000);
                                                               } else {
-                                                                date = new Date(billingData.subscription.nextBillingDate);
+                                                                date = new Date(paypalDate);
                                                               }
 
-                                                              if (isNaN(date.getTime())) return null;
+                                                              if (isNaN(date.getTime())) {
+                                                                console.error('❌ [CHAT] Invalid PayPal date:', paypalDate);
+                                                                return null;
+                                                              }
 
-                                                              // Check if this is a daily subscription (for testing) by comparing dates
+                                                              console.log('📅 [CHAT] Parsed PayPal date:', date);
+
+                                                              // Check if daily by looking at actual time difference
                                                               const now = new Date();
                                                               const timeDiff = date.getTime() - now.getTime();
-                                                              const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                                                              const hoursDiff = Math.ceil(timeDiff / (1000 * 3600));
-                                                              // If next billing is within 25 hours, assume daily testing
-                                                              const isDailySubscription = hoursDiff <= 25 && daysDiff <= 1;
+                                                              const hoursDiff = Math.abs(timeDiff / (1000 * 3600));
+                                                              const isDailyBilling = hoursDiff <= 25; // Within 25 hours = daily
 
-                                                              // Format with time using the same function as BillingSection
-                                                              const formatDateWithTime = (dateString) => {
-                                                                const date = new Date(dateString);
-                                                                return date.toLocaleString('en-US', {
+                                                              console.log('⏰ [CHAT] Time diff hours:', hoursDiff, 'Is daily:', isDailyBilling);
+
+                                                              const formatDateWithTime = (dateObj) => {
+                                                                return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
                                                                   month: 'long',
                                                                   day: 'numeric',
@@ -3321,13 +3325,13 @@ function Chat() {
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
                                                                     ? 'Access until:' 
                                                                     : 'Next billing:'} {formatDateWithTime(date)}
-                                                                  {isDailySubscription && (
+                                                                  {isDailyBilling && (
                                                                     <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
                                                                   )}
                                                                 </p>
                                                               );
                                                             } catch (error) {
-                                                              console.error('Error formatting next billing date:', error);
+                                                              console.error('❌ [CHAT] Error formatting next billing date:', error);
                                                               return null;
                                                             }
                                                           })()}
@@ -3339,44 +3343,40 @@ function Chat() {
                                                                 return <p>Last charged: Not yet billed</p>;
                                                               }
 
-                                                              console.log('🔍 Processing lastChargedAt:', billingData.subscription.lastChargedAt, 'Type:', typeof billingData.subscription.lastChargedAt);
+                                                              // ALWAYS use PayPal's exact date - no calculations!
+                                                              const paypalDate = billingData.subscription.lastChargedAt;
+                                                              console.log('🔍 [CHAT] Raw PayPal last charged date:', paypalDate);
 
                                                               let date;
-
-                                                              // Handle different date formats with improved logic
-                                                              if (billingData.subscription.lastChargedAt?.seconds) {
-                                                                // Firestore timestamp with seconds
-                                                                date = new Date(billingData.subscription.lastChargedAt.seconds * 1000);
-                                                                console.log('📅 Firestore seconds format detected:', billingData.subscription.lastChargedAt.seconds);
-                                                              } else if (billingData.subscription.lastChargedAt?._seconds) {
-                                                                // Firestore timestamp with _seconds
-                                                                date = new Date(billingData.subscription.lastChargedAt._seconds * 1000);
-                                                                console.log('📅 Firestore _seconds format detected:', billingData.subscription.lastChargedAt._seconds);
-                                                              } else if (typeof billingData.subscription.lastChargedAt === 'string') {
-                                                                // ISO string format
-                                                                date = new Date(billingData.subscription.lastChargedAt);
-                                                                console.log('📅 ISO string format detected:', billingData.subscription.lastChargedAt);
-                                                              } else if (typeof billingData.subscription.lastChargedAt === 'number') {
-                                                                // Unix timestamp
-                                                                date = new Date(billingData.subscription.lastChargedAt > 1e12 ? billingData.subscription.lastChargedAt : billingData.subscription.lastChargedAt * 1000);
-                                                                console.log('📅 Number format detected:', billingData.subscription.lastChargedAt);
+                                                              if (paypalDate?.seconds) {
+                                                                date = new Date(paypalDate.seconds * 1000);
+                                                              } else if (paypalDate?._seconds) {
+                                                                date = new Date(paypalDate._seconds * 1000);
+                                                              } else if (typeof paypalDate === 'string') {
+                                                                date = new Date(paypalDate);
+                                                              } else if (typeof paypalDate === 'number') {
+                                                                date = new Date(paypalDate > 1e12 ? paypalDate : paypalDate * 1000);
                                                               } else {
-                                                                // Try direct Date constructor as fallback
-                                                                date = new Date(billingData.subscription.lastChargedAt);
-                                                                console.log('📅 Fallback Date constructor:', billingData.subscription.lastChargedAt);
+                                                                date = new Date(paypalDate);
                                                               }
 
-                                                              console.log('📅 Parsed date:', date, 'Valid:', !isNaN(date.getTime()));
-
                                                               if (!date || isNaN(date.getTime())) {
-                                                                console.error('❌ Invalid lastChargedAt date:', billingData.subscription.lastChargedAt, 'Parsed:', date);
+                                                                console.error('❌ [CHAT] Invalid PayPal last charged date:', paypalDate);
                                                                 return <p>Last charged: Invalid date</p>;
                                                               }
 
-                                                              // Format with time using the same function as BillingSection
-                                                              const formatDateWithTime = (dateString) => {
-                                                                const date = new Date(dateString);
-                                                                return date.toLocaleString('en-US', {
+                                                              console.log('📅 [CHAT] Parsed PayPal last charged date:', date);
+
+                                                              // Check if daily by looking at how recent the charge was
+                                                              const now = new Date();
+                                                              const timeDiff = now.getTime() - date.getTime();
+                                                              const hoursSinceCharge = Math.abs(timeDiff / (1000 * 3600));
+                                                              const isDailyBilling = hoursSinceCharge <= 25; // Within 25 hours = daily
+
+                                                              console.log('⏰ [CHAT] Hours since charge:', hoursSinceCharge, 'Is daily:', isDailyBilling);
+
+                                                              const formatDateWithTime = (dateObj) => {
+                                                                return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
                                                                   month: 'long',
                                                                   day: 'numeric',
@@ -3386,27 +3386,15 @@ function Chat() {
                                                                 });
                                                               };
 
-                                                              const formattedDate = formatDateWithTime(date);
-
-                                                              // Check if this was charged recently (within last 25 hours for daily billing)
-                                                              const now = new Date();
-                                                              const timeDiff = now.getTime() - date.getTime();
-                                                              const hoursSinceCharge = Math.floor(timeDiff / (1000 * 3600));
-                                                              const daysSinceCharge = Math.floor(timeDiff / (1000 * 3600 * 24));
-                                                              // If charged within last 25 hours, assume daily testing
-                                                              const isDailySubscription = hoursSinceCharge <= 25 && daysSinceCharge <= 1;
-
-                                                              console.log('✅ Formatted date with time:', formattedDate);
-
                                                               return (
-                                                                <p>Last charged: {formattedDate}
-                                                                  {isDailySubscription && (
+                                                                <p>Last charged: {formatDateWithTime(date)}
+                                                                  {isDailyBilling && (
                                                                     <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
                                                                   )}
                                                                 </p>
                                                               );
                                                             } catch (error) {
-                                                              console.error('❌ Error formatting last charged date:', error);
+                                                              console.error('❌ [CHAT] Error formatting last charged date:', error);
                                                               return <p>Last charged: Error loading date</p>;
                                                             }
                                                           })()}
@@ -3431,7 +3419,7 @@ function Chat() {
                                                                   }
 
                                                                   if (isNaN(date.getTime())) return 'Unknown';
-                                                                  
+
                                                                   // Format with time using the same function as BillingSection
                                                                   const formatDateWithTime = (dateString) => {
                                                                     const date = new Date(dateString);
@@ -3444,7 +3432,7 @@ function Chat() {
                                                                       timeZoneName: 'short'
                                                                     });
                                                                   };
-                                                                  
+
                                                                   return formatDateWithTime(date);
                                                                 } catch (error) {
                                                                   console.error('Error formatting cancelled date:', error);
@@ -4655,7 +4643,7 @@ function Chat() {
                                                 });
                                               }}
                                               placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custom box-border leading-relaxed break-words"
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
                                               id="chat-input-field"
                                               rows={1}
                                               onKeyDown={(e) => {
