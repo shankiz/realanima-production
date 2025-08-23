@@ -4,12 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
-// Mock SUBSCRIPTION_PLANS for demonstration purposes. In a real app, this would be fetched or imported.
-const SUBSCRIPTION_PLANS: Record<string, { name: string; price: number }> = {
-  premium: { name: 'Premium', price: 10 },
-  ultimate: { name: 'Ultimate', price: 20 },
-};
-
 interface BillingSectionProps {
   user: any;
   currentUserPlan: string;
@@ -26,7 +20,6 @@ interface SubscriptionData {
     lastChargedAt?: string;
     cancelledAt?: string;
     cancelReason?: string;
-    paypalSubscriptionId?: string; // Added PayPal Subscription ID
   } | null;
 }
 
@@ -137,7 +130,6 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -145,25 +137,8 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
     });
   };
 
-  const formatDateWithTime = (dateString: string | any) => {
-    if (!dateString) return '';
-    
-    let date;
-    // Handle different date formats from PayPal/Firestore
-    if (typeof dateString === 'string') {
-      date = new Date(dateString);
-    } else if (dateString?.seconds) {
-      // Firestore timestamp
-      date = new Date(dateString.seconds * 1000);
-    } else if (dateString?._seconds) {
-      // Firestore timestamp alternative format
-      date = new Date(dateString._seconds * 1000);
-    } else {
-      date = new Date(dateString);
-    }
-    
-    if (isNaN(date.getTime())) return 'Invalid date';
-    
+  const formatDateWithTime = (dateString: string) => {
+    const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -172,82 +147,6 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
       minute: '2-digit',
       timeZoneName: 'short'
     });
-  };
-
-  const detectBillingInterval = () => {
-    // Check if this is a testing subscription based on plan configuration
-    // From PayPalSubscriptionService.ts, we know testing plans use DAY interval
-    const isTestingPlan = subscription?.planId === 'premium' || subscription?.planId === 'ultimate';
-    
-    // For testing plans, ALWAYS show as Daily - Testing regardless of PayPal's date scheduling
-    // PayPal sandbox often schedules daily subscriptions with monthly-looking intervals for testing
-    if (isTestingPlan) {
-      console.log('🔍 Billing interval detection: Testing plan detected, showing Daily - Testing');
-      return 'Daily - Testing';
-    }
-    
-    if (!subscription?.nextBillingDate || !subscription?.lastChargedAt) return 'Unknown';
-    
-    try {
-      let nextDate, lastDate;
-      
-      // Parse next billing date
-      if (typeof subscription.nextBillingDate === 'string') {
-        nextDate = new Date(subscription.nextBillingDate);
-      } else if (subscription.nextBillingDate?.seconds) {
-        nextDate = new Date(subscription.nextBillingDate.seconds * 1000);
-      } else {
-        nextDate = new Date(subscription.nextBillingDate);
-      }
-      
-      // Parse last charged date
-      if (typeof subscription.lastChargedAt === 'string') {
-        lastDate = new Date(subscription.lastChargedAt);
-      } else if (subscription.lastChargedAt?.seconds) {
-        lastDate = new Date(subscription.lastChargedAt.seconds * 1000);
-      } else {
-        lastDate = new Date(subscription.lastChargedAt);
-      }
-      
-      if (isNaN(nextDate.getTime()) || isNaN(lastDate.getTime())) return 'Unknown';
-      
-      // Calculate the difference in hours
-      const diffInHours = Math.abs(nextDate.getTime() - lastDate.getTime()) / (1000 * 3600);
-      const diffInDays = diffInHours / 24;
-      
-      console.log('🔍 Billing interval detection:', {
-        nextDate: nextDate.toISOString(),
-        lastDate: lastDate.toISOString(),
-        diffInHours,
-        diffInDays,
-        subscriptionPlanId: subscription.planId,
-        paypalPlanId: subscription.paypalPlanId
-      });
-      
-      // For non-testing plans, use the actual date difference calculation
-      // If difference is close to 24 hours (within 4 hours tolerance), it's daily
-      if (diffInHours >= 20 && diffInHours <= 28) {
-        return 'Daily';
-      }
-      // If difference is close to 7 days, it's weekly
-      else if (diffInDays >= 6 && diffInDays <= 8) {
-        return 'Weekly';
-      }
-      // If difference is close to 30 days (within 3 days tolerance), it's monthly
-      else if (diffInDays >= 27 && diffInDays <= 33) {
-        return 'Monthly';
-      }
-      // If difference is close to 365 days, it's yearly
-      else if (diffInDays >= 350 && diffInDays <= 380) {
-        return 'Yearly';
-      }
-      
-      // For any other interval, show the actual days
-      return `Every ${Math.round(diffInDays)} days`;
-    } catch (error) {
-      console.error('Error detecting billing interval:', error);
-      return 'Unknown';
-    }
   };
 
   if (loading) {
@@ -311,16 +210,13 @@ const BillingSection: React.FC<BillingSectionProps> = ({ user, currentUserPlan, 
           </span></p>
 
               {subscription.nextBillingDate && (
-                <p>
-                  {subscription.status === 'cancelled' || subscription.cancelledAt ? 'Access until:' : 'Next billing:'} {formatDateWithTime(subscription.nextBillingDate)}
-                  <span className="text-yellow-400 text-xs ml-2">({detectBillingInterval()})</span>
-                </p>
-              )}
+            <p>
+              {subscription.status === 'cancelled' || subscription.cancelledAt ? 'Access until:' : 'Next billing:'} {formatDateWithTime(subscription.nextBillingDate)}
+            </p>
+          )}
 
               {subscription.lastChargedAt && (
-                <p>Last charged: {formatDateWithTime(subscription.lastChargedAt)}
-                  <span className="text-yellow-400 text-xs ml-2">({detectBillingInterval()})</span>
-                </p>
+                <p>Last charged: {formatDateWithTime(subscription.lastChargedAt)}</p>
               )}
 
               {subscription.cancelledAt && (

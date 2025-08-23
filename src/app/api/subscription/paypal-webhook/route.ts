@@ -63,22 +63,22 @@ async function handlePaymentCompleted(webhookData: any) {
       return;
     }
     
-    // Get subscription ID from the webhook data
+    // Try both possible subscription ID fields for different PayPal subscription types
     const subscriptionId = webhookData.resource?.billing_agreement_id || 
-                          webhookData.resource?.subscription_id;
-    
+                          webhookData.resource?.subscription_id ||
+                          webhookData.resource?.id;
     if (!subscriptionId) {
       console.log('⚠️ No subscription ID found in payment data');
       return;
     }
 
-    // Find user with this PayPal subscription ID
+    // Find user with this subscription
     const usersSnapshot = await adminDb.collection('users')
-      .where('subscription.paypalSubscriptionId', '==', subscriptionId)
+      .where('subscription.id', '==', subscriptionId)
       .get();
 
     if (usersSnapshot.empty) {
-      console.log('⚠️ No user found with PayPal subscription ID:', subscriptionId);
+      console.log('⚠️ No user found with subscription ID:', subscriptionId);
       return;
     }
 
@@ -86,14 +86,14 @@ async function handlePaymentCompleted(webhookData: any) {
     const userId = userDoc.id;
     const userData = userDoc.data();
 
-    // Calculate next billing date based on plan interval
+    // Get updated subscription details from PayPal
+    const paypalService = new PayPalSubscriptionService();
+    const subscriptionDetails = await paypalService.getSubscriptionDetails(subscriptionId);
+
+    // Calculate next billing date (add 1 day for daily billing)
     const now = new Date();
     const nextBilling = new Date(now);
-    
-    // For daily testing plans
-    if (userData.subscription?.planId === 'premium' || userData.subscription?.planId === 'ultimate') {
-      nextBilling.setDate(nextBilling.getDate() + 1);
-    }
+    nextBilling.setDate(nextBilling.getDate() + 1);
 
     // Reset credits based on plan
     let newCredits = 30; // free default
@@ -112,7 +112,7 @@ async function handlePaymentCompleted(webhookData: any) {
       'subscription.status': 'active',
     });
 
-    console.log('✅ Recurring payment processed for user:', userId, 'Credits reset to:', newCredits);
+    console.log('✅ Payment processed for user:', userId);
     
   } catch (error) {
     console.error('❌ Error processing payment completed:', error);
@@ -133,16 +133,13 @@ async function handleSubscriptionActivated(webhookData: any) {
 
     // Find user and update status
     const usersSnapshot = await adminDb.collection('users')
-      .where('subscription.paypalSubscriptionId', '==', subscriptionId)
+      .where('subscription.id', '==', subscriptionId)
       .get();
 
     if (!usersSnapshot.empty) {
       const userDoc = usersSnapshot.docs[0];
-      const now = new Date();
-      
       await adminDb.collection('users').doc(userDoc.id).update({
         'subscription.status': 'active',
-        'subscription.activatedAt': now.toISOString(),
       });
       console.log('✅ Subscription activated for user:', userDoc.id);
     }
@@ -166,7 +163,7 @@ async function handleSubscriptionCancelled(webhookData: any) {
 
     // Find user and update status
     const usersSnapshot = await adminDb.collection('users')
-      .where('subscription.paypalSubscriptionId', '==', subscriptionId)
+      .where('subscription.id', '==', subscriptionId)
       .get();
 
     if (!usersSnapshot.empty) {
@@ -174,7 +171,6 @@ async function handleSubscriptionCancelled(webhookData: any) {
       await adminDb.collection('users').doc(userDoc.id).update({
         'subscription.status': 'cancelled',
         'subscription.cancelledAt': new Date().toISOString(),
-        // Keep current credits until they run out
       });
       console.log('✅ Subscription cancelled for user:', userDoc.id);
     }

@@ -63,7 +63,7 @@ async function getPayPalAccessToken() {
 }
 
 export class PayPalSubscriptionService {
-  async createActualSubscription(planId: keyof typeof SUBSCRIPTION_PLANS, subscriberInfo: any) {
+  async createSubscriptionOrder(paymentSourceToken: string, planId: keyof typeof SUBSCRIPTION_PLANS) {
     const accessToken = await getPayPalAccessToken();
     const plan = SUBSCRIPTION_PLANS[planId];
 
@@ -71,108 +71,46 @@ export class PayPalSubscriptionService {
       throw new Error(`Invalid plan ID: ${planId}`);
     }
 
-    // First, create a product
-    const productData = {
-      name: `${plan.name} Product`,
-      type: 'SERVICE',
-      category: 'SOFTWARE'
-    };
-
-    const productResponse = await fetch(`${PAYPAL_BASE_URL}/v1/catalogs/products`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': uuidv4(),
-      },
-      body: JSON.stringify(productData),
-    });
-
-    const product = await productResponse.json();
-    if (!productResponse.ok) {
-      throw new Error(`Failed to create product: ${product.message}`);
-    }
-
-    // Create a billing plan
-    const billingPlanData = {
-      product_id: product.id,
-      name: plan.name,
-      description: `${plan.credits} credits per ${plan.interval.toLowerCase()}`,
-      status: 'ACTIVE',
-      billing_cycles: [{
-        frequency: {
-          interval_unit: plan.interval,
-          interval_count: plan.intervalCount
-        },
-        tenure_type: 'REGULAR',
-        sequence: 1,
-        total_cycles: 0, // Infinite
-        pricing_scheme: {
-          fixed_price: {
-            value: plan.price.toString(),
-            currency_code: 'USD'
-          }
+    const orderData = {
+      intent: 'CAPTURE',
+      payment_source: {
+        token: {
+          id: paymentSourceToken,
+          type: 'BILLING_AGREEMENT'
         }
-      }],
-      payment_preferences: {
-        auto_bill_outstanding: true,
-        setup_fee: {
-          value: '0',
-          currency_code: 'USD'
+      },
+      purchase_units: [{
+        amount: {
+          currency_code: 'USD',
+          value: plan.price.toString()
         },
-        setup_fee_failure_action: 'CONTINUE',
-        payment_failure_threshold: 3
-      }
+        description: `${plan.name} Subscription - ${plan.credits} credits`
+      }]
     };
 
-    const planResponse = await fetch(`${PAYPAL_BASE_URL}/v1/billing/plans`, {
+    const response = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
         'PayPal-Request-Id': uuidv4(),
       },
-      body: JSON.stringify(billingPlanData),
+      body: JSON.stringify(orderData),
     });
 
-    const billingPlan = await planResponse.json();
-    if (!planResponse.ok) {
-      throw new Error(`Failed to create billing plan: ${billingPlan.message}`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('PayPal create order error:', {
+        status: response.status,
+        statusText: response.statusText,
+        result: result
+      });
+      throw new Error(`Failed to create order: ${result.message || result.error_description || 'Unknown error'}`);
     }
 
-    // Create the actual subscription
-    const subscriptionData = {
-      plan_id: billingPlan.id,
-      subscriber: subscriberInfo,
-      application_context: {
-        brand_name: 'RealAnima AI',
-        shipping_preference: 'NO_SHIPPING',
-        payment_method: {
-          payer_selected: 'PAYPAL',
-          payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
-        },
-        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/subscription/success`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/subscription/cancel`
-      }
-    };
-
-    const subscriptionResponse = await fetch(`${PAYPAL_BASE_URL}/v1/billing/subscriptions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'PayPal-Request-Id': uuidv4(),
-      },
-      body: JSON.stringify(subscriptionData),
-    });
-
-    const subscription = await subscriptionResponse.json();
-    if (!subscriptionResponse.ok) {
-      throw new Error(`Failed to create subscription: ${subscription.message}`);
-    }
-
-    console.log('✅ Real PayPal subscription created:', subscription);
-    return subscription;
+    console.log('✅ Order created successfully:', result);
+    return result;
   }
 
   async captureOrder(orderId: string) {
