@@ -146,15 +146,23 @@ export async function GET(request: NextRequest) {
         if (subscriptionDetails) {
           console.log('📊 PayPal subscription details received:', subscriptionDetails);
 
-          // Update subscription with real PayPal data
+          // Update subscription with real PayPal data - ALWAYS prefer PayPal's dates
           finalSubscription = {
             ...finalSubscription,
             status: subscriptionDetails.status?.toLowerCase() || finalSubscription.status,
             planId: subscriptionDetails.planId || finalSubscription.planId,
+            // ALWAYS use PayPal's billing dates if available - they are the source of truth
             nextBillingDate: subscriptionDetails.billing_info?.next_billing_time || finalSubscription.nextBillingDate,
             lastChargedAt: subscriptionDetails.billing_info?.last_payment?.time || finalSubscription.lastChargedAt,
             subscriptionId: finalSubscription.subscriptionId, // Keep original subscription ID
           };
+
+          console.log('📊 Using PayPal billing dates:', {
+            paypalNextBilling: subscriptionDetails.billing_info?.next_billing_time,
+            paypalLastPayment: subscriptionDetails.billing_info?.last_payment?.time,
+            finalNextBilling: finalSubscription.nextBillingDate,
+            finalLastCharged: finalSubscription.lastChargedAt
+          });
 
           console.log('✅ Updated subscription with PayPal data:', {
             nextBillingDate: finalSubscription.nextBillingDate,

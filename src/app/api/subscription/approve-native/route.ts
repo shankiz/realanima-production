@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
     const { subscriptionId, planId } = await request.json();
 
     if (!subscriptionId || !planId) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: subscriptionId, planId' 
+      return NextResponse.json({
+        error: 'Missing required fields: subscriptionId, planId'
       }, { status: 400 });
     }
 
@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
 
     // Verify subscription is active
     if (subscriptionDetails.status !== 'ACTIVE') {
-      return NextResponse.json({ 
-        error: 'Subscription is not active', 
-        status: subscriptionDetails.status 
+      return NextResponse.json({
+        error: 'Subscription is not active',
+        status: subscriptionDetails.status
       }, { status: 400 });
     }
 
@@ -68,9 +68,16 @@ export async function POST(request: NextRequest) {
     const userDoc = await userRef.get();
 
     const now = new Date();
-    // Calculate next billing date (daily for testing)
-    const nextBillingDate = new Date();
-    nextBillingDate.setDate(nextBillingDate.getDate() + 1);
+    // Calculate next billing date based on plan interval
+    const nextBilling = new Date(now);
+
+    // Use the plan configuration to determine the correct interval
+    const planConfig = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS];
+    if (planConfig?.interval === 'DAY' && planConfig?.intervalCount === 1) {
+      nextBilling.setDate(nextBilling.getDate() + 1); // Daily plan
+    } else {
+      nextBilling.setDate(nextBilling.getDate() + 30); // Monthly plan fallback
+    }
 
     const userData = {
       messagesLeft: plan.credits,
@@ -86,7 +93,7 @@ export async function POST(request: NextRequest) {
         planId: planId,
         paypalPlanId: subscriptionDetails.plan_id,
         lastChargedAt: now.toISOString(),
-        nextBillingDate: nextBillingDate.toISOString(),
+        nextBillingDate: nextBilling.toISOString(),
         isNativePayPal: true
       },
       lastUpdated: now
@@ -106,11 +113,11 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Updated user', decodedToken.uid, 'with native subscription', subscriptionId);
 
-    return NextResponse.json({ 
-        success: true, 
-        message: 'Subscription activated successfully!',
-        subscription: 'success'
-      });
+    return NextResponse.json({
+      success: true,
+      message: 'Subscription activated successfully!',
+      subscription: 'success'
+    });
 
   } catch (error) {
     console.error('❌ Native subscription approval error:', error);
