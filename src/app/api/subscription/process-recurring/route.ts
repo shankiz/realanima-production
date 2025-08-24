@@ -5,7 +5,7 @@ import { PayPalSubscriptionService, SUBSCRIPTION_PLANS } from '@/services/PayPal
 export async function POST(request: NextRequest) {
   try {
     console.log('🔄 Processing recurring billing...');
-    
+
     if (!adminDb) {
       console.error('❌ Firebase Admin DB not initialized');
       return NextResponse.json({ error: 'Database not available' }, { status: 500 });
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         try {
           // Get fresh PayPal subscription details
           const paypalDetails = await paypalService.getSubscriptionDetails(subscription.id);
-          
+
           if (paypalDetails && paypalDetails.status === 'ACTIVE') {
             // Calculate next billing date (daily)
             const newNextBilling = new Date(now);
@@ -90,98 +90,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`🎯 Billing processing complete. Processed: ${processed}`);
-
-    return NextResponse.json({
-      success: true,
-      processed,
-      results,
-      timestamp: now.toISOString()
-    });
-
-  } catch (error) {
-    console.error('❌ Recurring billing error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process recurring billing' },
-      { status: 500 }
-    );
-  }
-}
-import { adminDb } from '@/lib/firebase/admin';
-
-export async function POST(request: NextRequest) {
-  try {
-    console.log('🔄 Processing all recurring charges...');
-
-    if (!adminDb) {
-      console.error('❌ Firebase Admin DB not initialized');
-      return NextResponse.json(
-        { error: 'Database not available' },
-        { status: 500 }
-      );
-    }
-
-    // Get all users with active subscriptions
-    const usersSnapshot = await adminDb.collection('users')
-      .where('subscription.status', '==', 'active')
-      .get();
-
-    // Also check for cancelled subscriptions that have reached their end date
+    // Also handle cancelled subscriptions that have reached their end date
     const cancelledSnapshot = await adminDb.collection('users')
       .where('subscription.status', '==', 'cancelled')
       .get();
 
-    const results = [];
-    const now = new Date();
-
-    for (const userDoc of usersSnapshot.docs) {
-      const userId = userDoc.id;
-      const userData = userDoc.data();
-      const subscription = userData.subscription;
-
-      if (!subscription?.nextBillingDate) {
-        continue;
-      }
-
-      const nextBillingDate = new Date(subscription.nextBillingDate);
-
-      // Check if it's time to charge this user
-      if (now >= nextBillingDate) {
-        try {
-          console.log(`💳 Processing charge for user ${userId}`);
-
-          // Import and call the charge function directly instead of making HTTP request
-          const { POST: chargeFunction } = await import('../charge/route');
-          const mockChargeRequest = new Request('http://localhost/api/subscription/charge', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId,
-              forceCharge: true,
-            }),
-          });
-
-          const chargeResponse = await chargeFunction(mockChargeRequest as any);
-          const chargeResult = await chargeResponse.json();
-
-          results.push({
-            userId,
-            success: chargeResponse.ok,
-            result: chargeResult,
-          });
-
-        } catch (error: unknown) {
-          console.error(`❌ Failed to charge user ${userId}:`, error);
-          results.push({
-            userId,
-            success: false,
-            error: error instanceof Error ? (error as Error).message : 'Unknown error',
-          });
-        }
-      }
-    }
-
-    // Handle cancelled subscriptions that have reached their end date
     for (const userDoc of cancelledSnapshot.docs) {
       const userId = userDoc.id;
       const userData = userDoc.data();
@@ -224,18 +137,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`✅ Processed ${results.length} billing operations`);
+    console.log(`🎯 Billing processing complete. Processed: ${processed}`);
 
     return NextResponse.json({
       success: true,
-      processed: results.length,
+      processed,
       results,
+      timestamp: now.toISOString()
     });
 
-  } catch (error: unknown) {
-    console.error('❌ Error processing recurring charges:', error);
+  } catch (error) {
+    console.error('❌ Recurring billing error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? (error as Error).message : 'Internal server error' },
+      { error: 'Failed to process recurring billing' },
       { status: 500 }
     );
   }
