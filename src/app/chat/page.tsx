@@ -522,7 +522,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           );
                         };
 
-                        // Main Chat component with minimalist design
+// Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
                           const router = useRouter();
@@ -580,7 +580,10 @@ function Chat() {
 
                           const [placeholderText, setPlaceholderText] = useState('');
 
-
+                          // State for Topic Suggestions
+                          const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
+                          const [currentSuggestions, setCurrentSuggestions] = useState<string[]>([]);
+                          const suggestionsRef = useRef<HTMLDivElement>(null);
 
                           // Chat sidebar states
                           const [showChatSidebar, setShowChatSidebar] = useState(false);
@@ -1563,12 +1566,50 @@ function Chat() {
                             }
                           };
 
+                          // Fetch and set initial topic suggestions for the current character
+                          useEffect(() => {
+                            if (character) {
+                              // Fetch suggestions from CHARACTER_CONTEXTS or a dedicated API if available
+                              // For now, using a mock approach
+                              const context = CHARACTER_CONTEXTS[character as keyof typeof CHARACTER_CONTEXTS];
+                              if (context && context.greetingSuggestions) {
+                                setCurrentSuggestions(context.greetingSuggestions);
+                              } else {
+                                setCurrentSuggestions(['Tell me about yourself.', 'What are your hobbies?', 'What do you like?']);
+                              }
+                            }
+                          }, [character]);
+
+                          // Show suggestions after the initial greeting message from the assistant
+                          useEffect(() => {
+                            // Check if the last message is from the assistant and is the initial greeting
+                            if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
+                              const lastMessageContent = messages[messages.length - 1].content;
+                              const initialGreeting = getInitialMessage(character || 'gojo');
+
+                              // Only show suggestions if the last message matches the initial greeting (or is similar)
+                              // And if there are suggestions available and they haven't been hidden
+                              if (
+                                (lastMessageContent === initialGreeting || lastMessageContent.startsWith('Hello! I\'m glad to meet you.')) && 
+                                currentSuggestions.length > 0 &&
+                                !showTopicSuggestions // Only show if not already visible
+                              ) {
+                                // Use a small delay to ensure the greeting message is rendered first
+                                setTimeout(() => {
+                                  setShowTopicSuggestions(true);
+                                }, 500); 
+                              }
+                            }
+                          }, [messages, character, currentSuggestions.length, showTopicSuggestions]);
+
+
                           const handleSendMessage = async (e: React.FormEvent) => {
                             e.preventDefault();
                             const currentInput = inputRef.current?.value || input;
                             if (currentInput.trim() === '') return;
 
-
+                            // Hide suggestions if user is typing
+                            setShowTopicSuggestions(false);
 
                             // Check if user has messages left
                             if (messagesLeft === null || messagesLeft === 0) {
@@ -2324,6 +2365,36 @@ function Chat() {
                             oscillator.stop(audioContext.currentTime + 0.3);
                           };
 
+                          // Function to handle clicks on suggestion bubbles
+                          const handleSuggestionClick = (suggestion: string) => {
+                            // Set input value and trigger send
+                            setInput(suggestion);
+                            if (inputRef.current) {
+                              inputRef.current.value = suggestion;
+                              // Manually trigger the input event to update the textarea height and focus
+                              const event = new Event('input', { bubbles: true, cancelable: true });
+                              inputRef.current.dispatchEvent(event);
+                              inputRef.current.focus();
+                            }
+                            setShowTopicSuggestions(false); // Hide suggestions after selection
+                          };
+
+                          // Function to refresh topic suggestions
+                          const refreshSuggestions = () => {
+                            // In a real app, this would fetch new suggestions based on character context
+                            // For now, just shuffle and take a new set
+                            const characterSuggestions = CHARACTER_CONTEXTS[character as keyof typeof CHARACTER_CONTEXTS]?.greetingSuggestions || ['Tell me about yourself.', 'What are your hobbies?', 'What do you like?'];
+                            
+                            // Shuffle array in place
+                            for (let i = characterSuggestions.length - 1; i > 0; i--) {
+                              const j = Math.floor(Math.random() * (i + 1));
+                              [characterSuggestions[i], characterSuggestions[j]] = [characterSuggestions[j], characterSuggestions[i]];
+                            }
+
+                            setCurrentSuggestions(characterSuggestions.slice(0, 3)); // Show up to 3 suggestions
+                            setShowTopicSuggestions(true); // Ensure suggestions are visible
+                          };
+
                           // Early return for loading state
                           if (loading) {
                             return (
@@ -2469,8 +2540,8 @@ function Chat() {
                                         <li className="flex items-start">
                                           <div className="w-2 h-2 bg-green-400 rounded-full mt-1.5 mr-3 flex-shrink-0"></div>
                                           <div>
-                                            <span className="text-white font-medium text-sm">Character voices unlocked</span>
-                                            <p className="text-gray-400 text-xs mt-0.5">Authentic voices for each character</p>
+                                            <span className="text-white font-medium text-sm">Character-authentic voices</span>
+                                            <p className="text-gray-400 text-xs mt-0.5">Each character sounds exactly like they should</p>
                                           </div>
                                         </li>
                                         <li className="flex items-start">
@@ -4537,74 +4608,100 @@ function Chat() {
                                     <div className="px-6 md:px-10 lg:px-16 max-w-3xl mx-auto space-y-4">
                                       {messages.map((msg, index) => (
                                         <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                                          <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%]' : ''}`}>
-                                            {msg.role === 'assistant' && (
-                                              <div className="relative w-8 h-8 mr-2">
-                                                <Image 
-                                                  src={getCharacterImage(character || 'gojo')}
-                                                  alt={getCharacterName(character || 'gojo')}
-                                                  fill
-                                                  className="rounded-full object-cover"
-                                                />
-                                              </div>
-                                            )}
-                                            <div className={`rounded-lg px-2.5 py-2 ${
-                                              msg.role === 'user' 
-                                                ? 'bg-cyan-500/20 text-white min-w-[40px]' 
-                                                : 'bg-gray-300/10 max-w-[70%]'
-                                            }`}>
-                                              <div className={`${msg.role === 'user' ? 'text-white text-sm' : 'text-gray-200 text-sm'}`}>
-                                                {msg.content}
-                                              </div>
-                                            </div>
+                                          <div className={`max-w-[80%] rounded-2xl px-4 py-3 relative ${
+                                            msg.role === 'user' 
+                                              ? 'bg-cyan-600 text-white' 
+                                              : 'bg-gray-900 text-gray-100'
+                                          }`}>
+                                            <div className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</div>
 
-                                            {/* Audio Playing Indicator - Only show for AI messages when audio is playing and user has premium/ultimate */}
-                                            {msg.role === 'assistant' && 
-                                             audioPlayingForMessage === index && 
-                                             (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
-                                             isVoiceResponseEnabled && (
-                                              <div className="ml-2 flex items-end pb-1">
-                                                <div className="w-6 h-6 bg-cyan-500/24 rounded-full flex items-center justify-center animate-pulse">
-                                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                            {/* Play button for assistant messages */}
+                                            {msg.role === 'assistant' && (
+                                              <button
+                                                onClick={() => playBeepSound()}
+                                                className="absolute -right-2 -top-2 w-8 h-8 bg-cyan-600 hover:bg-cyan-700 rounded-full flex items-center justify-center text-white shadow-lg transition-colors group"
+                                                title="Play audio (coming soon)"
+                                              >
+                                                {audioPlayingForMessage === index ? (
+                                                  <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                                                ) : (
+                                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>
                                                   </svg>
-                                                </div>
-                                              </div>
+                                                )}
+                                              </button>
                                             )}
                                           </div>
                                         </div>
                                       ))}
-                                      {(isLoading || isGeneratingVoice) && (
-                                        <div className="flex justify-start animate-fadeIn">
-                                          <div className="flex items-start">
-                                            <div className="relative w-8 h-8 mr-2">
-                                              <Image 
-                                                src={getCharacterImage(character || 'gojo')}
-                                                alt={getCharacterName(character || 'gojo')}
-                                                fill
-                                                className="rounded-full object-cover"
-                                              />
+
+                                      {/* Topic Suggestions - Show after character greeting */}
+                                      {showTopicSuggestions && currentSuggestions.length > 0 && (
+                                        <div className={`flex justify-start transition-all duration-500 ease-out ${
+                                          showTopicSuggestions ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'
+                                        }`}>
+                                          <div className="max-w-[90%] space-y-2">
+                                            <div className="text-xs text-gray-500 mb-2 flex items-center">
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                              </svg>
+                                              Try asking:
                                             </div>
-                                            <div className="text-gray-500 text-sm italic flex items-center">
-                                              {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
-                                                <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                                              </span>
+                                            <div className="flex flex-wrap gap-2">
+                                              {currentSuggestions.map((suggestion, idx) => (
+                                                <button
+                                                  key={idx}
+                                                  onClick={() => handleSuggestionClick(suggestion)}
+                                                  className="bg-gray-800/60 hover:bg-gray-700/80 border border-gray-700/50 hover:border-cyan-500/50 text-gray-300 hover:text-white px-3 py-2 rounded-full text-xs transition-all duration-200 hover:scale-105 shadow-lg backdrop-blur-sm"
+                                                >
+                                                  {suggestion}
+                                                </button>
+                                              ))}
+                                            </div>
+                                            <div className="flex items-center justify-between mt-2">
+                                              <button
+                                                onClick={refreshSuggestions}
+                                                className="text-gray-500 hover:text-gray-300 text-xs flex items-center transition-colors"
+                                              >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                                More ideas
+                                              </button>
+                                              <button
+                                                onClick={() => setShowTopicSuggestions(false)}
+                                                className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
+                                              >
+                                                ✕ Hide
+                                              </button>
                                             </div>
                                           </div>
                                         </div>
                                       )}
-                                      {/* Live transcription display - shows on user side only while listening and not in call interface */}
-                                      {isCallActive && liveTranscriptDisplay && callStatus === 'listening' && !showCallInterface && (
-                                        <div className="flex justify-end animate-fadeIn">
-                                          <div className="flex items-start max-w-[70%]">
-                                            <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-3 py-3">
-                                              <div className="text-cyan-300 text-sm italic">
-                                                {liveTranscriptDisplay}...
+
+                                      {/* Loading State */}
+                                      {isLoading && (
+                                        <div className="flex justify-start">
+                                          <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-900 text-gray-100 relative">
+                                            <div className="flex items-center space-x-2">
+                                              <div className="flex space-x-1">
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
                                               </div>
-                                              <div className="text-xs text-cyan-400/60 mt-1">
-                                                Recording
-                                              </div>
+                                              <span className="text-sm text-gray-400">
+                                                {isGeneratingVoice ? 'Generating voice...' : 'Thinking...'}
+                                              </span>
+                                              {/* Cancel button */}
+                                              <button
+                                                onClick={handleCancelMessage}
+                                                className="ml-2 text-gray-500 hover:text-red-400 transition-colors"
+                                                title="Cancel"
+                                              >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                              </button>
                                             </div>
                                           </div>
                                         </div>
@@ -4643,27 +4740,26 @@ function Chat() {
                                                 });
                                               }}
                                               placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
-                                              id="chat-input-field"
-                                              rows={1}
-                                              onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                  e.preventDefault();
-                                                  const currentValue = (e.target as HTMLTextAreaElement).value;
-                                                  if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice && audioPlayingForMessage === null) {
-                                                    handleSendMessage(e);
-                                                  }
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-word break
+                                              overflow-y: hidden;
+                                              padding-left: 16px;
+                                              padding-right: 16px;
+                                              text-indent: 0;
+                                              white-space: pre-wrap;
+                                              word-break: break-word;
+                                            }}
+                                            id="chat-input-field"
+                                            rows={1}
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                const currentValue = (e.target as HTMLTextAreaElement).value;
+                                                if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice && audioPlayingForMessage === null) {
+                                                  handleSendMessage(e);
                                                 }
-                                              }}
-                                              style={{
-                                                paddingLeft: '16px', 
-                                                paddingRight: '16px',
-                                                textIndent: '0',
-                                                whiteSpace: 'pre-wrap',
-                                                wordBreak: 'break-word',
-                                                overflowY: 'hidden'
-                                              }}
-                                            />
+                                              }
+                                            }}
+                                          />
                                           </div>
                                           <div className="flex-shrink-0 pr-2">
                                             <button
