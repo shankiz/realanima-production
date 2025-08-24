@@ -3891,6 +3891,21 @@ function Chat() {
                                 </div>
                               </div>
 
+                              {/* Overlay */}
+                              {(showChatSidebar || showHistorySidebar) && (
+                                <div 
+                                  className={`absolute inset-0 z-30 ${
+                                    document.body.classList.contains('light') 
+                                      ? 'bg-white/30' 
+                                      : 'bg-black/50'
+                                  }`}
+                                  onClick={() => {
+                                    setShowChatSidebar(false);
+                                    setShowHistorySidebar(false);
+                                  }}
+                                />
+                              )}
+
                               {/* Settings Modal Overlay */}
                               <SettingsModal />
 
@@ -3923,25 +3938,23 @@ function Chat() {
                                 </div>
 
                                 <div className="px-4 py-3">
-                                  <div className="flex items-center justify-between">
-                                    <p className="text-sm text-gray-500">
-                                      Messages left: <span className="text-cyan-400 font-medium">
-                                        {messagesLeft === null ? '...' : messagesLeft}
-                                      </span>
-                                    </p>
-                                    <div className="relative group">
-                                      <svg 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        className="h-5 w-5 text-gray-500 cursor-pointer" 
-                                        fill="none" 
-                                        viewBox="0 0 24 24" 
-                                        stroke="currentColor"
-                                      >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                      </svg>
-                                      <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                                        Your messages reset every day
-                                      </div>
+                                  <p className="text-sm text-gray-500">
+                                    Messages left: <span className="text-cyan-400 font-medium">
+                                      {messagesLeft === null ? '...' : messagesLeft}
+                                    </span>
+                                  </p>
+                                  <div className="relative group">
+                                    <svg 
+                                      xmlns="http://www.w3.org/2000/svg" 
+                                      className="h-5 w-5 text-gray-500 cursor-pointer" 
+                                      fill="none" 
+                                      viewBox="0 0 24 24" 
+                                      stroke="currentColor"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                                      Your messages reset every day
                                     </div>
                                   </div>
                                 </div>
@@ -4647,23 +4660,27 @@ function Chat() {
                                                 requestAnimationFrame(() => {
                                                   target.style.height = 'auto';
                                                   const newHeight = Math.min(target.scrollHeight, 150);
-                                                  target.style.height = newHeight + 'px';
+                                                  target.style.height = `${newHeight}px`;
                                                   target.style.overflowY = target.scrollHeight > 150 ? 'scroll' : 'hidden';
                                                 });
                                               }}
-                                              placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
-                                              id="chat-input-field"
-                                              rows={1}
                                               onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                  e.preventDefault();
-                                                  const currentValue = (e.target as HTMLTextAreaElement).value;
-                                                  if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice && audioPlayingForMessage === null) {
+                                                if (e.key === 'Enter') {
+                                                  if (e.shiftKey) {
+                                                    // Allow new line with Shift+Enter
+                                                    return;
+                                                  } else {
+                                                    // Submit with Enter (without Shift)
+                                                    e.preventDefault();
                                                     handleSendMessage(e);
                                                   }
                                                 }
                                               }}
+                                              placeholder={placeholderText}
+                                              disabled={isLoading}
+                                              rows={1}
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
+                                              id="chat-input-field"
                                               style={{
                                                 paddingLeft: '16px', 
                                                 paddingRight: '16px',
