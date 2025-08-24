@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
                         import ChatSupportBubble from '@/components/ChatSupportBubble';
+                        import GeminiService from '@/services/GeminiService'; // Import GeminiService
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
@@ -529,6 +530,14 @@ function Chat() {
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
+
+                          // State for Scenario Modal
+                          const [showScenarioModal, setShowScenarioModal] = useState(false);
+                          const [scenarioInput, setScenarioInput] = useState('');
+                          const [generatedScenarios, setGeneratedScenarios] = useState<string[]>([]);
+                          const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
+                          const [scenarioLoading, setScenarioLoading] = useState(false);
+
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -4251,7 +4260,7 @@ function Chat() {
                                         </div>
                                         <div className="ml-2">
                                           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${currentUserPlan === 'free' ? 'text-gray-500' : isVoiceResponseEnabled ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 002 0V9a1 1 0 10-2 0v3z" />
                                           </svg>
                                         </div>
                                       </div>
@@ -4587,7 +4596,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
+                                              <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
