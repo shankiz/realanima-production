@@ -443,6 +443,40 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                             char.description.toLowerCase().includes(searchQuery.toLowerCase())
                           );
 
+                          // State for scenario suggestion
+                          const [isLoadingScenarios, setIsLoadingScenarios] = useState(false);
+
+                          // Function to generate scenarios
+                          const generateScenarios = async () => {
+                            if (isLoadingScenarios || !user || !character) return;
+
+                            setIsLoadingScenarios(true);
+                            try {
+                              const token = await user.getIdToken();
+                              const response = await fetch(`/api/conversation/${character}/generate-scenarios`, {
+                                method: 'POST',
+                                headers: {
+                                  'Authorization': `Bearer ${token}`,
+                                  'Content-Type': 'application/json',
+                                },
+                              });
+
+                              if (response.ok) {
+                                const data = await response.json();
+                                console.log('Scenario suggestions:', data.suggestions);
+                                // Here you would typically do something with the suggestions,
+                                // like populating a dropdown or showing them in a modal.
+                                // For now, we'll just log them.
+                              } else {
+                                console.error('Failed to generate scenarios');
+                              }
+                            } catch (error) {
+                              console.error('Error generating scenarios:', error);
+                            } finally {
+                              setIsLoadingScenarios(false);
+                            }
+                          };
+
                           return (
                             <div className="flex-1 overflow-y-auto bg-gradient-to-b from-black to-gray-950">
                               <style jsx>{`
@@ -2470,7 +2504,7 @@ function Chat() {
                                           <div className="w-2 h-2 bg-green-400 rounded-full mt-1.5 mr-3 flex-shrink-0"></div>
                                           <div>
                                             <span className="text-white font-medium text-sm">Character voices unlocked</span>
-                                            <p className="text-gray-400 text-xs mt-0.5">Authentic voices for each character</p>
+                                            <p className="text-gray-400 text-xs mt-0.5">Each character sounds exactly like they should</p>
                                           </div>
                                         </li>
                                         <li className="flex items-start">
@@ -4587,7 +4621,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
+                                              <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4637,8 +4671,7 @@ function Chat() {
                                                 // Handle height adjustment immediately without blocking
                                                 requestAnimationFrame(() => {
                                                   target.style.height = 'auto';
-                                                  const newHeight = Math.min(target.scrollHeight, 150);
-                                                  target.style.height = newHeight + 'px';
+                                                  const newHeight = Math.min(target.scrollHeight, 150);                                                  target.style.height = newHeight + 'px';
                                                   target.style.overflowY = target.scrollHeight > 150 ? 'scroll' : 'hidden';
                                                 });
                                               }}
@@ -4725,7 +4758,5 @@ function Chat() {
                                     </div>
                                   </div>
                                 </div>
-                              )}
-                            </div>
-                          );
-                        };
+                              );
+                            };
