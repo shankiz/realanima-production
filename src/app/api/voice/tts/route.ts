@@ -14,6 +14,8 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'eren': '2a1b57c3fcc448dc9bffd9a4d25f72d6',
   'nezuko': 'provide correct id',
   'megumin': 'provide correct id',
+  'light': 'f55b2ef3c11a45c48305e7918804c20f',
+  'itachi': '7d9f8d78e73e4215b10d6909da013b4d',
   'zenitsu': 'provide correct id'
 };
 
