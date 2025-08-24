@@ -518,10 +518,11 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
                                 </div>
                               </div>
-                            );
-                          };
+                            </div>
+                          );
+                        };
 
-// Main Chat component with minimalist design
+                        // Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
                           const router = useRouter();
@@ -1379,9 +1380,9 @@ function Chat() {
                                     timestamp: Date.now(),
                                     character: character // Include character for validation
                                   }));
-                                  console.log('Save session for character:', character, 'with', messages.length, 'messages');
+                                  console.log('💾 Saved session for character:', character, 'with', messages.length, 'messages');
                                 } else {
-                                  console.warn('Not saving session - missing valid initial message for character:', character);
+                                  console.warn('⚠️ Not saving session - missing valid initial message for character:', character);
                                 }
                               } catch (error) {
                                 console.error('Error saving session to localStorage:', error);
@@ -1417,11 +1418,11 @@ function Chat() {
 
                                 // Validate that the saved session is EXACTLY for the current character
                                 if (!savedCharacter || savedCharacter !== character) {
-                                  console.log('Saved session is for different character (', savedCharacter, 'vs', character, '), clearing and creating new session');
+                                  console.log('🔄 Saved session is for different character (', savedCharacter, 'vs', character, '), clearing and creating new session');
                                   localStorage.removeItem(storageKey);
                                 } else if (savedMessages && savedMessages.length > 0) {
-                                  console.log('Restoring previous chat session:', savedSessionId, 'for character:', character);
-                                  console.log('Restored messages count:', savedMessages.length);
+                                  console.log('🔄 Restoring previous chat session:', savedSessionId, 'for character:', character);
+                                  console.log('🔄 Restored messages count:', savedMessages.length);
 
                                   // Validate all messages don't contain cross-character contamination
                                   const validMessages = savedMessages.filter((msg: Message) => {
@@ -1434,7 +1435,7 @@ function Chat() {
                                   });
 
                                   if (validMessages.length !== savedMessages.length) {
-                                    console.log('Found contaminated messages, clearing session');
+                                    console.log('⚠️ Found contaminated messages, clearing session');
                                     localStorage.removeItem(storageKey);
                                   } else {
                                     // Use setTimeout to ensure state is properly cleared first
@@ -1462,7 +1463,7 @@ function Chat() {
                               }
 
                               // No valid saved session found, create new one
-                              console.log('Creating new chat session for character:', character);
+                              console.log('🆕 Creating new chat session for character:', character);
                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
 
@@ -1478,7 +1479,7 @@ function Chat() {
                                   timestamp: Date.now(),
                                   character: character
                                 }));
-                                console.log('Created and saved new session for character:', character);
+                                console.log('✅ New session created and saved for character:', character);
                               }, 50);
 
                             } catch (error) {
@@ -1784,7 +1785,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
+                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -2602,7 +2603,7 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      You can enable/disable voice responses in settings
+                                      Join thousands experiencing authentic character voices
                                     </p>
                                   </div>
                                 </div>
@@ -3591,7 +3592,7 @@ function Chat() {
                                                                     await fetchBillingData(true); // Force refresh
                                                                   }
                                                                 } else {
-                                                                  console.error('Cancel failed:', result);
+                                                                  console.error('❌ Cancel failed:', result);
                                                                   showCustomAlert(
                                                                     'Cancellation Failed',
                                                                     result.error || 'Failed to cancel subscription. Please try again.',
@@ -3599,7 +3600,7 @@ function Chat() {
                                                                   );
                                                                 }
                                                               } catch (error) {
-                                                                console.error('Error cancelling subscription:', error);
+                                                                console.error('❌ Error cancelling subscription:', error);
                                                                 showCustomAlert(
                                                                   'Error',
                                                                   'Failed to cancel subscription. Please try again.',
@@ -3801,11 +3802,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-                          );
+          );
 
-                          // Main Content Area
-                          return (
-                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+          // Main component return
+          return (
+            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -4250,7 +4251,7 @@ function Chat() {
                                         </div>
                                         <div className="ml-2">
                                           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${currentUserPlan === 'free' ? 'text-gray-500' : isVoiceResponseEnabled ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.0            72m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
                                           </svg>
                                         </div>
                                       </div>
@@ -4448,24 +4449,24 @@ function Chat() {
                                                                 className="w-full text-left"
                                                                 disabled={loadingConversation !== null}
                                                             >
-                                                                    <div>
-                                                                          {conversation.lastMessage && (
-                                                                              <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
-                                                                                  <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
-                                                                                      <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
-                                                                                          ? conversation.lastMessage.substring(0, 80) + '...' 
-                                                                                          : conversation.lastMessage}
-                                                                                  </div>
+                                                                <div>
+                                                                      {conversation.lastMessage && (
+                                                                          <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
+                                                                              <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
+                                                                                  <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
+                                                                                      ? conversation.lastMessage.substring(0, 80) + '...' 
+                                                                                      : conversation.lastMessage}
                                                                               </div>
-                                                                          )}
-                                                                            {conversation.response && (
-                                                                                <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
-                                                                                    <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
-                                                                                        ? conversation.response.substring(0, 80) + '...' 
-                                                                                        : conversation.response}
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
+                                                                          </div>
+                                                                      )}
+                                                                        {conversation.response && (
+                                                                            <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
+                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
+                                                                                    ? conversation.response.substring(0, 80) + '...' 
+                                                                                    : conversation.response}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
                                                             </button>
                                                         </div>
                                                     )}
@@ -4586,7 +4587,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml-2">
+                                              <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4614,22 +4615,14 @@ function Chat() {
                                   </div>
 
                                   {/* Message Input */}
-                                  <div className="p-3 bg-black border-t border-gray-800/30">
+                                  <div className="p-3 bg-black border-t border-transparent">
                                     <div className="relative mb-2 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto">
                                       <div className="flex items-center">
                                         <div className={`relative ${input.length > 50 ? 'rounded-xl' : 'rounded-full'} bg-black border border-gray-800/50 overflow-hidden w-full flex items-center transition-all duration-200`}>
                                           <div className="flex-grow relative w-full">
-                                            {/* Suggestion Text */}
-                                            <div className="text-center mb-2">
-                                              <p className="text-xs text-gray-400">
-                                                Don't have topic? Create a scenario
-                                              </p>
-                                            </div>
                                             <textarea
-                                              id="chat-input-field"
                                               ref={inputRef}
-                                              placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
+                                              defaultValue={input}
                                               onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
 
@@ -4649,6 +4642,10 @@ function Chat() {
                                                   target.style.overflowY = target.scrollHeight > 150 ? 'scroll' : 'hidden';
                                                 });
                                               }}
+                                              placeholder={placeholderText}
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
+                                              id="chat-input-field"
+                                              rows={1}
                                               onKeyDown={(e) => {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                   e.preventDefault();
@@ -4658,8 +4655,6 @@ function Chat() {
                                                   }
                                                 }
                                               }}
-                                              disabled={isLoading}
-                                              rows={1}
                                               style={{
                                                 paddingLeft: '16px', 
                                                 paddingRight: '16px',
