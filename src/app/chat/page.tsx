@@ -11,7 +11,6 @@ import { useSearchParams } from 'next/navigation';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
                         import ChatSupportBubble from '@/components/ChatSupportBubble';
-                        import GeminiService from '@/services/GeminiService'; // Import GeminiService
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
@@ -122,7 +121,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       <div className="relative h-40 overflow-hidden rounded-t-xl">
                                 <Image 
                                   src={`/characters/${character.id}.png`}
-                                  alt={character.name} 
+                                  alt={character.name}
                                   fill
           className="object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] will-change-transform"
           loading="lazy"
@@ -530,14 +529,6 @@ function Chat() {
                           const searchParams = useSearchParams();
                           const character = searchParams?.get('character') || null;
                           const [view, setView] = useState('discover'); // Default view is discover
-
-                          // State for Scenario Modal
-                          const [showScenarioModal, setShowScenarioModal] = useState(false);
-                          const [scenarioInput, setScenarioInput] = useState('');
-                          const [generatedScenarios, setGeneratedScenarios] = useState<string[]>([]);
-                          const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
-                          const [scenarioLoading, setScenarioLoading] = useState(false);
-
 
                           const [input, setInput] = useState('');
                           const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -3891,21 +3882,6 @@ function Chat() {
                                 </div>
                               </div>
 
-                              {/* Overlay */}
-                              {(showChatSidebar || showHistorySidebar) && (
-                                <div 
-                                  className={`absolute inset-0 z-30 ${
-                                    document.body.classList.contains('light') 
-                                      ? 'bg-white/30' 
-                                      : 'bg-black/50'
-                                  }`}
-                                  onClick={() => {
-                                    setShowChatSidebar(false);
-                                    setShowHistorySidebar(false);
-                                  }}
-                                />
-                              )}
-
                               {/* Settings Modal Overlay */}
                               <SettingsModal />
 
@@ -3938,23 +3914,25 @@ function Chat() {
                                 </div>
 
                                 <div className="px-4 py-3">
-                                  <p className="text-sm text-gray-500">
-                                    Messages left: <span className="text-cyan-400 font-medium">
-                                      {messagesLeft === null ? '...' : messagesLeft}
-                                    </span>
-                                  </p>
-                                  <div className="relative group">
-                                    <svg 
-                                      xmlns="http://www.w3.org/2000/svg" 
-                                      className="h-5 w-5 text-gray-500 cursor-pointer" 
-                                      fill="none" 
-                                      viewBox="0 0 24 24" 
-                                      stroke="currentColor"
-                                    >
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                                      Your messages reset every day
+                                  <div className="flex items-center justify-between">
+                                    <p className="text-sm text-gray-500">
+                                      Messages left: <span className="text-cyan-400 font-medium">
+                                        {messagesLeft === null ? '...' : messagesLeft}
+                                      </span>
+                                    </p>
+                                    <div className="relative group">
+                                      <svg 
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        className="h-5 w-5 text-gray-500 cursor-pointer" 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor"
+                                      >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                                        Your messages reset every day
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -4273,7 +4251,7 @@ function Chat() {
                                         </div>
                                         <div className="ml-2">
                                           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${currentUserPlan === 'free' ? 'text-gray-500' : isVoiceResponseEnabled ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 002 0V9a1 1 0 10-2 0v3z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
                                           </svg>
                                         </div>
                                       </div>
@@ -4559,7 +4537,7 @@ function Chat() {
                                     <div className="px-6 md:px-10 lg:px-16 max-w-3xl mx-auto space-y-4">
                                       {messages.map((msg, index) => (
                                         <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                                          <div className={`flex items-start ${msg.role === 'user' ? 'max-w        ? 'max-w-[70%]' : ''}`}>
+                                          <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%]' : ''}`}>
                                             {msg.role === 'assistant' && (
                                               <div className="relative w-8 h-8 mr-2">
                                                 <Image 
@@ -4609,7 +4587,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml-2">
+                                              <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4660,27 +4638,23 @@ function Chat() {
                                                 requestAnimationFrame(() => {
                                                   target.style.height = 'auto';
                                                   const newHeight = Math.min(target.scrollHeight, 150);
-                                                  target.style.height = `${newHeight}px`;
+                                                  target.style.height = newHeight + 'px';
                                                   target.style.overflowY = target.scrollHeight > 150 ? 'scroll' : 'hidden';
                                                 });
                                               }}
+                                              placeholder={placeholderText}
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
+                                              id="chat-input-field"
+                                              rows={1}
                                               onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                  if (e.shiftKey) {
-                                                    // Allow new line with Shift+Enter
-                                                    return;
-                                                  } else {
-                                                    // Submit with Enter (without Shift)
-                                                    e.preventDefault();
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                  e.preventDefault();
+                                                  const currentValue = (e.target as HTMLTextAreaElement).value;
+                                                  if (currentValue.trim() !== '' && !isLoading && !isGeneratingVoice && audioPlayingForMessage === null) {
                                                     handleSendMessage(e);
                                                   }
                                                 }
                                               }}
-                                              placeholder={placeholderText || 'Type your message...'}
-                                              disabled={isLoading}
-                                              rows={1}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
-                                              id="chat-input-field"
                                               style={{
                                                 paddingLeft: '16px', 
                                                 paddingRight: '16px',
