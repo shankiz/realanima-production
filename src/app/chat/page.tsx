@@ -518,9 +518,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        };
+                            );
+                          };
 
 // Main Chat component with minimalist design
 function Chat() {
@@ -3802,11 +3801,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-          );
+                          );
 
-          // Main component return
-          return (
-            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+                          // Main Content Area
+                          return (
+                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -4251,7 +4250,7 @@ function Chat() {
                                         </div>
                                         <div className="ml-2">
                                           <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${currentUserPlan === 'free' ? 'text-gray-500' : isVoiceResponseEnabled ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.536 8.464a5 5 0 010 7.0            72m2.828-9.9a9 9 0 010 14.142M9 12a1 1 0 102 0V9a1 1 0 10-2 0v3z" />
                                           </svg>
                                         </div>
                                       </div>
@@ -4587,7 +4586,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml                                                -2">
+                                              <span className="ml-2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4622,8 +4621,8 @@ function Chat() {
                                           <div className="flex-grow relative w-full">
                                             {/* Suggestion Text */}
                                             <div className="text-center mb-2">
-                                              <p className="text-gray-400 text-xs">
-                                                Don't have topic? create a scenario
+                                              <p className="text-xs text-gray-400">
+                                                Don't have topic? Create a scenario
                                               </p>
                                             </div>
                                             <textarea
