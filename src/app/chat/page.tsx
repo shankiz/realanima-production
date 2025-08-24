@@ -1785,7 +1785,7 @@ function Chat() {
                                         try {
                                           const secondChunkAudio = await secondChunkPromise;
                                           if (secondChunkAudio) {
-                                            console.log('🔊 [CHAT-TTS-2CHUNK] Playing second chunk seamlessly');
+                                            console.log('✅ [CHAT-TTS-2CHUNK] Second chunk received successfully');
                                             const secondAudio = new Audio(secondChunkAudio);
                                             secondAudio.volume = 1.0;
 
@@ -2603,7 +2603,7 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      Join thousands experiencing authentic character voices
+                                      You can enable/disable voice responses in settings
                                     </p>
                                   </div>
                                 </div>
@@ -4615,14 +4615,22 @@ function Chat() {
                                   </div>
 
                                   {/* Message Input */}
-                                  <div className="p-3 bg-black border-t border-transparent">
+                                  <div className="p-3 bg-black border-t border-gray-800/30">
                                     <div className="relative mb-2 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto">
                                       <div className="flex items-center">
                                         <div className={`relative ${input.length > 50 ? 'rounded-xl' : 'rounded-full'} bg-black border border-gray-800/50 overflow-hidden w-full flex items-center transition-all duration-200`}>
                                           <div className="flex-grow relative w-full">
+                                            {/* Suggestion Text */}
+                                            <div className="text-center mb-2">
+                                              <p className="text-gray-400 text-xs">
+                                                Don't have a topic? Create a scenario
+                                              </p>
+                                            </div>
                                             <textarea
+                                              id="chat-input-field"
                                               ref={inputRef}
-                                              defaultValue={input}
+                                              placeholder={placeholderText}
+                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
                                               onInput={(e) => {
                                                 const target = e.target as HTMLTextAreaElement;
 
@@ -4642,10 +4650,6 @@ function Chat() {
                                                   target.style.overflowY = target.scrollHeight > 150 ? 'scroll' : 'hidden';
                                                 });
                                               }}
-                                              placeholder={placeholderText}
-                                              className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
-                                              id="chat-input-field"
-                                              rows={1}
                                               onKeyDown={(e) => {
                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                   e.preventDefault();
@@ -4655,6 +4659,8 @@ function Chat() {
                                                   }
                                                 }
                                               }}
+                                              disabled={isLoading}
+                                              rows={1}
                                               style={{
                                                 paddingLeft: '16px', 
                                                 paddingRight: '16px',
