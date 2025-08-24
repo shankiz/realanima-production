@@ -94,6 +94,12 @@ async function handlePaymentCompleted(webhookData: any) {
     const now = new Date();
     const nextBilling = new Date(now);
     nextBilling.setDate(nextBilling.getDate() + 1);
+    
+    console.log('🕐 Billing date calculation:', {
+      currentTime: now.toISOString(),
+      nextBillingCalculated: nextBilling.toISOString(),
+      planId: userData.subscription?.planId
+    });
 
     // Reset credits based on plan
     let newCredits = 30; // free default

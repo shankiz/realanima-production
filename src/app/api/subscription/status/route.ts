@@ -11,7 +11,7 @@ class PayPalSubscriptionService {
     const baseURL = isProduction ? 'https://api.paypal.com' : 'https://api.sandbox.paypal.com';
 
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-    
+
     const response = await fetch(`${baseURL}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
@@ -141,36 +141,56 @@ export async function GET(request: NextRequest) {
       try {
         console.log('🔄 Fetching real-time PayPal data for subscription:', finalSubscription.subscriptionId);
         const paypalService = new PayPalSubscriptionService();
-        const subscriptionDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
+        const paypalDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
 
-        if (subscriptionDetails) {
-          console.log('📊 PayPal subscription details received:', subscriptionDetails);
+        if (paypalDetails) {
+          // For daily subscriptions, calculate proper next billing
+          const now = new Date();
+          let calculatedNextBilling = finalSubscription.nextBillingDate;
 
-          // Update subscription with real PayPal data - ALWAYS prefer PayPal's dates
-          const paypalNextBilling = subscriptionDetails.billing_info?.next_billing_time;
-          const paypalLastPayment = subscriptionDetails.billing_info?.last_payment?.time;
+          // If we're past the billing date, calculate new one
+          if (finalSubscription.nextBillingDate && new Date(finalSubscription.nextBillingDate) <= now) {
+            const newNextBilling = new Date(now);
+            newNextBilling.setDate(newNextBilling.getDate() + 1);
+            calculatedNextBilling = newNextBilling.toISOString();
+
+            console.log('📅 Calculated new next billing date:', calculatedNextBilling);
+          }
+
+          // Update our local data with fresh PayPal data
+          const paypalNextBilling = paypalDetails.billing_info?.next_billing_time;
+          const paypalLastPayment = paypalDetails.billing_info?.last_payment?.time;
+
+          const updates: any = {
+            'subscription.status': paypalDetails.status?.toLowerCase() || finalSubscription.status
+          };
+
+          if (paypalNextBilling) {
+            updates['subscription.nextBillingDate'] = paypalNextBilling;
+          } else if (calculatedNextBilling !== finalSubscription.nextBillingDate) {
+            updates['subscription.nextBillingDate'] = calculatedNextBilling;
+          }
+
+          if (paypalLastPayment) {
+            updates['subscription.lastChargedAt'] = paypalLastPayment;
+          }
+
+          if (Object.keys(updates).length > 1) {
+            await adminDb.collection('users').doc(uid).update(updates);
+          }
 
           finalSubscription = {
             ...finalSubscription,
-            status: subscriptionDetails.status?.toLowerCase() || finalSubscription.status,
-            planId: subscriptionDetails.planId || finalSubscription.planId,
-            // ALWAYS use PayPal's billing dates if available - they are the source of truth
-            nextBillingDate: paypalNextBilling || finalSubscription.nextBillingDate,
-            lastChargedAt: paypalLastPayment || finalSubscription.lastChargedAt,
-            subscriptionId: finalSubscription.subscriptionId, // Keep original subscription ID
+            nextBillingDate: updates['subscription.nextBillingDate'] || finalSubscription.nextBillingDate,
+            lastChargedAt: updates['subscription.lastChargedAt'] || finalSubscription.lastChargedAt,
+            status: updates['subscription.status'] || finalSubscription.status
           };
-
-          console.log('📊 Using PayPal billing dates:', {
-            paypalNextBilling: subscriptionDetails.billing_info?.next_billing_time,
-            paypalLastPayment: subscriptionDetails.billing_info?.last_payment?.time,
-            finalNextBilling: finalSubscription.nextBillingDate,
-            finalLastCharged: finalSubscription.lastChargedAt
-          });
 
           console.log('✅ Updated subscription with PayPal data:', {
             nextBillingDate: finalSubscription.nextBillingDate,
             lastChargedAt: finalSubscription.lastChargedAt,
-            status: finalSubscription.status
+            status: finalSubscription.status,
+            paypalStatus: paypalDetails.status
           });
         } else {
           console.log('⚠️ Could not fetch PayPal details, using cached data');
