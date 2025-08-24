@@ -122,7 +122,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
       <div className="relative h-40 overflow-hidden rounded-t-xl">
                                 <Image 
                                   src={`/characters/${character.id}.png`}
-                                  alt={character.name}
+                                  alt={character.name} 
                                   fill
           className="object-cover object-top transition-transform duration-200 group-hover:scale-[1.02] will-change-transform"
           loading="lazy"
@@ -4559,7 +4559,7 @@ function Chat() {
                                     <div className="px-6 md:px-10 lg:px-16 max-w-3xl mx-auto space-y-4">
                                       {messages.map((msg, index) => (
                                         <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                                          <div className={`flex items-start ${msg.role === 'user' ? 'max-w-[70%]' : ''}`}>
+                                          <div className={`flex items-start ${msg.role === 'user' ? 'max-w        ? 'max-w-[70%]' : ''}`}>
                                             {msg.role === 'assistant' && (
                                               <div className="relative w-8 h-8 mr-2">
                                                 <Image 
@@ -4676,7 +4676,7 @@ function Chat() {
                                                   }
                                                 }
                                               }}
-                                              placeholder={placeholderText}
+                                              placeholder={placeholderText || 'Type your message...'}
                                               disabled={isLoading}
                                               rows={1}
                                               className="w-full bg-transparent text-white py-3 text-sm focus:outline-none min-h-[46px] max-h-[150px] resize-none scrollbar-custombox-border leading-relaxed break-words"
