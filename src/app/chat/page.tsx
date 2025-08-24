@@ -522,7 +522,7 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                           );
                         };
 
-                        // Main Chat component with minimalist design
+// Main Chat component with minimalist design
 function Chat() {
   const { user, signOut, loading } = useAuth();
                           const router = useRouter();
@@ -1380,9 +1380,9 @@ function Chat() {
                                     timestamp: Date.now(),
                                     character: character // Include character for validation
                                   }));
-                                  console.log('💾 Saved session for character:', character, 'with', messages.length, 'messages');
+                                  console.log('Save session for character:', character, 'with', messages.length, 'messages');
                                 } else {
-                                  console.warn('⚠️ Not saving session - missing valid initial message for character:', character);
+                                  console.warn('Not saving session - missing valid initial message for character:', character);
                                 }
                               } catch (error) {
                                 console.error('Error saving session to localStorage:', error);
@@ -1418,11 +1418,11 @@ function Chat() {
 
                                 // Validate that the saved session is EXACTLY for the current character
                                 if (!savedCharacter || savedCharacter !== character) {
-                                  console.log('🔄 Saved session is for different character (', savedCharacter, 'vs', character, '), clearing and creating new session');
+                                  console.log('Saved session is for different character (', savedCharacter, 'vs', character, '), clearing and creating new session');
                                   localStorage.removeItem(storageKey);
                                 } else if (savedMessages && savedMessages.length > 0) {
-                                  console.log('🔄 Restoring previous chat session:', savedSessionId, 'for character:', character);
-                                  console.log('🔄 Restored messages count:', savedMessages.length);
+                                  console.log('Restoring previous chat session:', savedSessionId, 'for character:', character);
+                                  console.log('Restored messages count:', savedMessages.length);
 
                                   // Validate all messages don't contain cross-character contamination
                                   const validMessages = savedMessages.filter((msg: Message) => {
@@ -1435,7 +1435,7 @@ function Chat() {
                                   });
 
                                   if (validMessages.length !== savedMessages.length) {
-                                    console.log('⚠️ Found contaminated messages, clearing session');
+                                    console.log('Found contaminated messages, clearing session');
                                     localStorage.removeItem(storageKey);
                                   } else {
                                     // Use setTimeout to ensure state is properly cleared first
@@ -1463,7 +1463,7 @@ function Chat() {
                               }
 
                               // No valid saved session found, create new one
-                              console.log('🆕 Creating new chat session for character:', character);
+                              console.log('Creating new chat session for character:', character);
                               const newSessionId = `${user.uid}-${character}-${Date.now()}`;
                               const initialMessages: Message[] = [{ role: 'assistant', content: getInitialMessage(character) }];
 
@@ -1479,7 +1479,7 @@ function Chat() {
                                   timestamp: Date.now(),
                                   character: character
                                 }));
-                                console.log('✅ New session created and saved for character:', character);
+                                console.log('Created and saved new session for character:', character);
                               }, 50);
 
                             } catch (error) {
@@ -3592,7 +3592,7 @@ function Chat() {
                                                                     await fetchBillingData(true); // Force refresh
                                                                   }
                                                                 } else {
-                                                                  console.error('❌ Cancel failed:', result);
+                                                                  console.error('Cancel failed:', result);
                                                                   showCustomAlert(
                                                                     'Cancellation Failed',
                                                                     result.error || 'Failed to cancel subscription. Please try again.',
@@ -3600,7 +3600,7 @@ function Chat() {
                                                                   );
                                                                 }
                                                               } catch (error) {
-                                                                console.error('❌ Error cancelling subscription:', error);
+                                                                console.error('Error cancelling subscription:', error);
                                                                 showCustomAlert(
                                                                   'Error',
                                                                   'Failed to cancel subscription. Please try again.',
@@ -4449,24 +4449,24 @@ function Chat() {
                                                                 className="w-full text-left"
                                                                 disabled={loadingConversation !== null}
                                                             >
-                                                                <div>
-                                                                      {conversation.lastMessage && (
-                                                                          <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
-                                                                              <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
-                                                                                  <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
-                                                                                      ? conversation.lastMessage.substring(0, 80) + '...' 
-                                                                                      : conversation.lastMessage}
+                                                                    <div>
+                                                                          {conversation.lastMessage && (
+                                                                              <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
+                                                                                  <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
+                                                                                      <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
+                                                                                          ? conversation.lastMessage.substring(0, 80) + '...' 
+                                                                                          : conversation.lastMessage}
+                                                                                  </div>
                                                                               </div>
-                                                                          </div>
-                                                                      )}
-                                                                        {conversation.response && (
-                                                                            <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
-                                                                                <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
-                                                                                    ? conversation.response.substring(0, 80) + '...' 
-                                                                                    : conversation.response}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
+                                                                          )}
+                                                                            {conversation.response && (
+                                                                                <div className="text-sm text-gray-200 leading-relaxed line-clamp-2 mt-2">
+                                                                                    <span className="text-cyan-400 font-medium">{getCharacterName(character || 'gojo')}:</span> {conversation.response.length > 80 
+                                                                                        ? conversation.response.substring(0, 80) + '...' 
+                                                                                        : conversation.response}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
                                                             </button>
                                                         </div>
                                                     )}
@@ -4623,7 +4623,7 @@ function Chat() {
                                             {/* Suggestion Text */}
                                             <div className="text-center mb-2">
                                               <p className="text-gray-400 text-xs">
-                                                Don't have a topic? Create a scenario
+                                                Don't have topic? create a scenario
                                               </p>
                                             </div>
                                             <textarea
