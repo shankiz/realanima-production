@@ -36,7 +36,14 @@ export async function POST(request: NextRequest) {
       const nextBillingDate = new Date(subscription.nextBillingDate);
       const shouldBill = nextBillingDate <= now;
 
-      console.log(`👤 User ${userId}: Next billing ${nextBillingDate.toISOString()}, Should bill: ${shouldBill}`);
+      // Enhanced debugging
+      console.log(`👤 User ${userId}:`);
+      console.log(`   📅 Next billing: ${nextBillingDate.toISOString()}`);
+      console.log(`   🕐 Current time: ${now.toISOString()}`);
+      console.log(`   ⏰ Time diff: ${nextBillingDate.getTime() - now.getTime()}ms`);
+      console.log(`   💰 Should bill: ${shouldBill}`);
+      console.log(`   📋 Plan: ${subscription.planId}`);
+      console.log(`   🔄 Subscription ID: ${subscription.id}`);
 
       if (shouldBill) {
         try {
