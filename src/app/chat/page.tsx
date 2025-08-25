@@ -2470,7 +2470,7 @@ function Chat() {
                                           <div className="w-2 h-2 bg-green-400 rounded-full mt-1.5 mr-3 flex-shrink-0"></div>
                                           <div>
                                             <span className="text-white font-medium text-sm">Character voices unlocked</span>
-                                            <p className="text-gray-400 text-xs mt-0.5">Each character sounds exactly like they should</p>
+                                            <p className="text-gray-400 text-xs mt-0.5">Authentic voices for each character</p>
                                           </div>
                                         </li>
                                         <li className="flex items-start">
@@ -2503,7 +2503,7 @@ function Chat() {
                                           document.getElementById('chat-input-field')?.focus();
                                         }, 300);
                                       }}
-                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20"
+                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20 mb-3"
                                     >
                                       Start Chatting with Voices
                                     </button>
@@ -2603,7 +2603,7 @@ function Chat() {
 
                                     {/* Subtle hint */}
                                     <p className="text-center text-gray-500 text-xs">
-                                      Voice responses can be toggled anytime in the chat header
+                                      Join thousands experiencing authentic character voices
                                     </p>
                                   </div>
                                 </div>
@@ -4561,7 +4561,7 @@ function Chat() {
                                             {/* Audio Playing Indicator - Only show for AI messages when audio is playing and user has premium/ultimate */}
                                             {msg.role === 'assistant' && 
                                              audioPlayingForMessage === index && 
-                                             (currentUserPlan=== 'premium' || currentUserPlan === 'ultimate') && 
+                                             (currentUserPlan === 'premium' || currentUserPlan === 'ultimate') && 
                                              isVoiceResponseEnabled && (
                                               <div className="ml-2 flex items-end pb-1">
                                                 <div className="w-6 h-6 bg-cyan-500/24 rounded-full flex items-center justify-center animate-pulse">
@@ -4587,7 +4587,7 @@ function Chat() {
                                             </div>
                                             <div className="text-gray-500 text-sm italic flex items-center">
                                               {getCharacterName(character || 'gojo')} is thinking
-                                              <span className="ml-2">
+                                              <span className="ml                                                -2">
                                                 <div className="inline-block w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
                                               </span>
                                             </div>
@@ -4725,7 +4725,7 @@ function Chat() {
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           );
                         };
