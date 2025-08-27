@@ -3966,29 +3966,93 @@ function Chat() {
                                     msOverflowStyle: 'none'
                                   }}>
                                     {(() => {
-                                      const grouped = groupConversationsByTime();
+                                      // Filter conversations based on search query
+                                      const filteredConversations = sidebarSearchQuery.trim() 
+                                        ? recentConversations.filter(conv => 
+                                            conv.name.toLowerCase().includes(sidebarSearchQuery.toLowerCase())
+                                          )
+                                        : recentConversations;
+
+                                      // Group the filtered conversations
+                                      const now = new Date();
+                                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                      const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+                                      const thisWeekStart = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
+                                      const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+                                      const grouped = {
+                                        today: [],
+                                        yesterday: [],
+                                        thisWeek: [],
+                                        thisMonth: [],
+                                        older: []
+                                      };
+
+                                      filteredConversations.forEach(conv => {
+                                        const interactionDate = new Date(conv.lastInteraction);
+                                        const interactionDateOnly = new Date(interactionDate.getFullYear(), interactionDate.getMonth(), interactionDate.getDate());
+
+                                        if (interactionDateOnly.getTime() === today.getTime()) {
+                                          grouped.today.push(conv);
+                                        } else if (interactionDateOnly.getTime() === yesterday.getTime()) {
+                                          grouped.yesterday.push(conv);
+                                        } else if (interactionDate >= thisWeekStart && interactionDate < yesterday) {
+                                          grouped.thisWeek.push(conv);
+                                        } else if (interactionDate >= thisMonth && interactionDate < thisWeekStart) {
+                                          grouped.thisMonth.push(conv);
+                                        } else {
+                                          grouped.older.push(conv);
+                                        }
+                                      });
+
                                       const hasAnyConversations = grouped.today.length > 0 || grouped.yesterday.length > 0 || 
                                         grouped.thisWeek.length > 0 || grouped.thisMonth.length > 0 || grouped.older.length > 0;
                                       
                                       if (!hasAnyConversations) {
-                                        return (
-                                          <div className="flex flex-col items-center justify-center py-8 px-4">
-                                            <div className="w-12 h-12 rounded-full bg-gray-800/50 flex items-center justify-center mb-3">
-                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                              </svg>
+                                        if (sidebarSearchQuery.trim()) {
+                                          // Show "no search results" message
+                                          return (
+                                            <div className="flex flex-col items-center justify-center py-8 px-4">
+                                              <div className="w-12 h-12 rounded-full bg-gray-800/50 flex items-center justify-center mb-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                </svg>
+                                              </div>
+                                              <p className="text-gray-500 text-sm text-center mb-1">No characters found</p>
+                                              <p className="text-gray-600 text-xs text-center">Try a different search term</p>
                                             </div>
-                                            <p className="text-gray-500 text-sm text-center mb-1">No recent conversations</p>
-                                            <p className="text-gray-600 text-xs text-center">Start chatting to see your recent characters here</p>
-                                          </div>
-                                        );
+                                          );
+                                        } else {
+                                          // Show "no conversations" message
+                                          return (
+                                            <div className="flex flex-col items-center justify-center py-8 px-4">
+                                              <div className="w-12 h-12 rounded-full bg-gray-800/50 flex items-center justify-center mb-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                </svg>
+                                              </div>
+                                              <p className="text-gray-500 text-sm text-center mb-1">No recent conversations</p>
+                                              <p className="text-gray-600 text-xs text-center">Start chatting to see your recent characters here</p>
+                                            </div>
+                                          );
+                                        }
                                       }
 
                                       return (
                                         <div className="space-y-3">
+                                          {sidebarSearchQuery.trim() && (
+                                            <div className="mb-3">
+                                              <p className="text-xs text-gray-400">
+                                                {filteredConversations.length} result{filteredConversations.length !== 1 ? 's' : ''} for "{sidebarSearchQuery}"
+                                              </p>
+                                            </div>
+                                          )}
+                                          
                                           {grouped.today.length > 0 && (
                                             <div>
-                                              <h3 className="text-xs text-gray-500 mb-1">Today</h3>
+                                              <h3 className="text-xs text-gray-500 mb-1">
+                                                {sidebarSearchQuery.trim() ? 'Found Today' : 'Today'}
+                                              </h3>
                                               <div className="space-y-1">
                                                 {grouped.today.map((conv) => (
                                                   <RecentConversationItem
@@ -4005,7 +4069,9 @@ function Chat() {
 
                                           {grouped.yesterday.length > 0 && (
                                             <div>
-                                              <h3 className="text-xs text-gray-500 mb-1">Yesterday</h3>
+                                              <h3 className="text-xs text-gray-500 mb-1">
+                                                {sidebarSearchQuery.trim() ? 'Found Yesterday' : 'Yesterday'}
+                                              </h3>
                                               <div className="space-y-1">
                                                 {grouped.yesterday.map((conv) => (
                                                   <RecentConversationItem
@@ -4022,7 +4088,9 @@ function Chat() {
 
                                           {grouped.thisWeek.length > 0 && (
                                             <div>
-                                              <h3 className="text-xs text-gray-500 mb-1">This Week</h3>
+                                              <h3 className="text-xs text-gray-500 mb-1">
+                                                {sidebarSearchQuery.trim() ? 'Found This Week' : 'This Week'}
+                                              </h3>
                                               <div className="space-y-1">
                                                 {grouped.thisWeek.map((conv) => (
                                                   <RecentConversationItem
@@ -4039,7 +4107,9 @@ function Chat() {
 
                                           {grouped.thisMonth.length > 0 && (
                                             <div>
-                                              <h3 className="text-xs text-gray-500 mb-1">This Month</h3>
+                                              <h3 className="text-xs text-gray-500 mb-1">
+                                                {sidebarSearchQuery.trim() ? 'Found This Month' : 'This Month'}
+                                              </h3>
                                               <div className="space-y-1">
                                                 {grouped.thisMonth.map((conv) => (
                                                   <RecentConversationItem
@@ -4056,7 +4126,9 @@ function Chat() {
 
                                           {grouped.older.length > 0 && (
                                             <div>
-                                              <h3 className="text-xs text-gray-500 mb-1">A While Ago</h3>
+                                              <h3 className="text-xs text-gray-500 mb-1">
+                                                {sidebarSearchQuery.trim() ? 'Found Earlier' : 'A While Ago'}
+                                              </h3>
                                               <div className="space-y-1">
                                                 {grouped.older.map((conv) => (
                                                   <RecentConversationItem
