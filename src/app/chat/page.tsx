@@ -519,7 +519,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
                                 </div>
                               </div>
-                            );
+                            </div>
+                          );
                           };
 
                         // Main Chat component with minimalist design
