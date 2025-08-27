@@ -3301,14 +3301,6 @@ function Chat() {
 
                                                               console.log('📅 [CHAT] Parsed PayPal date:', date);
 
-                                                              // Check if daily by looking at actual time difference
-                                                              const now = new Date();
-                                                              const timeDiff = date.getTime() - now.getTime();
-                                                              const hoursDiff = Math.abs(timeDiff / (1000 * 3600));
-                                                              const isDailyBilling = hoursDiff <= 25; // Within 25 hours = daily
-
-                                                              console.log('⏰ [CHAT] Time diff hours:', hoursDiff, 'Is daily:', isDailyBilling);
-
                                                               const formatDateWithTime = (dateObj) => {
                                                                 return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
@@ -3325,9 +3317,6 @@ function Chat() {
                                                                   {billingData.subscription.status === 'cancelled' || billingData.subscription.cancelledAt 
                                                                     ? 'Access until:' 
                                                                     : 'Next billing:'} {formatDateWithTime(date)}
-                                                                  {isDailyBilling && (
-                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
-                                                                  )}
                                                                 </p>
                                                               );
                                                             } catch (error) {
@@ -3367,14 +3356,6 @@ function Chat() {
 
                                                               console.log('📅 [CHAT] Parsed PayPal last charged date:', date);
 
-                                                              // Check if daily by looking at how recent the charge was
-                                                              const now = new Date();
-                                                              const timeDiff = now.getTime() - date.getTime();
-                                                              const hoursSinceCharge = Math.abs(timeDiff / (1000 * 3600));
-                                                              const isDailyBilling = hoursSinceCharge <= 25; // Within 25 hours = daily
-
-                                                              console.log('⏰ [CHAT] Hours since charge:', hoursSinceCharge, 'Is daily:', isDailyBilling);
-
                                                               const formatDateWithTime = (dateObj) => {
                                                                 return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
@@ -3387,11 +3368,7 @@ function Chat() {
                                                               };
 
                                                               return (
-                                                                <p>Last charged: {formatDateWithTime(date)}
-                                                                  {isDailyBilling && (
-                                                                    <span className="text-yellow-400 text-xs ml-2">(Daily - Testing)</span>
-                                                                  )}
-                                                                </p>
+                                                                <p>Last charged: {formatDateWithTime(date)}</p>
                                                               );
                                                             } catch (error) {
                                                               console.error('❌ [CHAT] Error formatting last charged date:', error);
