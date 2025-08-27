@@ -121,14 +121,16 @@ export default function SignUp() {
             <div className="space-y-4">
               <button
                 onClick={handleResendVerification}
-                className="w-full py-3 text-gray-400 border border-gray-800 rounded hover:bg-gray-900 transition-colors text-sm"
+                className="w-full py-2.5 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm font-medium"
+                style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
               >
                 Resend email
               </button>
 
               <Link
                 href="/auth/signin"
-                className="w-full py-3 bg-white hover:bg-gray-100 text-black rounded transition-colors inline-block text-center font-medium text-sm"
+                className="w-full py-2.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors inline-block text-center font-medium text-sm"
+                style={{ fontFamily: 'Shocka Serif', fontWeight: 700 }}
               >
                 Continue to sign in
               </Link>
