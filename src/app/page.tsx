@@ -599,8 +599,8 @@ export default function Home() {
               <p className="text-gray-400">© 2025 All rights reserved</p>
             </div>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-purple-400 transition-colors">Terms</a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">Privacy</a>
+              <a href="/terms" className="text-gray-400 hover:text-purple-400 transition-colors">Terms</a>
+              <a href="/privacy" className="text-gray-400 hover:text-blue-400 transition-colors">Privacy</a>
               <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Support</a>
             </div>
           </div>
