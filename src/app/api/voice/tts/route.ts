@@ -19,6 +19,7 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'lawliet': 'd1d069582a5b40c39de50e8a5048a608',
   'edward': '58f85b3f72464bf18dfd409801a632f3',
   'spike': '3e3eee1fe0624d00961c6ed980eda03d',
+  'kenshin': 'e2c8325a540a4fa68f61b72111afdd1a',
   'zenitsu': 'provide correct id'
 };
 

@@ -113,7 +113,7 @@ export default function SignUp() {
                 <p className="text-gray-400 text-sm">Verification sent to</p>
                 <p className="text-white text-sm">{formData.email}</p>
                 <p className="text-gray-500 text-xs">
-                  Click the link to verify your account. If you don't see the email, check your spam folder.
+                  Click the link to verify your account. If you don't see the email, please check your spam folder.
                 </p>
               </div>
             </div>
