@@ -13,14 +13,14 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
 export const SUBSCRIPTION_PLANS = {
   premium: {
     name: 'Premium Monthly',
-    price: 9.99, // Production monthly price
+    price: 3.88, // Your original monthly price
     credits: 200,
     interval: 'MONTH',
     intervalCount: 1
   },
   ultimate: {
     name: 'Ultimate Monthly',
-    price: 19.99, // Production monthly price
+    price: 6.88, // Your original monthly price
     credits: 500,
     interval: 'MONTH',
     intervalCount: 1

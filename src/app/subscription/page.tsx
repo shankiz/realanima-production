@@ -197,7 +197,7 @@ export default function Subscription() {
     {
       id: 'premium',
       name: 'Premium',
-      price: 9.99,
+      price: 3.88,
       credits: '200',
       description: 'Enhanced experience with voice',
       features: ['200 messages per day', 'Access to all characters', 'Text & voice responses', 'Conversation memory'],
@@ -208,7 +208,7 @@ export default function Subscription() {
     {
       id: 'ultimate',
       name: 'Ultimate',
-      price: 19.99,
+      price: 6.88,
       credits: '500',
       description: 'Premium unlimited access',
       features: ['500 messages per day', 'Access to all characters', 'Text & voice responses', 'Conversation memory'],
