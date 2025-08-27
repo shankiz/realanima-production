@@ -25,6 +25,10 @@ async function getPayPalAccessToken() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 Creating PayPal subscription plan...');
+    console.log('🔧 PayPal Mode:', PAYPAL_MODE);
+    console.log('🌐 PayPal Base URL:', PAYPAL_BASE_URL);
+
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'No authorization token provided' }, { status: 401 });
@@ -46,8 +50,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    console.log('📋 Plan details:', { planId, planName, price, credits });
+
     // Get PayPal access token
     const accessToken = await getPayPalAccessToken();
+    console.log('✅ Got PayPal access token');
 
     // First create a product
     const product = {
@@ -56,6 +63,8 @@ export async function POST(request: NextRequest) {
       type: "SERVICE",
       category: "SOFTWARE"
     };
+
+    console.log('🛍️ Creating product:', product);
 
     const productResponse = await fetch(`${PAYPAL_BASE_URL}/v1/catalogs/products`, {
       method: 'POST',
@@ -70,9 +79,18 @@ export async function POST(request: NextRequest) {
     const productData = await productResponse.json();
 
     if (!productResponse.ok) {
-      console.error('PayPal product creation error:', productData);
-      return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+      console.error('❌ PayPal product creation error:', {
+        status: productResponse.status,
+        statusText: productResponse.statusText,
+        data: productData
+      });
+      return NextResponse.json({ 
+        error: 'Failed to create product', 
+        details: productData 
+      }, { status: 500 });
     }
+
+    console.log('✅ Product created:', productData.id);
 
     // Create billing plan
     const billingPlan = {
@@ -108,6 +126,8 @@ export async function POST(request: NextRequest) {
       }
     };
 
+    console.log('📅 Creating billing plan:', JSON.stringify(billingPlan, null, 2));
+
     // Create the billing plan
     const planResponse = await fetch(`${PAYPAL_BASE_URL}/v1/billing/plans`, {
       method: 'POST',
@@ -122,8 +142,15 @@ export async function POST(request: NextRequest) {
     const planData = await planResponse.json();
 
     if (!planResponse.ok) {
-      console.error('PayPal plan creation error:', planData);
-      return NextResponse.json({ error: 'Failed to create billing plan' }, { status: 500 });
+      console.error('❌ PayPal plan creation error:', {
+        status: planResponse.status,
+        statusText: planResponse.statusText,
+        data: planData
+      });
+      return NextResponse.json({ 
+        error: 'Failed to create billing plan', 
+        details: planData 
+      }, { status: 500 });
     }
 
     console.log('✅ PayPal plan created successfully:', planData.id);

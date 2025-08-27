@@ -30,10 +30,17 @@ export const SUBSCRIPTION_PLANS = {
 async function getPayPalAccessToken() {
   if (PAYPAL_DEBUG) {
     console.log('🔑 Getting PayPal access token...');
+    console.log('🔧 PayPal Mode:', PAYPAL_MODE);
+    console.log('🌐 PayPal Base URL:', PAYPAL_BASE_URL);
   }
 
   // Check for credentials when actually needed
   if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || PAYPAL_CLIENT_SECRET === 'your_paypal_client_secret_here') {
+    console.error('❌ PayPal credentials missing or invalid:', {
+      hasClientId: !!PAYPAL_CLIENT_ID,
+      hasClientSecret: !!PAYPAL_CLIENT_SECRET,
+      clientSecretIsPlaceholder: PAYPAL_CLIENT_SECRET === 'your_paypal_client_secret_here'
+    });
     throw new Error('PayPal credentials not found in environment variables');
   }
 
