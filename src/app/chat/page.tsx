@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
                         import { ConfirmModal, AlertModal } from '@/components/ui/modal';
                         import BillingSection from '@/components/BillingSection';
                         import ChatSupportBubble from '@/components/ChatSupportBubble';
+import Link from 'next/link';
 
 // Wrap the Chat component in a Suspense boundary to satisfy Next.js requirements
 export default function ChatPage() {
@@ -518,9 +519,8 @@ const CharacterCard = React.memo(function CharacterCard({ character, onClick }: 
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        };
+                            );
+                          };
 
                         // Main Chat component with minimalist design
 function Chat() {
@@ -2503,7 +2503,7 @@ function Chat() {
                                           document.getElementById('chat-input-field')?.focus();
                                         }, 300);
                                       }}
-                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20 mb-3"
+                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20"
                                     >
                                       Start Chatting with Voices
                                     </button>
@@ -4007,7 +4007,7 @@ function Chat() {
 
                                       const hasAnyConversations = grouped.today.length > 0 || grouped.yesterday.length > 0 || 
                                         grouped.thisWeek.length > 0 || grouped.thisMonth.length > 0 || grouped.older.length > 0;
-                                      
+
                                       if (!hasAnyConversations) {
                                         if (sidebarSearchQuery.trim()) {
                                           // Show "no search results" message
@@ -4047,7 +4047,7 @@ function Chat() {
                                               </p>
                                             </div>
                                           )}
-                                          
+
                                           {grouped.today.length > 0 && (
                                             <div>
                                               <h3 className="text-xs text-gray-500 mb-1">
@@ -4151,9 +4151,13 @@ function Chat() {
                                   <div className="flex-shrink-0">
                                     {/* Terms and Policy */}
                                     <div className="flex justify-center space-x-2 text-[10px] text-gray-500 mb-3">
-                                      <a href="#" className="hover:text-gray-300">Privacy</a>
+                                      <Link href="/terms" className="hover:text-cyan-400 transition-colors cursor-pointer">
+                                        Terms
+                                      </Link>
                                       <span>•</span>
-                                      <a href="#" className="hover:text-gray-300">Terms</a>
+                                      <Link href="/privacy" className="hover:text-cyan-400 transition-colors cursor-pointer">
+                                        Privacy
+                                      </Link>
                                     </div>
 
                                     {/* Upgrade Plan Button */}
@@ -4520,7 +4524,7 @@ function Chat() {
                                                                           <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
                                                                               <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
                                                                                   <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
-                                                                                      ? conversation.lastMessage.substring(0, 80) + '...' 
+                                                                                      ? conversation.lastMessage.substring(0,                                                                                  80) + '...' 
                                                                                       : conversation.lastMessage}
                                                                               </div>
                                                                           </div>
