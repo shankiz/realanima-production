@@ -12,10 +12,13 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'tanjiro': '5926dcd0aae6441c8355ecb3b8bf28bb',
   'levi': 'b67e283da1224a3a8dadc36b6ce6d795',
   'eren': '2a1b57c3fcc448dc9bffd9a4d25f72d6',
-  'nezuko': 'provide correct id',
+  'nezuko': 'e29d081deee440828354374caff08b0b',
   'megumin': 'provide correct id',
   'light': 'f55b2ef3c11a45c48305e7918804c20f',
   'itachi': '7d9f8d78e73e4215b10d6909da013b4d',
+  'lawliet': 'd1d069582a5b40c39de50e8a5048a608',
+  'edward': '58f85b3f72464bf18dfd409801a632f3',
+  'spike': '3e3eee1fe0624d00961c6ed980eda03d',
   'zenitsu': 'provide correct id'
 };
 
