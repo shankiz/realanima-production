@@ -17,7 +17,7 @@ export const SUBSCRIPTION_PLANS = {
     credits: 200,
     interval: 'MONTH',
     intervalCount: 1,
-    paypalPlanId: 'P-03K12086182264158NCVCWCQ' // Reuse existing Premium plan
+    paypalPlanId: 'REPLACE_WITH_NEW_PREMIUM_PLAN_ID' // Will be updated with fresh Premium plan
   },
   ultimate: {
     name: 'Ultimate Monthly',
