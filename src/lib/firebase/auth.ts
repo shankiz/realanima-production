@@ -12,6 +12,9 @@ import {
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from './config';
 
+// Export auth for react-firebase-hooks
+export { auth };
+
 export interface UserData {
   uid: string;
   name: string;
