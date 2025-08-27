@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
         const paypalDetails = await paypalService.getSubscriptionDetails(finalSubscription.subscriptionId);
 
         if (paypalDetails) {
-          // For daily subscriptions, calculate proper next billing
+          // For monthly subscriptions, calculate proper next billing
           const now = new Date();
           let calculatedNextBilling = finalSubscription.nextBillingDate;
 
