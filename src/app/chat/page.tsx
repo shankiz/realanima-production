@@ -2504,7 +2504,7 @@ function Chat() {
                                           document.getElementById('chat-input-field')?.focus();
                                         }, 300);
                                       }}
-                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20"
+                                      className="w-full bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-700 hover:to-cyan-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-green-500/20 mb-4"
                                     >
                                       Start Chatting with Voices
                                     </button>
