@@ -2597,7 +2597,7 @@ function Chat() {
                                         setShowFirstResponseVoiceModal(false);
                                         router.push('/subscription');
                                       }}
-                                      className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20"
+                                      className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700 text-white py-3 px-5 rounded-xl transition-all font-medium text-base shadow-lg hover:shadow-cyan-500/20 mb-4"
                                     >
                                       Upgrade to Hear Their Voice
                                     </button>
