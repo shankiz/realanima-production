@@ -9,21 +9,23 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
   ? 'https://api.paypal.com'
   : 'https://api.sandbox.paypal.com';
 
-// Subscription plans configuration
+// Subscription plans configuration with reusable PayPal plan IDs
 export const SUBSCRIPTION_PLANS = {
   premium: {
     name: 'Premium Monthly',
     price: 3.88, // Your original monthly price
     credits: 200,
     interval: 'MONTH',
-    intervalCount: 1
+    intervalCount: 1,
+    paypalPlanId: 'P-03K12086182264158NCVCWCQ' // Reuse existing Premium plan
   },
   ultimate: {
     name: 'Ultimate Monthly',
     price: 6.88, // Your original monthly price
     credits: 500,
     interval: 'MONTH',
-    intervalCount: 1
+    intervalCount: 1,
+    paypalPlanId: 'P-0B523244UM225325KNCXTGTQ' // Reuse existing Ultimate plan
   }
 };
 

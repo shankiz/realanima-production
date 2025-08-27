@@ -25,9 +25,7 @@ async function getPayPalAccessToken() {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🚀 Creating PayPal subscription plan...');
-    console.log('🔧 PayPal Mode:', PAYPAL_MODE);
-    console.log('🌐 PayPal Base URL:', PAYPAL_BASE_URL);
+    console.log('🔍 Getting existing PayPal subscription plan...');
 
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -52,116 +50,23 @@ export async function POST(request: NextRequest) {
 
     console.log('📋 Plan details:', { planId, planName, price, credits });
 
-    // Get PayPal access token
-    const accessToken = await getPayPalAccessToken();
-    console.log('✅ Got PayPal access token');
+    // Import the SUBSCRIPTION_PLANS to get the existing PayPal plan ID
+    const { SUBSCRIPTION_PLANS } = require('@/services/PayPalSubscriptionService');
+    const plan = SUBSCRIPTION_PLANS[planId as keyof typeof SUBSCRIPTION_PLANS];
 
-    // First create a product
-    const product = {
-      name: `${planName} Product`,
-      description: `Product for ${planName}`,
-      type: "SERVICE",
-      category: "SOFTWARE"
-    };
-
-    console.log('🛍️ Creating product:', product);
-
-    const productResponse = await fetch(`${PAYPAL_BASE_URL}/v1/catalogs/products`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'PayPal-Request-Id': `product-${planId}-${Date.now()}`,
-      },
-      body: JSON.stringify(product),
-    });
-
-    const productData = await productResponse.json();
-
-    if (!productResponse.ok) {
-      console.error('❌ PayPal product creation error:', {
-        status: productResponse.status,
-        statusText: productResponse.statusText,
-        data: productData
-      });
-      return NextResponse.json({ 
-        error: 'Failed to create product', 
-        details: productData 
-      }, { status: 500 });
+    if (!plan || !plan.paypalPlanId) {
+      return NextResponse.json({ error: 'Invalid plan or PayPal plan ID not found' }, { status: 400 });
     }
 
-    console.log('✅ Product created:', productData.id);
-
-    // Create billing plan
-    const billingPlan = {
-      product_id: productData.id,
-      name: planName,
-      description: `Monthly subscription for ${planName}`,
-      status: "ACTIVE",
-      billing_cycles: [
-        {
-          frequency: {
-            interval_unit: "MONTH",
-            interval_count: 1
-          },
-          tenure_type: "REGULAR",
-          sequence: 1,
-          total_cycles: 0, // 0 means infinite
-          pricing_scheme: {
-            fixed_price: {
-              value: price.toString(),
-              currency_code: "USD"
-            }
-          }
-        }
-      ],
-      payment_preferences: {
-        auto_bill_outstanding: true,
-        setup_fee: {
-          value: "0",
-          currency_code: "USD"
-        },
-        setup_fee_failure_action: "CONTINUE",
-        payment_failure_threshold: 3
-      }
-    };
-
-    console.log('📅 Creating billing plan:', JSON.stringify(billingPlan, null, 2));
-
-    // Create the billing plan
-    const planResponse = await fetch(`${PAYPAL_BASE_URL}/v1/billing/plans`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        'PayPal-Request-Id': `plan-${planId}-${Date.now()}`,
-      },
-      body: JSON.stringify(billingPlan),
-    });
-
-    const planData = await planResponse.json();
-
-    if (!planResponse.ok) {
-      console.error('❌ PayPal plan creation error:', {
-        status: planResponse.status,
-        statusText: planResponse.statusText,
-        data: planData
-      });
-      return NextResponse.json({ 
-        error: 'Failed to create billing plan', 
-        details: planData 
-      }, { status: 500 });
-    }
-
-    console.log('✅ PayPal plan created successfully:', planData.id);
+    console.log('✅ Using existing PayPal plan:', plan.paypalPlanId);
 
     return NextResponse.json({ 
-      paypalPlanId: planData.id,
-      productId: productData.id
+      paypalPlanId: plan.paypalPlanId,
+      productId: 'existing' // Not needed since we're reusing plans
     });
 
   } catch (error: unknown) {
-    console.error('Plan creation error:', error);
+    console.error('Plan retrieval error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
