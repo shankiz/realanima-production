@@ -3329,7 +3329,7 @@ function Chat() {
 
                                                               console.log('📅 [CHAT] Parsed PayPal date:', date);
 
-                                                              const formatDateWithTime = (dateObj) => {
+                                                              const formatDateWithTime = (dateObj: Date) => {
                                                                 return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
                                                                   month: 'long',
@@ -3384,7 +3384,7 @@ function Chat() {
 
                                                               console.log('📅 [CHAT] Parsed PayPal last charged date:', date);
 
-                                                              const formatDateWithTime = (dateObj) => {
+                                                              const formatDateWithTime = (dateObj: Date) => {
                                                                 return dateObj.toLocaleString('en-US', {
                                                                   year: 'numeric',
                                                                   month: 'long',
