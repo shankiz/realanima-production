@@ -3099,7 +3099,7 @@ function Chat() {
                                                               setTimeout(() => {
                                                                 setShowSettingsModal(true);
                                                                 setSelectedSettingsTab('account');
-                                                                setShowAccountManagement(true);
+                                                                setShowAccountManagement(false); // Reset dropdown state
                                                               }, 100);
                                                             }
                                                           }
@@ -3171,7 +3171,15 @@ function Chat() {
                                                           {
                                                             type: 'danger',
                                                             confirmText: 'Delete Account',
-                                                            cancelText: 'Keep Account'
+                                                            cancelText: 'Keep Account',
+                                                            onCancel: () => {
+                                                              // Reopen settings modal when Keep Account is clicked
+                                                              setTimeout(() => {
+                                                                setShowSettingsModal(true);
+                                                                setSelectedSettingsTab('account');
+                                                                setShowAccountManagement(false); // Reset dropdown state
+                                                              }, 100);
+                                                            }
                                                           }
                                                         );
                                                       }}
