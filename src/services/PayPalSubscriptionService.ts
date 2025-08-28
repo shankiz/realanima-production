@@ -16,6 +16,7 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Premium Monthly',
     price: 3.88,
     credits: 200,
+    interval: 'MONTH',
     description: 'Premium plan with 200 monthly credits'
   },
   ultimate: {
@@ -23,6 +24,7 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Ultimate Monthly',
     price: 6.88,
     credits: 500,
+    interval: 'MONTH',
     description: 'Ultimate plan with 500 monthly credits'
   }
 };

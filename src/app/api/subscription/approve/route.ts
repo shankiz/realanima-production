@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         paidAt: new Date()
       },
       createdAt: new Date(),
-      nextBillingDate: new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000)),
+      nextBillingDate: new Date(Date.now() + (plan.interval === 'MONTH' ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)),
       lastChargedAt: new Date()
     };
 
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
           subscriptionStatus: 'active',
           lastMessageReset: new Date(),
           'subscription.lastChargedAt': new Date().toISOString(),
-          'subscription.nextBillingDate': new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000)).toISOString(),
+          'subscription.nextBillingDate': new Date(Date.now() + (plan.interval === 'MONTH' ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)).toISOString(),
           'subscription.status': 'active',
           'subscription.planId': planId,
           lastUpdated: new Date()
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
           lastMessageReset: new Date(),
           subscription: {
             lastChargedAt: new Date().toISOString(),
-            nextBillingDate: new Date(Date.now() + (plan.interval === 'DAY' ? 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000)).toISOString(),
+            nextBillingDate: new Date(Date.now() + (plan.interval === 'MONTH' ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000)).toISOString(),
             status: 'active',
             planId: planId
           },
