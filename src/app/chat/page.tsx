@@ -3426,7 +3426,7 @@ function Chat() {
                                                                   if (isNaN(date.getTime())) return 'Unknown';
 
                                                                   // Format with time using the same function as BillingSection
-                                                                  const formatDateWithTime = (dateString) => {
+                                                                  const formatDateWithTime = (dateString: string | Date) => {
                                                                     const date = new Date(dateString);
                                                                     return date.toLocaleString('en-US', {
                                                                       year: 'numeric',
