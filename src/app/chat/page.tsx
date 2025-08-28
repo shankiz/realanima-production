@@ -3807,11 +3807,11 @@ function Chat() {
                                 </div>
                               </div>
                             </div>
-          );
+                          );
 
-          // Main component return
-          return (
-            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
+                          // Main component return
+                          return (
+                            <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
@@ -4014,11 +4014,11 @@ function Chat() {
                                       const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
                                       const grouped = {
-                                        today: [],
-                                        yesterday: [],
-                                        thisWeek: [],
-                                        thisMonth: [],
-                                        older: []
+                                        today: [] as RecentConversation[],
+                                        yesterday: [] as RecentConversation[],
+                                        thisWeek: [] as RecentConversation[],
+                                        thisMonth: [] as RecentConversation[],
+                                        older: [] as RecentConversation[]
                                       };
 
                                       filteredConversations.forEach(conv => {
@@ -4041,7 +4041,7 @@ function Chat() {
                                       const hasAnyConversations = grouped.today.length > 0 || grouped.yesterday.length > 0 || 
                                         grouped.thisWeek.length > 0 || grouped.thisMonth.length > 0 || grouped.older.length > 0;
 
-                                      if (!hasAnyConversations) {
+                                      if (!hasAnyConversConversations) {
                                         if (sidebarSearchQuery.trim()) {
                                           // Show "no search results" message
                                           return (
@@ -4557,7 +4557,7 @@ function Chat() {
                                                                           <div className="bg-gray-800/30 border border-gray-700/20 rounded-lg p-3">
                                                                               <div className="text-sm text-gray-200 leading-relaxed line-clamp-2">
                                                                                   <span className="text-gray-300 font-medium">You:</span> {conversation.lastMessage.length > 80 
-                                                                                      ? conversation.lastMessage.substring(0,                                                                                  80) + '...' 
+                                                                                                                                                                            ? conversation.lastMessage.substring(0,                                                                                  80) + '...' 
                                                                                       : conversation.lastMessage}
                                                                               </div>
                                                                           </div>
@@ -4828,7 +4828,7 @@ function Chat() {
                                     </div>
                                   </div>
                                 </div>
-                              )}
+                              </div>
                             </div>
                           );
                         };
