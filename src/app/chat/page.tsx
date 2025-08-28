@@ -2996,7 +2996,15 @@ function Chat() {
                                                           {
                                                             type: 'default',
                                                             confirmText: 'Send Email',
-                                                            cancelText: 'Cancel'
+                                                            cancelText: 'Cancel',
+                                                            onCancel: () => {
+                                                              // Reopen settings modal when Cancel is clicked
+                                                              setTimeout(() => {
+                                                                setShowSettingsModal(true);
+                                                                setSelectedSettingsTab('account');
+                                                                setShowAccountManagement(false); // Reset dropdown state
+                                                              }, 100);
+                                                            }
                                                           }
                                                         );
                                                       }}
