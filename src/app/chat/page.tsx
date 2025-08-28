@@ -3809,7 +3809,7 @@
                                                                                       </div>
 
                                                                                     // Main component return
-                                                                                    (
+                                                                                    return (
                                                                                       <div className={`flex h-screen bg-black text-white overflow-hidden ${theme === 'light' ? 'light' : 'dark'}`} suppressHydrationWarning={true}>
                                                                                         {/* Custom Modals */}
                                                                                         <ConfirmModal
