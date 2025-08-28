@@ -16,16 +16,14 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Premium Monthly',
     price: 3.88,
     credits: 200,
-    description: 'Premium plan with 200 monthly credits',
-    interval: 'MONTH' as const
+    description: 'Premium plan with 200 monthly credits'
   },
   ultimate: {
     paypalPlanId: 'P-1GT93847A8166341UNCXTDZA', // Ultimate plan
     name: 'Ultimate Monthly',
     price: 6.88,
     credits: 500,
-    description: 'Ultimate plan with 500 monthly credits',
-    interval: 'MONTH' as const
+    description: 'Ultimate plan with 500 monthly credits'
   }
 };
 
