@@ -20,6 +20,7 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'edward': '58f85b3f72464bf18dfd409801a632f3',
   'spike': '3e3eee1fe0624d00961c6ed980eda03d',
   'kenshin': 'e2c8325a540a4fa68f61b72111afdd1a',
+  'hisoka': '4f3faeee81424e318a8fbe2d1cf999ca',
   'zenitsu': 'provide correct id'
 };
 
