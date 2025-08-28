@@ -28,7 +28,7 @@ export default function TermsOfService() {
             </div>
             <Button 
               variant="ghost" 
-              className="text-gray-300 hover:text-white"
+              className="text-gray-300 hover:text-gray-100 hover:bg-gray-800/30"
               onClick={() => router.push('/')}
             >
               Back to Home
