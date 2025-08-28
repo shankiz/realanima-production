@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
             </div>
             <Button 
               variant="ghost" 
-              className="text-gray-300 hover:text-gray-100 hover:bg-gray-800/30"
+              className="text-gray-300 hover:text-white"
               onClick={() => router.push('/')}
             >
               Back to Home
