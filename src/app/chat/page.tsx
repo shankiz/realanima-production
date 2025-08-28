@@ -626,6 +626,7 @@ function Chat() {
                             title: '',
                             message: '',
                             onConfirm: () => {},
+                            onCancel: undefined as (() => void) | undefined,
                             type: 'default' as 'default' | 'danger' | 'warning',
                             confirmText: 'Confirm',
                             cancelText: 'Cancel'
@@ -679,12 +680,14 @@ function Chat() {
                               type?: 'default' | 'danger' | 'warning';
                               confirmText?: string;
                               cancelText?: string;
+                              onCancel?: () => void;
                             }
                           ) => {
                             setModalConfig({
                               title,
                               message,
                               onConfirm,
+                              onCancel: options?.onCancel,
                               type: options?.type || 'default',
                               confirmText: options?.confirmText || 'Confirm',
                               cancelText: options?.cancelText || 'Cancel'
@@ -3090,7 +3093,15 @@ function Chat() {
                                                           {
                                                             type: 'danger',
                                                             confirmText: isDeleteHistoryLoading ? 'Deleting...' : 'Delete History',
-                                                            cancelText: 'Keep Data'
+                                                            cancelText: 'Keep Data',
+                                                            onCancel: () => {
+                                                              // Reopen settings modal when Keep Data is clicked
+                                                              setTimeout(() => {
+                                                                setShowSettingsModal(true);
+                                                                setSelectedSettingsTab('account');
+                                                                setShowAccountManagement(true);
+                                                              }, 100);
+                                                            }
                                                           }
                                                         );
                                                       }}
@@ -3788,7 +3799,12 @@ function Chat() {
                               {/* Custom Modals */}
                               <ConfirmModal
                                 isOpen={showConfirmModal}
-                                onClose={() => setShowConfirmModal(false)}
+                                onClose={() => {
+                                  setShowConfirmModal(false);
+                                  if (modalConfig.onCancel) {
+                                    modalConfig.onCancel();
+                                  }
+                                }}
                                 onConfirm={modalConfig.onConfirm}
                                 title={modalConfig.title}
                                 message={modalConfig.message}
