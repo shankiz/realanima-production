@@ -12,7 +12,7 @@ const PAYPAL_BASE_URL = PAYPAL_MODE === 'live'
 // Subscription plans configuration with reusable PayPal plan IDs
 export const SUBSCRIPTION_PLANS = {
   premium: {
-    paypalPlanId: 'P-0B523244UM225325KNCXTGTQ', // Fresh Premium plan
+    paypalPlanId: 'P-5UV27119F12878115NCY4X5A', // Fresh Premium plan
     name: 'Premium Monthly',
     price: 3.88,
     credits: 200,
@@ -20,7 +20,7 @@ export const SUBSCRIPTION_PLANS = {
     description: 'Premium plan with 200 monthly credits'
   },
   ultimate: {
-    paypalPlanId: 'P-1HD21980YW7161032NCXTTSA', // Ultimate plan
+    paypalPlanId: 'P-6R275684US0788241NCY4XOI', // Ultimate plan
     name: 'Ultimate Monthly',
     price: 6.88,
     credits: 500,
