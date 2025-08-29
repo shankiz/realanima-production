@@ -27,7 +27,7 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'todoroki': 'ef6c2448b88d41209cd0e0682a638dc4',
   'rimuru': 'c2b8bab440d34b84817ed39f5d99e08f',
   'senku': '4d00189aaa5a45aa87278ec506932a1d',
-  'reigen': '4d00189aaa5a45aa87278ec506932a1d',
+  'reigen': '2ea429cb25914d00a840eee5670eb973',
   'zenitsu': 'provide correct id'
 };
 
