@@ -21,6 +21,13 @@ const VOICE_MAPPINGS: Record<string, string> = {
   'spike': '3e3eee1fe0624d00961c6ed980eda03d',
   'kenshin': 'e2c8325a540a4fa68f61b72111afdd1a',
   'hisoka': '4f3faeee81424e318a8fbe2d1cf999ca',
+  'bakugo': 'fa5b22c0da804b029b1037177410826b',
+  'killua': '9e76b237c94e4c49be5249ab6dc2bd0c',
+  'gon': '72640486e5414e8bbc9acce0ce5ba7b2',
+  'todoroki': 'ef6c2448b88d41209cd0e0682a638dc4',
+  'rimuru': 'c2b8bab440d34b84817ed39f5d99e08f',
+  'senku': '4d00189aaa5a45aa87278ec506932a1d',
+  'reigen': '4d00189aaa5a45aa87278ec506932a1d',
   'zenitsu': 'provide correct id'
 };
 

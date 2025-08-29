@@ -101,7 +101,7 @@ export default function TermsOfService() {
 
                 <h3 className="text-xl font-semibold text-white mb-3">3.2 Copyright Compliance</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  We respect intellectual property rights and operate in compliance with copyright law. If you are a rights holder and believe that any character or content on our platform infringes your intellectual property rights, please contact us immediately at <strong>contact@realanima.ai</strong> with the following information:
+                  We respect intellectual property rights and operate in compliance with copyright law. If you are a rights holder and believe that any character or content on our platform infringes your intellectual property rights, please contact us immediately at <strong>contact@realanima.online</strong> with the following information:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 mb-4 space-y-2">
                   <li>Your contact information and proof of rights ownership</li>
@@ -244,8 +244,8 @@ export default function TermsOfService() {
                 </p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
                   <p className="text-white font-semibold">RealAnima AI</p>
-                  <p className="text-gray-300">Email: contact@realanima.ai</p>
-                  <p className="text-gray-300">Website: realanima.ai</p>
+                  <p className="text-gray-300">Email: contact@realanima.online</p>
+                  <p className="text-gray-300">Website: realanima.online</p>
                 </div>
               </section>
 

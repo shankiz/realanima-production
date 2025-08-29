@@ -234,7 +234,7 @@ export default function PrivacyPolicy() {
 
                 <h3 className="text-xl font-semibold text-white mb-3">7.4 Exercising Your Rights</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  To exercise these rights, contact us at <strong>privacy@realanima.ai</strong> or use the privacy controls in your account settings. We will respond to requests within 30 days.
+                  To exercise these rights, contact us at <strong>contact@realanima.online</strong> or use the privacy controls in your account settings. We will respond to requests within 30 days.
                 </p>
               </section>
 
@@ -260,7 +260,7 @@ export default function PrivacyPolicy() {
                   Our Service is designed for users aged 13 and older. We do not knowingly collect personal information from children under 13. If you are under 13, please do not use our Service or provide any personal information.
                 </p>
                 <p className="text-gray-300 leading-relaxed">
-                  If we discover that we have collected information from a child under 13, we will delete that information immediately. Parents who believe their child has provided information to us should contact us at <strong>privacy@realanima.ai</strong>.
+                  If we discover that we have collected information from a child under 13, we will delete that information immediately. Parents who believe their child has provided information to us should contact us at <strong>contact@realanima.online</strong>.
                 </p>
               </section>
 
@@ -296,9 +296,9 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="bg-gray-800/50 rounded-lg p-4 mb-4">
                   <p className="text-white font-semibold">RealAnima AI - Privacy Team</p>
-                  <p className="text-gray-300">Email: privacy@realanima.ai</p>
-                  <p className="text-gray-300">General Contact: contact@realanima.ai</p>
-                  <p className="text-gray-300">Website: realanima.ai</p>
+                  <p className="text-gray-300">Email: contact@realanima.online</p>
+                  
+                  <p className="text-gray-300">Website: realanima.online</p>
                 </div>
                 <p className="text-gray-300 leading-relaxed">
                   We are committed to addressing your privacy concerns and will respond to your inquiries promptly and professionally.
